@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tarkov-database/api/model"
-	"github.com/tarkov-database/api/model/item"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/model"
+	"github.com/tarkov-database/rest-api/model/item"
+	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"

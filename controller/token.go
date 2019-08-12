@@ -3,9 +3,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/tarkov-database/api/middleware/jwt"
-	"github.com/tarkov-database/api/model/user"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/middleware/jwt"
+	"github.com/tarkov-database/rest-api/model/user"
+	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/julienschmidt/httprouter"
 )

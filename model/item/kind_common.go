@@ -3,7 +3,7 @@ package item
 import (
 	"errors"
 
-	"github.com/tarkov-database/api/model"
+	"github.com/tarkov-database/rest-api/model"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

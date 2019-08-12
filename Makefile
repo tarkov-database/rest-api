@@ -1,6 +1,6 @@
 OUT := apiserver
 VERSION := $(shell git describe --always --long --dirty)
-API_PKG := github.com/tarkov-database/api/model/api
+API_PKG := github.com/tarkov-database/rest-api/model/api
 
 all: run
 

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tarkov-database/api/model"
+	"github.com/tarkov-database/rest-api/model"
 )
 
 func getLimitOffset(r *http.Request) (int64, int64) {

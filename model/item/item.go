@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tarkov-database/api/core/database"
-	"github.com/tarkov-database/api/model"
+	"github.com/tarkov-database/rest-api/core/database"
+	"github.com/tarkov-database/rest-api/model"
 
 	"github.com/google/logger"
 	"go.mongodb.org/mongo-driver/bson"

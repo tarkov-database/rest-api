@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/tarkov-database/api/core/database"
-	"github.com/tarkov-database/api/core/server"
-	"github.com/tarkov-database/api/model/api"
+	"github.com/tarkov-database/rest-api/core/database"
+	"github.com/tarkov-database/rest-api/core/server"
+	"github.com/tarkov-database/rest-api/model/api"
 
 	"github.com/google/logger"
 )

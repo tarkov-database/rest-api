@@ -3,7 +3,7 @@ package item
 import (
 	"encoding/json"
 
-	"github.com/tarkov-database/api/model"
+	"github.com/tarkov-database/rest-api/model"
 )
 
 type Entity interface {

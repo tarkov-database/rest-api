@@ -1,4 +1,4 @@
-module github.com/tarkov-database/api
+module github.com/tarkov-database/rest-api
 
 go 1.12
 

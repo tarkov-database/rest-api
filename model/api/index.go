@@ -1,7 +1,7 @@
 package api
 
 import (
-// "github.com/tarkov-database/api/model"
+// "github.com/tarkov-database/rest-api/model"
 )
 
 // type timestamp = model.Timestamp

@@ -3,8 +3,8 @@ package route
 import (
 	"net/http"
 
-	cntrl "github.com/tarkov-database/api/controller"
-	"github.com/tarkov-database/api/middleware/jwt"
+	cntrl "github.com/tarkov-database/rest-api/controller"
+	"github.com/tarkov-database/rest-api/middleware/jwt"
 
 	"github.com/julienschmidt/httprouter"
 )
