@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/tarkov-database/api/model/user"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/model/user"
+	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"

@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/tarkov-database/api/model/api"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/model/api"
+	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/julienschmidt/httprouter"
 )

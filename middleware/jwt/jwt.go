@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tarkov-database/api/model"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/model"
+	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/logger"

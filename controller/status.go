@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/tarkov-database/api/model"
-	"github.com/tarkov-database/api/view"
+	"github.com/tarkov-database/rest-api/model"
+	"github.com/tarkov-database/rest-api/view"
 )
 
 type Status struct {

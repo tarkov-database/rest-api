@@ -2,14 +2,14 @@ FROM golang:1.13-rc
 
 EXPOSE 8080
 
-WORKDIR /tmp/github.com/tarkov-database/api
+WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
 
 RUN make bin && \
-    mkdir -p /usr/share/tarkov-database/api && \
-    mv -t /usr/share/tarkov-database/api apiserver view && \
-    rm -rf /tmp/github.com/tarkov-database/api
+    mkdir -p /usr/share/tarkov-database/rest-api && \
+    mv -t /usr/share/tarkov-database/rest-api apiserver && \
+    rm -rf /tmp/github.com/tarkov-database/rest-api
 
-WORKDIR /usr/share/tarkov-database/api
+WORKDIR /usr/share/tarkov-database/rest-api
 
-CMD ["/usr/share/tarkov-database/api/apiserver"]
+CMD ["/usr/share/tarkov-database/rest-api/apiserver"]
