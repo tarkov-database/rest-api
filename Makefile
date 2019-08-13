@@ -1,7 +1,7 @@
 OUT := apiserver
 VERSION := $(shell git describe --always)
 REPO_PATH := tarkov-database/rest-api
-API_PKG := ${REPO_PATH}/model/api
+API_PKG := github.com/${REPO_PATH}/model/api
 IMAGE_TAG := $(shell git describe --abbrev=0 | cut -c2-)
 
 all: run
