@@ -14,14 +14,11 @@ import (
 )
 
 // ListenAndServe starts the HTTP server
-func ListenAndServe() {
-	c := &config{}
-	c.Get()
-
+func ListenAndServe() error {
 	mux := route.Load()
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%v", c.Port),
+		Addr:    fmt.Sprintf(":%v", cfg.Port),
 		Handler: mux,
 	}
 
@@ -40,17 +37,19 @@ func ListenAndServe() {
 		close(idleConnsClosed)
 	}()
 
-	if c.TLS {
-		logger.Infof("HTTPS server listen and serve on *:%v\n\n", c.Port)
-		if err := srv.ListenAndServeTLS(c.Certificate, c.PrivateKey); err != http.ErrServerClosed {
+	if cfg.TLS {
+		logger.Infof("HTTPS server listen and serve on *:%v\n\n", cfg.Port)
+		if err := srv.ListenAndServeTLS(cfg.Certificate, cfg.PrivateKey); err != http.ErrServerClosed {
 			logger.Fatalf("HTTP server ListenAndServe: %v", err)
 		}
 	} else {
-		logger.Infof("HTTP server listen and serve on *:%v\n\n", c.Port)
+		logger.Infof("HTTP server listen and serve on *:%v\n\n", cfg.Port)
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 			logger.Fatalf("HTTP server ListenAndServe: %v", err)
 		}
 	}
 
 	<-idleConnsClosed
+
+	return nil
 }
