@@ -12,11 +12,18 @@ import (
 )
 
 func main() {
-	fmt.Printf("Starting up Tarkov Database API %s\n\n", api.Version)
+	fmt.Printf("Starting up Tarkov Database REST API %s\n\n", api.Version)
 
 	defLog := logger.Init("default", true, false, ioutil.Discard)
 	defer defLog.Close()
 
-	database.Init()
-	server.ListenAndServe()
+	err := database.Init()
+	if err != nil {
+		logger.Fatal("Database initiation error: %s", err)
+	}
+
+	err = server.ListenAndServe()
+	if err != nil {
+		logger.Fatal("HTTP server error: %s", err)
+	}
 }
