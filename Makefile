@@ -1,11 +1,16 @@
 OUT := apiserver
 VERSION := $(shell git describe --always)
-API_PKG := github.com/tarkov-database/rest-api/model/api
+REPO_PATH := tarkov-database/rest-api
+API_PKG := ${REPO_PATH}/model/api
+IMAGE_TAG := $(shell git describe --abbrev=0 | cut -c2-)
 
 all: run
 
 bin:
 	go build -v -o ${OUT} -ldflags="-X ${API_PKG}.Version=${VERSION}"
+
+image:
+	docker build -t docker.pkg.github.com/${REPO_PATH}/rest-api:${IMAGE_TAG} .
 
 lint:
 	revive -config revive.toml -formatter stylish ./...
