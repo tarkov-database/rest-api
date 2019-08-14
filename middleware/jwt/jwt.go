@@ -18,23 +18,39 @@ import (
 )
 
 var (
-	ErrInvalidScope    = errors.New("no or invalid scopes")
-	ErrInvalidSubject  = errors.New("invalid subject")
+	// ErrInvalidScope indicates that a scope value is not valid
+	ErrInvalidScope = errors.New("no or invalid scopes")
+
+	// ErrInvalidSubject indicates that the subject value is not valid
+	ErrInvalidSubject = errors.New("invalid subject")
+
+	// ErrInvalidAudience indicates that the audience value does not match
 	ErrInvalidAudience = errors.New("audience mismatch")
-	ErrExpiredToken    = errors.New("token is expired")
+
+	// ErrExpiredToken indicates that the token is expired
+	ErrExpiredToken = errors.New("token is expired")
 )
 
 const (
-	// Scopes
-	ScopeAllRead  = "read:all"
+	// ScopeAllRead represents the global read permission scope
+	ScopeAllRead = "read:all"
+
+	// ScopeAllWrite represents the global write permission scope
 	ScopeAllWrite = "write:all"
 
-	ScopeItemRead  = "read:item"
+	// ScopeItemRead represents the item read permission scope
+	ScopeItemRead = "read:item"
+
+	// ScopeItemWrite represents the item write permission scope
 	ScopeItemWrite = "write:item"
 
-	ScopeUserRead  = "read:user"
+	// ScopeUserRead represents the user read permission scope
+	ScopeUserRead = "read:user"
+
+	// ScopeUserWrite represents the user write permission scope
 	ScopeUserWrite = "write:user"
 
+	// ScopeTokenWrite represents the token write permission scope
 	ScopeTokenWrite = "write:token"
 )
 
@@ -87,11 +103,13 @@ func init() {
 	}
 }
 
+// Claims represents the claims of a token
 type Claims struct {
 	jwt.StandardClaims `json:",inline"`
 	Scope              []string `json:"scope"`
 }
 
+// ValidateCustom validates the custom claims of a token
 func (c *Claims) ValidateCustom() error {
 	if len(c.Subject) < 24 {
 		return ErrInvalidSubject
@@ -109,6 +127,7 @@ func (c *Claims) ValidateCustom() error {
 	return nil
 }
 
+// VerifyToken verifies a token
 func VerifyToken(tokenStr string) (*Claims, error) {
 	parser := jwt.Parser{SkipClaimsValidation: true}
 	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
@@ -139,6 +158,7 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
+// CreateToken creates a new token
 func CreateToken(c *Claims) (string, error) {
 	c.Audience = audience
 	c.IssuedAt = time.Now().Unix()
@@ -148,6 +168,7 @@ func CreateToken(c *Claims) (string, error) {
 	return token.SignedString(key)
 }
 
+// GetToken gets the token of an HTTP request
 func GetToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
 	if len(header) == 0 {
@@ -162,6 +183,7 @@ func GetToken(r *http.Request) (string, error) {
 	return strings.TrimSpace(strings.TrimPrefix(headerString, "Bearer")), nil
 }
 
+// AuhtorizationHandler returns a JWT authorization handler
 func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		token, err := GetToken(r)

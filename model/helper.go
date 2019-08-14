@@ -4,6 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// ToObjectID converts a string id to an object ID
 func ToObjectID(id string) (objectID, error) {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

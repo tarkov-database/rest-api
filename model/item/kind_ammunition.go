@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindAmmunition represents the kind of Ammunition
 	KindAmmunition Kind = "ammunition"
 )
 
+// Ammunition describes the entity of an ammunition item
 type Ammunition struct {
 	Item `json:",inline" bson:",inline"`
 
@@ -21,6 +23,7 @@ type Ammunition struct {
 	Pellets             int64    `json:"pellets,omitempty" bson:"pellets,omitempty"`
 }
 
+// AmmoFrag represents the fragmentation data of Ammunition
 type AmmoFrag struct {
 	Chance float64 `json:"chance" bson:"chance"`
 	Min    float64 `json:"min" bson:"min"`

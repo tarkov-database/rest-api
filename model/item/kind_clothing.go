@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindClothing represents the kind of Clothing
 	KindClothing Kind = "clothing"
 )
 
+// Clothing describes the entity of an clothing item
 type Clothing struct {
 	Item `json:",inline" bson:",inline"`
 

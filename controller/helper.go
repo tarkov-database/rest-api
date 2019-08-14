@@ -43,17 +43,17 @@ func handleError(err error, w http.ResponseWriter) {
 	s := &Status{}
 	switch err {
 	case model.ErrNoResult:
-		s.NotFound("Resource(s) not found").Write(w)
+		s.NotFound("Resource(s) not found").Render(w)
 	case model.ErrInvalidKind:
-		s.NotFound("Kind is not valid").Write(w)
+		s.NotFound("Kind is not valid").Render(w)
 	case model.ErrInvalidObjectID:
-		s.NotFound("Resource ID is not valid").Write(w)
+		s.NotFound("Resource ID is not valid").Render(w)
 	case model.ErrInvalidInput:
-		s.UnprocessableEntity("Input is not valid").Write(w)
+		s.UnprocessableEntity("Input is not valid").Render(w)
 	case model.ErrInternalError:
-		s.InternalServerError("Backend error").Write(w)
+		s.InternalServerError("Backend error").Render(w)
 	default:
-		s.InternalServerError("Internal error").Write(w)
+		s.InternalServerError("Internal error").Render(w)
 	}
 }
 

@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindArmor represents the kind of Armor
 	KindArmor Kind = "armor"
 )
 
+// Armor describes the entity of an armor item
 type Armor struct {
 	Item `json:",inline" bson:",inline"`
 
@@ -12,9 +14,10 @@ type Armor struct {
 	Penalties     Penalties  `json:"penalties" bson:"penalties"`
 	Blocking      []string   `json:"blocking" bson:"blocking"`
 	Slots         Slots      `json:"slots" bson:"slots"`
-	Compatibility ItemList   `json:"compatibility" bson:"compatibility"`
+	Compatibility List       `json:"compatibility" bson:"compatibility"`
 }
 
+// ArmorProps represents the armor properties of Armor and TacticalRig
 type ArmorProps struct {
 	Class           int64         `json:"class" bson:"class"`
 	Durability      float64       `json:"durability" bson:"durability"`
@@ -23,6 +26,7 @@ type ArmorProps struct {
 	Zones           []string      `json:"zones" bson:"zones"`
 }
 
+// ArmorMaterial represents the armor material of ArmorProps
 type ArmorMaterial struct {
 	Name            string  `json:"name" bson:"name"`
 	Destructibility float64 `json:"destructibility" bson:"destructibility"`

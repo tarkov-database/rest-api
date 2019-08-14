@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindHeadphone represents the kind of Headphone
 	KindHeadphone Kind = "headphone"
 )
 
+// Headphone describes the entity of an headphone item
 type Headphone struct {
 	Item `json:",inline" bson:",inline"`
 
@@ -14,11 +16,13 @@ type Headphone struct {
 	Compressor     Compressor `json:"compressor" bson:"compressor"`
 }
 
+// HighPass represents the highpass filter data of Headphone
 type HighPass struct {
 	CutoffFrequency float64 `json:"cutoffFreq" bson:"cutoffFreq"`
 	Resonance       float64 `json:"resonance" bson:"resonance"`
 }
 
+// Compressor represents the compressor data of Headphone
 type Compressor struct {
 	Attack    float64 `json:"attack" bson:"attack"`
 	Gain      float64 `json:"gain" bson:"gain"`

@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindTacticalrig represents the kind of TacticalRig
 	KindTacticalrig Kind = "tacticalrig"
 )
 
+// TacticalRig describes the entity of an tactical rig item
 type TacticalRig struct {
 	Item `json:",inline" bson:",inline"`
 

@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	// ErrInvalidEmail indicates that a email address is not valid
 	ErrInvalidEmail = errors.New("invalid e-mail address")
 )
 
@@ -24,6 +25,7 @@ type objectID = primitive.ObjectID
 
 type timestamp = model.Timestamp
 
+// User describes the entity of a user
 type User struct {
 	ID       objectID  `json:"_id" bson:"_id"`
 	Email    string    `json:"email" bson:"email"`
@@ -31,6 +33,7 @@ type User struct {
 	Modified timestamp `json:"_modified" bson:"_modified"`
 }
 
+// Validate validates the fields of a user
 func (u *User) Validate() error {
 	if len(u.Email) < 8 || !strings.Contains(u.Email, "@") {
 		return ErrInvalidEmail
@@ -61,6 +64,7 @@ func getOneByFilter(filter interface{}) (*User, error) {
 	return u, nil
 }
 
+// GetByID returns the entity of the given ID
 func GetByID(id string) (*User, error) {
 	objID, err := model.ToObjectID(id)
 	if err != nil {
@@ -70,6 +74,7 @@ func GetByID(id string) (*User, error) {
 	return getOneByFilter(bson.M{"_id": objID})
 }
 
+// Options represents the options for a database operation
 type Options struct {
 	Sort   map[string]int64
 	Limit  int64
@@ -124,18 +129,22 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 	return r, nil
 }
 
+// GetAll returns a result based on filters
 func GetAll(opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.D{}, opts)
 }
 
+// GetByEmail returns a result based on email address
 func GetByEmail(addr string, opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.M{"email": addr}, opts)
 }
 
+// GetByLockedState returns a result based on lock state
 func GetByLockedState(locked bool, opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.M{"locked": locked}, opts)
 }
 
+// Create creates a new entity
 func Create(user *User) error {
 	db := database.GetDB()
 	c := db.Collection(collection)
@@ -158,6 +167,7 @@ func Create(user *User) error {
 	return nil
 }
 
+// Replace replaces the data of an existing entity
 func Replace(id string, user *User) error {
 	objID, err := model.ToObjectID(id)
 	if err != nil {
@@ -191,6 +201,7 @@ func Replace(id string, user *User) error {
 	return nil
 }
 
+// Remove removes an entity
 func Remove(id string) error {
 	objID, err := model.ToObjectID(id)
 	if err != nil {

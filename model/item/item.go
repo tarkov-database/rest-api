@@ -42,6 +42,7 @@ func getOneByFilter(filter interface{}, k Kind) (Entity, error) {
 	return e, nil
 }
 
+// GetByID returns the entity of the given ID
 func GetByID(id string, k Kind) (Entity, error) {
 	objID, err := model.ToObjectID(id)
 	if err != nil {
@@ -51,6 +52,7 @@ func GetByID(id string, k Kind) (Entity, error) {
 	return getOneByFilter(bson.M{"_id": objID, "_kind": k}, k)
 }
 
+// Options represents the options for a database operation
 type Options struct {
 	Sort   map[string]int64
 	Limit  int64
@@ -115,11 +117,13 @@ func getManyByFilter(filter interface{}, k Kind, opts *Options) (*model.Result, 
 	return r, nil
 }
 
+// GetAll returns a result based on filters
 func GetAll(qs map[string]interface{}, k Kind, opts *Options) (*model.Result, error) {
 	qs["_kind"] = k
 	return getManyByFilter(qs, k, opts)
 }
 
+// GetByIDs returns a result by given IDs
 func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
 	objIDs := make([]objectID, 0, len(ids))
 	for _, id := range ids {
@@ -134,6 +138,7 @@ func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.M{"_id": bson.M{"$in": objIDs}, "_kind": k}, k, opts)
 }
 
+// GetByText returns a result based on given keyword
 func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	db := database.GetDB()
 	c := db.Collection(collection)
@@ -254,6 +259,7 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	return r, nil
 }
 
+// Create creates a new entity
 func Create(e Entity) error {
 	db := database.GetDB()
 	c := db.Collection(collection)
@@ -278,6 +284,7 @@ func Create(e Entity) error {
 	return nil
 }
 
+// Replace replaces the data of an existing entity
 func Replace(id string, e Entity) error {
 	objID, err := model.ToObjectID(id)
 	if err != nil {
@@ -311,6 +318,7 @@ func Replace(id string, e Entity) error {
 	return nil
 }
 
+// Remove removes an entity
 func Remove(id string) error {
 	objID, err := model.ToObjectID(id)
 	if err != nil {

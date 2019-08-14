@@ -14,17 +14,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Index describes the entity of an the item root endpoint
 type Index struct {
 	Total    int64                 `json:"total" bson:"total"`
 	Modified timestamp             `json:"modified" bson:"modified"`
 	Kinds    map[string]*KindStats `json:"kinds" bson:"kinds"`
 }
 
+// KindStats describes the statistics of a kind
 type KindStats struct {
 	Count    int64     `json:"count" bson:"count"`
 	Modified timestamp `json:"modified" bson:"modified"`
 }
 
+// WithKinds fills Index with kind data
 func (i *Index) WithKinds(c *mongo.Collection) error {
 	var err error
 
@@ -87,6 +90,7 @@ func (i *Index) WithKinds(c *mongo.Collection) error {
 	return nil
 }
 
+// WithoutKinds fills Index without kind data
 func (i *Index) WithoutKinds(c *mongo.Collection) error {
 	findOpts := options.Find()
 	findOpts.SetSort(bson.M{"_modified": -1})
@@ -136,6 +140,7 @@ func (i *Index) WithoutKinds(c *mongo.Collection) error {
 	return nil
 }
 
+// GetIndex returns the data of the item root endpoint
 func GetIndex(skipKinds bool) (*Index, error) {
 	db := database.GetDB()
 	c := db.Collection(collection)
