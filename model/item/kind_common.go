@@ -102,8 +102,8 @@ type GridProps struct {
 
 // RGBA represents a color in RGBA
 type RGBA struct {
-	R int `json:"r" bson:"r"`
-	G int `json:"g" bson:"g"`
-	B int `json:"b" bson:"b"`
-	A int `json:"a" bson:"a"`
+	R uint `json:"r" bson:"r"`
+	G uint `json:"g" bson:"g"`
+	B uint `json:"b" bson:"b"`
+	A uint `json:"a" bson:"a"`
 }
