@@ -14,6 +14,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// ItemIndexGET handles a GET request on the item root endpoint
 func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var err error
 	var i interface{}
@@ -24,7 +25,7 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		txt, err := url.QueryUnescape(search)
 		if err != nil {
 			s := &Status{}
-			s.BadRequest(err.Error()).Write(w)
+			s.BadRequest(err.Error()).Render(w)
 			return
 		}
 
@@ -54,11 +55,12 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view.RenderJSON(w, i, http.StatusOK)
 }
 
+// ItemGET handles a GET request on a item entity endpoint
 func ItemGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	kind := item.Kind(ps.ByName("kind"))
 	if !kind.IsValid() {
 		s := &Status{}
-		s.NotFound("Kind not found").Write(w)
+		s.NotFound("Kind not found").Render(w)
 		return
 	}
 
@@ -71,6 +73,7 @@ func ItemGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	view.RenderJSON(w, i, http.StatusOK)
 }
 
+// ItemsGET handles a GET request on a item kind endpoint
 func ItemsGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var result *model.Result
 	var err error
@@ -78,7 +81,7 @@ func ItemsGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	kind := item.Kind(ps.ByName("kind"))
 	if !kind.IsValid() {
 		s := &Status{}
-		s.NotFound("Kind not found").Write(w)
+		s.NotFound("Kind not found").Render(w)
 		return
 	}
 
@@ -97,20 +100,20 @@ Loop:
 			q, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(err.Error()).Write(w)
+				s.BadRequest(err.Error()).Render(w)
 				return
 			}
 
 			if len(q) < 24 {
 				s := &Status{}
-				s.BadRequest("ID is not valid").Write(w)
+				s.BadRequest("ID is not valid").Render(w)
 				return
 			}
 
 			ids := strings.Split(q, ",")
 			if len(ids) > 100 {
 				s := &Status{}
-				s.BadRequest("ID limit exceeded").Write(w)
+				s.BadRequest("ID limit exceeded").Render(w)
 				return
 			}
 
@@ -119,11 +122,11 @@ Loop:
 				s := &Status{}
 				switch err {
 				case model.ErrInvalidInput:
-					s.UnprocessableEntity("Query contains an invalid ID").Write(w)
+					s.UnprocessableEntity("Query contains an invalid ID").Render(w)
 				case model.ErrInternalError:
-					s.InternalServerError("Network or database error").Write(w)
+					s.InternalServerError("Network or database error").Render(w)
 				default:
-					s.InternalServerError("Internal error").Write(w)
+					s.InternalServerError("Internal error").Render(w)
 				}
 				return
 			}
@@ -133,7 +136,7 @@ Loop:
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(err.Error()).Write(w)
+				s.BadRequest(err.Error()).Render(w)
 				return
 			}
 
@@ -170,7 +173,7 @@ Loop:
 		}
 		if err != nil {
 			s := &Status{}
-			s.BadRequest(err.Error()).Write(w)
+			s.BadRequest(err.Error()).Render(w)
 			return
 		}
 
@@ -184,10 +187,11 @@ Loop:
 	view.RenderJSON(w, result, http.StatusOK)
 }
 
+// ItemPOST handles a POST request on a item kind endpoint
 func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
 		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Write(w)
+		s.UnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -201,19 +205,19 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Write(w)
+		s.BadRequest(err.Error()).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Write(w)
+		s.UnprocessableEntity(err.Error()).Render(w)
 		return
 	}
 
 	if entity.GetKind() != kind {
 		s := &Status{}
-		s.UnprocessableEntity("Kind mismatch").Write(w)
+		s.UnprocessableEntity("Kind mismatch").Render(w)
 		return
 	}
 
@@ -228,10 +232,11 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	view.RenderJSON(w, entity, http.StatusCreated)
 }
 
+// ItemPUT handles a PUT request on a item entity endpoint
 func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
 		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Write(w)
+		s.UnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -245,25 +250,25 @@ func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Write(w)
+		s.BadRequest(err.Error()).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Write(w)
+		s.UnprocessableEntity(err.Error()).Render(w)
 		return
 	}
 
 	if docID := entity.GetID(); !docID.IsZero() && docID.Hex() != id {
 		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Write(w)
+		s.UnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
 	if entity.GetKind() != kind {
 		s := &Status{}
-		s.UnprocessableEntity("Kind mismatch").Write(w)
+		s.UnprocessableEntity("Kind mismatch").Render(w)
 		return
 	}
 
@@ -278,6 +283,7 @@ func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	view.RenderJSON(w, entity, http.StatusOK)
 }
 
+// ItemDELETE handles a DELETE request on a item entity endpoint
 func ItemDELETE(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	id := ps.ByName("id")
 

@@ -14,6 +14,7 @@ import (
 
 var errInvalidUserID = errors.New("invalid user id")
 
+// UserGET handles a GET request on a user entity endpoint
 func UserGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	usr, err := user.GetByID(ps.ByName("id"))
 	if err != nil {
@@ -24,6 +25,7 @@ func UserGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	view.RenderJSON(w, usr, http.StatusOK)
 }
 
+// UsersGET handles a GET request on the user root endpoint
 func UsersGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var usr interface{}
 	var err error
@@ -42,7 +44,7 @@ Loop:
 			locked, err := strconv.ParseBool(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(err.Error()).Write(w)
+				s.BadRequest(err.Error()).Render(w)
 				return
 			}
 
@@ -75,10 +77,11 @@ Loop:
 	view.RenderJSON(w, usr, http.StatusOK)
 }
 
+// UserPOST handles a POST request on the user root endpoint
 func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if !isSupportedMediaType(r) {
 		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Write(w)
+		s.UnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -86,13 +89,13 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err := parseJSONBody(r.Body, usr)
 	if err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Write(w)
+		s.BadRequest(err.Error()).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Write(w)
+		s.UnprocessableEntity(err.Error()).Render(w)
 		return
 	}
 
@@ -107,10 +110,11 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	view.RenderJSON(w, usr, http.StatusCreated)
 }
 
+// UserPUT handles a PUT request on a user entity endpoint
 func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
 		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Write(w)
+		s.UnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -118,13 +122,13 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	err := parseJSONBody(r.Body, usr)
 	if err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Write(w)
+		s.BadRequest(err.Error()).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Write(w)
+		s.UnprocessableEntity(err.Error()).Render(w)
 		return
 	}
 
@@ -132,7 +136,7 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if !usr.ID.IsZero() && usr.ID.Hex() != id {
 		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Write(w)
+		s.UnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
@@ -147,6 +151,7 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	view.RenderJSON(w, usr, http.StatusOK)
 }
 
+// UserDELETE handles a DELETE request on a user entity endpoint
 func UserDELETE(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	err := user.Remove(ps.ByName("id"))
 	if err != nil {

@@ -1,26 +1,62 @@
 package item
 
 const (
-	KindModification               Kind = "modification"
-	KindModificationBarrel         Kind = "modificationBarrel"
-	KindModificationBipod          Kind = "modificationBipod"
-	KindModificationCharge         Kind = "modificationCharge"
-	KindModificationDevice         Kind = "modificationDevice"
-	KindModificationForegrip       Kind = "modificationForegrip"
-	KindModificationGasblock       Kind = "modificationGasblock"
-	KindModificationHandguard      Kind = "modificationHandguard"
-	KindModificationLauncher       Kind = "modificationLauncher"
-	KindModificationMount          Kind = "modificationMount"
-	KindModificationMuzzle         Kind = "modificationMuzzle"
-	KindModificationGoggles        Kind = "modificationGoggles"
+	// KindModification represents the kind of Modification
+	KindModification Kind = "modification"
+
+	// KindModificationBarrel represents the kind of Barrel
+	KindModificationBarrel Kind = "modificationBarrel"
+
+	// KindModificationBipod represents the kind of Bipod
+	KindModificationBipod Kind = "modificationBipod"
+
+	// KindModificationCharge represents the kind of Charge
+	KindModificationCharge Kind = "modificationCharge"
+
+	// KindModificationDevice represents the kind of Device
+	KindModificationDevice Kind = "modificationDevice"
+
+	// KindModificationForegrip represents the kind of Foregrip
+	KindModificationForegrip Kind = "modificationForegrip"
+
+	// KindModificationGasblock represents the kind of GasBlock
+	KindModificationGasblock Kind = "modificationGasblock"
+
+	// KindModificationHandguard represents the kind of Handguard
+	KindModificationHandguard Kind = "modificationHandguard"
+
+	// KindModificationLauncher represents the kind of Launcher
+	KindModificationLauncher Kind = "modificationLauncher"
+
+	// KindModificationMount represents the kind of Mount
+	KindModificationMount Kind = "modificationMount"
+
+	// KindModificationMuzzle represents the kind of Muzzle
+	KindModificationMuzzle Kind = "modificationMuzzle"
+
+	// KindModificationGoggles represents the kind of Goggles
+	KindModificationGoggles Kind = "modificationGoggles"
+
+	// KindModificationGogglesSpecial represents the kind of GogglesSpecial
 	KindModificationGogglesSpecial Kind = "modificationGogglesSpecial"
-	KindModificationPistolgrip     Kind = "modificationPistolgrip"
-	KindModificationReceiver       Kind = "modificationReceiver"
-	KindModificationSight          Kind = "modificationSight"
-	KindModificationSightSpecial   Kind = "modificationSightSpecial"
-	KindModificationStock          Kind = "modificationStock"
+
+	// KindModificationPistolgrip represents the kind of PistolGrip
+	KindModificationPistolgrip Kind = "modificationPistolgrip"
+
+	// KindModificationReceiver represents the kind of Receiver
+	KindModificationReceiver Kind = "modificationReceiver"
+
+	// KindModificationSight represents the kind of Sight
+	KindModificationSight Kind = "modificationSight"
+
+	// KindModificationSightSpecial represents the kind of SightSpecial
+	KindModificationSightSpecial Kind = "modificationSightSpecial"
+
+	// KindModificationStock represents the kind of Stock
+	KindModificationStock Kind = "modificationStock"
 )
 
+// Modification represents the basic data of modification item
 type Modification struct {
 	Item `json:",inline" bson:",inline"`
 
@@ -28,12 +64,13 @@ type Modification struct {
 	RaidModdable  int64        `json:"raidModdable" bson:"raidModdable"`
 	GridModifier  GridModifier `json:"gridModifier" bson:"gridModifier"`
 	Slots         Slots        `json:"slots" bson:"slots"`
-	Compatibility ItemList     `json:"compatibility" bson:"compatibility"`
-	Conflicts     ItemList     `json:"conflicts" bson:"conflicts"`
+	Compatibility List         `json:"compatibility" bson:"compatibility"`
+	Conflicts     List         `json:"conflicts" bson:"conflicts"`
 }
 
 // Weapon modifications //
 
+// Barrel describes the entity of an barrel item
 type Barrel struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -44,16 +81,19 @@ type Barrel struct {
 	Suppressor bool    `json:"suppressor" bson:"suppressor"`
 }
 
+// Bipod describes the entity of an bipod item
 type Bipod struct {
 	Modification `json:",inline" bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
+// Charge describes the entity of an charging handle item
 type Charge struct {
 	Modification `json:",inline" bson:",inline"`
 }
 
+// Device describes the entity of an tactical device item
 type Device struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -61,22 +101,26 @@ type Device struct {
 	Modes []string `json:"modes" bson:"modes"`
 }
 
+// Foregrip describes the entity of an foregrip item
 type Foregrip struct {
 	Modification `json:",inline" bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
+// GasBlock describes the entity of an gas block item
 type GasBlock struct {
 	Modification `json:",inline" bson:",inline"`
 }
 
+// Handguard describes the entity of an handguard item
 type Handguard struct {
 	Modification `json:",inline" bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
+// Launcher describes the entity of an launcher item
 type Launcher struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -84,10 +128,12 @@ type Launcher struct {
 	Caliber string  `json:"caliber" bson:"caliber"`
 }
 
+// Mount describes the entity of an mount item
 type Mount struct {
 	Modification `json:",inline" bson:",inline"`
 }
 
+// Muzzle describes the entity of an muzzle item
 type Muzzle struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -97,16 +143,19 @@ type Muzzle struct {
 	Recoil   float64 `json:"recoil" bson:"recoil"`
 }
 
+// PistolGrip describes the entity of an pistol grip item
 type PistolGrip struct {
 	Modification `json:",inline" bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
+// Receiver describes the entity of an receiver item
 type Receiver struct {
 	Modification `json:",inline" bson:",inline"`
 }
 
+// Sight describes the entity of an sight item
 type Sight struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -116,11 +165,13 @@ type Sight struct {
 	ZeroDistances []int64  `json:"zeroDistances" bson:"zeroDistances"`
 }
 
+// SightSpecial describes the entity of an special sights item
 type SightSpecial struct {
 	Sight        `json:",inline" bson:",inline"`
 	OpticSpecial `json:",inline" bson:",inline"`
 }
 
+// Stock describes the entity of an stock item
 type Stock struct {
 	Modification `json:",inline" bson:",inline"`
 
@@ -130,12 +181,14 @@ type Stock struct {
 
 // Gear modifications //
 
+// Goggles describes the entity of an goggles item
 type Goggles struct {
 	Modification `json:",inline" bson:",inline"`
 
 	Type string `json:"type" bson:"type"`
 }
 
+// GogglesSpecial describes the entity of an special goggles item
 type GogglesSpecial struct {
 	Goggles      `json:",inline" bson:",inline"`
 	OpticSpecial `json:",inline" bson:",inline"`
@@ -143,11 +196,13 @@ type GogglesSpecial struct {
 
 // Properties //
 
+// GridModifier represents the properties of an grid modifier
 type GridModifier struct {
 	Height int64 `json:"height" bson:"height"`
 	Width  int64 `json:"width" bson:"width"`
 }
 
+// OpticSpecial represents the properties of GogglesSpecial and SightSpecial
 type OpticSpecial struct {
 	Modes []string `json:"modes" bson:"modes"`
 	Color RGBA     `json:"color" bson:"color"`

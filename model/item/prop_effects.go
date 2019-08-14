@@ -1,5 +1,6 @@
 package item
 
+// Effects holds all effect types
 type Effects struct {
 	Energy            *Effect `json:"energy,omitempty" bson:"energy,omitempty"`
 	Hydration         *Effect `json:"hydration,omitempty" bson:"hydration,omitempty"`
@@ -16,6 +17,7 @@ type Effects struct {
 	UnlockSpeed       *Effect `json:"unlockSpeed,omitempty" bson:"unlockSpeed,omitempty"`
 }
 
+// Effect represents the properties of an effect
 type Effect struct {
 	ResourceCosts int64   `json:"resourceCosts" bson:"resourceCosts"`
 	FadeIn        float64 `json:"fadeIn" bson:"fadeIn"`

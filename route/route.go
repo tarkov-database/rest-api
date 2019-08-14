@@ -11,6 +11,7 @@ import (
 
 const prefix = "/v2"
 
+// Load returns a router with defined routes
 func Load() *httprouter.Router {
 	return routes()
 }

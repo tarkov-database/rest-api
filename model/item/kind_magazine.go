@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindMagazine represents the kind of Magazine
 	KindMagazine Kind = "magazine"
 )
 
+// Magazine describes the entity of an magazine item
 type Magazine struct {
 	Item `json:",inline" bson:",inline"`
 
@@ -12,9 +14,10 @@ type Magazine struct {
 	Ergonomics    int64            `json:"ergonomics" bson:"ergonomics"`
 	Modifier      MagazineModifier `json:"modifier" bson:"modifier"`
 	GridModifier  GridModifier     `json:"gridModifier" bson:"gridModifier"`
-	Compatibility ItemList         `json:"compatibility" bson:"compatibility"`
+	Compatibility List             `json:"compatibility" bson:"compatibility"`
 }
 
+// MagazineModifier describes the properties of Modifier in Magazine
 type MagazineModifier struct {
 	CheckTime  float64 `json:"checkTime" bson:"checkTime"`
 	LoadUnload float64 `json:"loadUnload" bson:"loadUnload"`

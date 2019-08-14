@@ -1,5 +1,6 @@
 package item
 
+// Penalties holds all existing penaltie types
 type Penalties struct {
 	Mouse      float64 `json:"mouse,omitempty" bson:"mouse,omitempty"`
 	Speed      float64 `json:"speed,omitempty" bson:"speed,omitempty"`

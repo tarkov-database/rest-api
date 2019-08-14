@@ -1,9 +1,11 @@
 package item
 
 const (
+	// KindGrenade represents the kind of Grenade
 	KindGrenade Kind = "grenade"
 )
 
+// Grenade describes the entity of an grenade item
 type Grenade struct {
 	Item `json:",inline" bson:",inline"`
 

@@ -9,6 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// IndexGET handles a GET request on the root endpoint
 func IndexGET(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	i, err := api.GetIndex()
 	if err != nil {

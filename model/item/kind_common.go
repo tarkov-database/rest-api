@@ -12,10 +12,13 @@ type objectID = primitive.ObjectID
 
 type timestamp = model.Timestamp
 
-type ItemList map[Kind][]objectID
+// List holds entity IDs and the associated kind
+type List map[Kind][]objectID
 
+// KindCommon represents the kind of Item
 const KindCommon Kind = "common"
 
+// Item represents the basic data of item
 type Item struct {
 	ID          objectID  `json:"_id" bson:"_id"`
 	Name        string    `json:"name" bson:"name"`
@@ -30,30 +33,37 @@ type Item struct {
 	Kind        Kind      `json:"_kind" bson:"_kind"`
 }
 
+// GetID returns the ID of the item
 func (i *Item) GetID() objectID {
 	return i.ID
 }
 
+// SetID sets an ID
 func (i *Item) SetID(id objectID) {
 	i.ID = id
 }
 
+// GetKind returns the Kind of the item
 func (i *Item) GetKind() Kind {
 	return i.Kind
 }
 
+// SetKind sets an kind
 func (i *Item) SetKind(k Kind) {
 	i.Kind = k
 }
 
+// GetModified returns the modified date of the item
 func (i *Item) GetModified() timestamp {
 	return i.Modified
 }
 
+// SetModified sets an modified date
 func (i *Item) SetModified(t timestamp) {
 	i.Modified = t
 }
 
+// Validate validates the item fields
 func (i *Item) Validate() error {
 	if len(i.Name) < 3 {
 		return errors.New("name is too short or not set")
@@ -83,12 +93,14 @@ func (i *Item) Validate() error {
 	return nil
 }
 
+// GridProps represents the grid properties of an item
 type GridProps struct {
 	Color  RGBA  `json:"color" bson:"color"`
 	Height int64 `json:"height" bson:"height"`
 	Width  int64 `json:"width" bson:"width"`
 }
 
+// RGBA represents a color in RGBA
 type RGBA struct {
 	R int `json:"r" bson:"r"`
 	G int `json:"g" bson:"g"`

@@ -6,6 +6,7 @@ import (
 	"github.com/tarkov-database/rest-api/model"
 )
 
+// Entity defines the methods of an item entity
 type Entity interface {
 	GetID() objectID
 	SetID(objectID)
@@ -19,8 +20,10 @@ type Entity interface {
 	Validate() error
 }
 
+// A Kind represents an item type
 type Kind string
 
+// IsValid checks if a kind is valid
 func (k Kind) IsValid() bool {
 	if _, err := k.GetEntity(); err != nil {
 		return false
@@ -29,18 +32,22 @@ func (k Kind) IsValid() bool {
 	return true
 }
 
+// IsEmpty checks if a kind is empty
 func (k Kind) IsEmpty() bool {
 	return k == Kind("")
 }
 
+// String returns the string representation of the kind
 func (k Kind) String() string {
 	return string(k)
 }
 
+// MarshalJSON implements the JSON marshaller
 func (k *Kind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(k.String())
 }
 
+// UnmarshalJSON implements the JSON unmarshaller
 func (k *Kind) UnmarshalJSON(b []byte) error {
 	var kind string
 
@@ -54,6 +61,7 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// GetEntity returns the associated entity of the kind
 func (k Kind) GetEntity() (Entity, error) {
 	var e Entity
 
@@ -137,6 +145,7 @@ func (k Kind) GetEntity() (Entity, error) {
 	return e, nil
 }
 
+// KindList holds all kinds
 var KindList = [...]Kind{
 	KindAmmunition,
 	KindArmor,
