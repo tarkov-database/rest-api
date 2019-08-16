@@ -40,9 +40,7 @@ func TestGetToken(t *testing.T) {
 	header := http.Header{}
 	header.Add("Authorization", fmt.Sprintf("Bearer %s", testToken))
 
-	req := &http.Request{Header: header}
-
-	token, err := GetToken(req)
+	token, err := GetToken(&http.Request{Header: header})
 	if err != nil {
 		t.Errorf("Getting token failed: %v", err)
 	}
