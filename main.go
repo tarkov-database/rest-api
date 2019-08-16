@@ -19,11 +19,11 @@ func main() {
 
 	err := database.Init()
 	if err != nil {
-		logger.Fatal("Database initiation error: %s", err)
+		logger.Fatalf("Database initiation error: %s", err)
 	}
 
 	err = server.ListenAndServe()
 	if err != nil {
-		logger.Fatal("HTTP server error: %s", err)
+		logger.Fatalf("HTTP server error: %s", err)
 	}
 }
