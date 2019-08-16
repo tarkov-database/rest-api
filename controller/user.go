@@ -32,7 +32,7 @@ func UsersGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	l, o := getLimitOffset(r)
 	opts := &user.Options{
-		Sort:   getSort("_modified", -1, r),
+		Sort:   getSort("-_modified", r),
 		Limit:  l,
 		Offset: o,
 	}

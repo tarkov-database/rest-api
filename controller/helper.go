@@ -10,30 +10,35 @@ import (
 	"github.com/tarkov-database/rest-api/model"
 )
 
-func getLimitOffset(r *http.Request) (int64, int64) {
-	limit, offset := 20, 0
-	if l, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil {
+func getLimitOffset(r *http.Request) (limit int64, offset int64) {
+	limit = 20
+
+	if l, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 64); err == nil {
 		if l > 100 {
 			l = 100
 		}
 		limit = l
 	}
-	if o, err := strconv.Atoi(r.URL.Query().Get("offset")); err == nil {
+
+	if o, err := strconv.ParseInt(r.URL.Query().Get("offset"), 10, 64); err == nil {
 		offset = o
 	}
 
-	return int64(limit), int64(offset)
+	return
 }
 
-func getSort(def string, order int64, r *http.Request) map[string]int64 {
-	sort := map[string]int64{def: order}
+func getSort(def string, r *http.Request) map[string]int64 {
+	sort := make(map[string]int64)
 
+	sortStr := def
 	if s := r.URL.Query().Get("sort"); len(s) > 1 {
-		if strings.HasPrefix(s, "-") {
-			sort = map[string]int64{strings.TrimPrefix(s, "-"): -1}
-		} else {
-			sort = map[string]int64{s: 1}
-		}
+		sortStr = s
+	}
+
+	if strings.HasPrefix(sortStr, "-") {
+		sort = map[string]int64{strings.TrimPrefix(sortStr, "-"): -1}
+	} else {
+		sort = map[string]int64{sortStr: 1}
 	}
 
 	return sort
