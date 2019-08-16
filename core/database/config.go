@@ -95,7 +95,7 @@ func (c *config) getClientOptions() (*options.ClientOptions, error) {
 		if certAuth {
 			clientCert, rootCAs, err := c.getTLSCertificate()
 			if err != nil {
-				return opts, fmt.Errorf("certificate loading error: %s")
+				return opts, fmt.Errorf("certificate loading error: %s", err)
 			}
 
 			tlsConfig = &tls.Config{
