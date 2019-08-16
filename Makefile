@@ -18,6 +18,9 @@ lint:
 fmt:
 	go fmt ./...
 
+test:
+	go test -v ./...
+
 run: bin
 	./${OUT}
 
