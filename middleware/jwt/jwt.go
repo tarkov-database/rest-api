@@ -217,7 +217,6 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 }
 
 func statusHandler(msg string, status int, w http.ResponseWriter) {
-	res := &model.Response{}
-	res.New(msg, status)
-	view.RenderJSON(w, res, status)
+	res := model.NewResponse(msg, status)
+	view.RenderJSON(res, status, w)
 }

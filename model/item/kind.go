@@ -42,12 +42,12 @@ func (k Kind) String() string {
 	return string(k)
 }
 
-// MarshalJSON implements the JSON marshaller
+// MarshalJSON implements the JSON marshaler
 func (k *Kind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(k.String())
 }
 
-// UnmarshalJSON implements the JSON unmarshaller
+// UnmarshalJSON implements the JSON unmarshaler
 func (k *Kind) UnmarshalJSON(b []byte) error {
 	var kind string
 

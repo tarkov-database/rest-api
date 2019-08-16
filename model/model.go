@@ -8,19 +8,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type objectID = primitive.ObjectID
+// ObjectID defines an object ID
+type ObjectID = primitive.ObjectID
 
 // Timestamp outputs the time in a Unix timestamp
 type Timestamp struct {
 	time.Time
 }
 
-// MarshalJSON implements the JSON marshaller
+// MarshalJSON implements the JSON marshaler
 func (t *Timestamp) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.Unix())
 }
 
-// UnmarshalJSON implements the JSON unmarshaller
+// UnmarshalJSON implements the JSON unmarshaler
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
 	var i int64
 
@@ -47,9 +48,12 @@ type Response struct {
 	StatusCode int    `json:"code"`
 }
 
-// New fills the Response with given values
-func (r *Response) New(msg string, code int) {
+// NewResponse creates a new status response based on parameters
+func NewResponse(msg string, code int) *Response {
+	r := &Response{}
 	r.Status = http.StatusText(code)
 	r.Message = msg
 	r.StatusCode = code
+
+	return r
 }

@@ -13,64 +13,73 @@ type Status struct {
 	Message string
 }
 
-// New fills the Status object
-func (s *Status) New(status int, msg string) *Status {
-	s.Code = status
-	s.Message = msg
-
-	return s
-}
-
 // Render renders Status
 func (s *Status) Render(w http.ResponseWriter) {
-	res := &model.Response{}
-	res.New(s.Message, s.Code)
-	view.RenderJSON(w, res, s.Code)
-}
-
-// NotFound fills Status with an HTTP 404 status and message
-func (s *Status) NotFound(msg string) *Status {
-	return s.New(http.StatusNotFound, msg)
-}
-
-// BadRequest fills Status with an HTTP 400 status and message
-func (s *Status) BadRequest(msg string) *Status {
-	return s.New(http.StatusBadRequest, msg)
-}
-
-// UnsupportedMediaType fills Status with an HTTP 415 status and message
-func (s *Status) UnsupportedMediaType(msg string) *Status {
-	return s.New(http.StatusUnsupportedMediaType, msg)
-}
-
-// InternalServerError fills Status with an HTTP 500 status and message
-func (s *Status) InternalServerError(msg string) *Status {
-	return s.New(http.StatusInternalServerError, msg)
-}
-
-// UnprocessableEntity fills Status with an HTTP 422 status and message
-func (s *Status) UnprocessableEntity(msg string) *Status {
-	return s.New(http.StatusUnprocessableEntity, msg)
-}
-
-// Unauthorized fills Status with an HTTP 401 status and message
-func (s *Status) Unauthorized(msg string) *Status {
-	return s.New(http.StatusUnauthorized, msg)
-}
-
-// Forbidden fills Status with an HTTP 403 status and message
-func (s *Status) Forbidden(msg string) *Status {
-	return s.New(http.StatusForbidden, msg)
-}
-
-// Created fills Status with an HTTP 201 status and message
-func (s *Status) Created(msg string) *Status {
-	return s.New(http.StatusCreated, msg)
+	res := model.NewResponse(s.Message, s.Code)
+	view.RenderJSON(res, s.Code, w)
 }
 
 // OK fills Status with an HTTP 200 status and message
 func (s *Status) OK(msg string) *Status {
-	return s.New(http.StatusOK, msg)
+	s.Code, s.Message = http.StatusOK, msg
+
+	return s
+}
+
+// Created fills Status with an HTTP 201 status and message
+func (s *Status) Created(msg string) *Status {
+	s.Code, s.Message = http.StatusCreated, msg
+
+	return s
+}
+
+// BadRequest fills Status with an HTTP 400 status and message
+func (s *Status) BadRequest(msg string) *Status {
+	s.Code, s.Message = http.StatusBadRequest, msg
+
+	return s
+}
+
+// Unauthorized fills Status with an HTTP 401 status and message
+func (s *Status) Unauthorized(msg string) *Status {
+	s.Code, s.Message = http.StatusUnauthorized, msg
+
+	return s
+}
+
+// Forbidden fills Status with an HTTP 403 status and message
+func (s *Status) Forbidden(msg string) *Status {
+	s.Code, s.Message = http.StatusForbidden, msg
+
+	return s
+}
+
+// NotFound fills Status with an HTTP 404 status and message
+func (s *Status) NotFound(msg string) *Status {
+	s.Code, s.Message = http.StatusNotFound, msg
+
+	return s
+}
+
+// UnsupportedMediaType fills Status with an HTTP 415 status and message
+func (s *Status) UnsupportedMediaType(msg string) *Status {
+	s.Code, s.Message = http.StatusUnsupportedMediaType, msg
+
+	return s
+}
+
+// UnprocessableEntity fills Status with an HTTP 422 status and message
+func (s *Status) UnprocessableEntity(msg string) *Status {
+	s.Code, s.Message = http.StatusUnprocessableEntity, msg
+
+	return s
+}
+
+// InternalServerError fills Status with an HTTP 500 status and message
+func (s *Status) InternalServerError(msg string) *Status {
+	s.Code, s.Message = http.StatusInternalServerError, msg
+
+	return s
 }
 
 // StatusNotFoundHandler returns a HTTP 404 handler
