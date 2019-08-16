@@ -47,15 +47,28 @@ func TestGetSort(t *testing.T) {
 	}
 
 	sort := getSort(defaultSort, order, &http.Request{URL: u})
-	if v, ok := sort["testSort"]; !ok || v != 1 {
-		t.Error("Getting sort failed: key not exist or value invalid")
+	if v, ok := sort["testSort"]; ok {
+		if v != 1 {
+			t.Errorf("Getting sort failed: value \"1\" expected but \"%v\" received", v)
+		}
+	} else {
+		t.Error("Getting sort failed: expected key \"testSort\" doesn't exist")
 	}
 
 	val.Set("sort", "-testSort")
 
+	u, err = url.Parse(fmt.Sprintf("https://example.com/test?%s", val.Encode()))
+	if err != nil {
+		t.Errorf("Error while parsing url: %s", err)
+	}
+
 	sort = getSort(defaultSort, order, &http.Request{URL: u})
-	if v, ok := sort["testSort"]; !ok || v != 1 {
-		t.Error("Getting sort failed: key not exist or value invalid")
+	if v, ok := sort["testSort"]; ok {
+		if v != -1 {
+			t.Errorf("Getting sort failed: value \"-1\" expected but \"%v\" received", v)
+		}
+	} else {
+		t.Error("Getting sort failed: expected key \"testSort\" doesn't exist")
 	}
 }
 
