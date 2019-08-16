@@ -17,5 +17,5 @@ func IndexGET(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(w, i, http.StatusOK)
+	view.RenderJSON(i, http.StatusOK, w)
 }

@@ -50,7 +50,7 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(w, Token{token}, http.StatusCreated)
+	view.RenderJSON(Token{token}, http.StatusCreated, w)
 }
 
 // TokenPOST handles a POST request on the token endpoint
@@ -124,5 +124,5 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(w, Token{token}, http.StatusCreated)
+	view.RenderJSON(Token{token}, http.StatusCreated, w)
 }

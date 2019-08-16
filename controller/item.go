@@ -52,7 +52,7 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		}
 	}
 
-	view.RenderJSON(w, i, http.StatusOK)
+	view.RenderJSON(i, http.StatusOK, w)
 }
 
 // ItemGET handles a GET request on a item entity endpoint
@@ -70,7 +70,7 @@ func ItemGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(w, i, http.StatusOK)
+	view.RenderJSON(i, http.StatusOK, w)
 }
 
 // ItemsGET handles a GET request on a item kind endpoint
@@ -184,7 +184,7 @@ Loop:
 		}
 	}
 
-	view.RenderJSON(w, result, http.StatusOK)
+	view.RenderJSON(result, http.StatusOK, w)
 }
 
 // ItemPOST handles a POST request on a item kind endpoint
@@ -229,7 +229,7 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	logger.Infof("Item %s created", entity.GetID().Hex())
 
-	view.RenderJSON(w, entity, http.StatusCreated)
+	view.RenderJSON(entity, http.StatusCreated, w)
 }
 
 // ItemPUT handles a PUT request on a item entity endpoint
@@ -280,7 +280,7 @@ func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	logger.Infof("Item %s updated", entity.GetID().Hex())
 
-	view.RenderJSON(w, entity, http.StatusOK)
+	view.RenderJSON(entity, http.StatusOK, w)
 }
 
 // ItemDELETE handles a DELETE request on a item entity endpoint

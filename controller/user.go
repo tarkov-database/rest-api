@@ -22,7 +22,7 @@ func UserGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(w, usr, http.StatusOK)
+	view.RenderJSON(usr, http.StatusOK, w)
 }
 
 // UsersGET handles a GET request on the user root endpoint
@@ -74,7 +74,7 @@ Loop:
 		}
 	}
 
-	view.RenderJSON(w, usr, http.StatusOK)
+	view.RenderJSON(usr, http.StatusOK, w)
 }
 
 // UserPOST handles a POST request on the user root endpoint
@@ -107,7 +107,7 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	logger.Infof("User %s created", usr.ID.Hex())
 
-	view.RenderJSON(w, usr, http.StatusCreated)
+	view.RenderJSON(usr, http.StatusCreated, w)
 }
 
 // UserPUT handles a PUT request on a user entity endpoint
@@ -148,7 +148,7 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	logger.Infof("User %s updated", usr.ID.Hex())
 
-	view.RenderJSON(w, usr, http.StatusOK)
+	view.RenderJSON(usr, http.StatusOK, w)
 }
 
 // UserDELETE handles a DELETE request on a user entity endpoint

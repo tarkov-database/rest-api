@@ -21,7 +21,7 @@ var (
 	ErrInvalidEmail = errors.New("invalid e-mail address")
 )
 
-type objectID = primitive.ObjectID
+type objectID = model.ObjectID
 
 type timestamp = model.Timestamp
 

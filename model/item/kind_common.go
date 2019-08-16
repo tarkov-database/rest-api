@@ -4,11 +4,9 @@ import (
 	"errors"
 
 	"github.com/tarkov-database/rest-api/model"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type objectID = primitive.ObjectID
+type objectID = model.ObjectID
 
 type timestamp = model.Timestamp
 

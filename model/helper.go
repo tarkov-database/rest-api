@@ -5,7 +5,7 @@ import (
 )
 
 // ToObjectID converts a string id to an object ID
-func ToObjectID(id string) (objectID, error) {
+func ToObjectID(id string) (ObjectID, error) {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return objID, ErrInvalidObjectID
