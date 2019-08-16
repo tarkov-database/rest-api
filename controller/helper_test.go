@@ -35,8 +35,7 @@ func TestGetLimitOffset(t *testing.T) {
 }
 
 func TestGetSort(t *testing.T) {
-	var defaultSort = "test"
-	var order int64 = 1
+	var defaultSort = "-test"
 
 	val := url.Values{}
 	val.Add("sort", "testSort")
@@ -46,7 +45,7 @@ func TestGetSort(t *testing.T) {
 		t.Errorf("Error while parsing url: %s", err)
 	}
 
-	sort := getSort(defaultSort, order, &http.Request{URL: u})
+	sort := getSort(defaultSort, &http.Request{URL: u})
 	if v, ok := sort["testSort"]; ok {
 		if v != 1 {
 			t.Errorf("Getting sort failed: value \"1\" expected but \"%v\" received", v)
@@ -62,7 +61,7 @@ func TestGetSort(t *testing.T) {
 		t.Errorf("Error while parsing url: %s", err)
 	}
 
-	sort = getSort(defaultSort, order, &http.Request{URL: u})
+	sort = getSort(defaultSort, &http.Request{URL: u})
 	if v, ok := sort["testSort"]; ok {
 		if v != -1 {
 			t.Errorf("Getting sort failed: value \"-1\" expected but \"%v\" received", v)
