@@ -149,7 +149,9 @@ func Create(user *User) error {
 	db := database.GetDB()
 	c := db.Collection(collection)
 
-	user.ID = primitive.NewObjectID()
+	if user.ID.IsZero() {
+		user.ID = primitive.NewObjectID()
+	}
 
 	user.Modified = timestamp{time.Now()}
 
