@@ -30,12 +30,8 @@ func UsersGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var usr interface{}
 	var err error
 
-	l, o := getLimitOffset(r)
-	opts := &user.Options{
-		Sort:   getSort("-_modified", r),
-		Limit:  l,
-		Offset: o,
-	}
+	opts := &user.Options{Sort: getSort("-_modified", r)}
+	opts.Limit, opts.Offset = getLimitOffset(r)
 
 Loop:
 	for p, v := range r.URL.Query() {
