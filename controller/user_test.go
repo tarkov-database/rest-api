@@ -12,6 +12,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type userResult struct {
+	Count int64       `json:"total"`
+	Items []user.User `json:"items"`
+}
+
 func TestUserGET(t *testing.T) {
 	userID := userIDs[0]
 
@@ -36,25 +41,18 @@ func TestUserGET(t *testing.T) {
 		t.Error("Getting user failed: content type is invalid")
 	}
 
-	usr := &user.User{}
+	output := &user.User{}
 
-	if err := json.NewDecoder(resp.Body).Decode(usr); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
 		t.Fatalf("Getting user failed: %s", err)
 	}
 
-	if usr.ID != userID {
+	if output.ID != userID {
 		t.Error("Getting user failed: user ID invalid")
 	}
 }
 
-type userResult struct {
-	Count int64       `json:"total"`
-	Items []user.User `json:"items"`
-}
-
 func TestUsersGET(t *testing.T) {
-	userID := userIDs[0]
-
 	req := httptest.NewRequest("GET", "http://example.com/v2/user", nil)
 
 	w := httptest.NewRecorder()
@@ -82,9 +80,6 @@ func TestUsersGET(t *testing.T) {
 	}
 	if len(res.Items) == 0 {
 		t.Fatal("Getting users failed: result empty")
-	}
-	if id := res.Items[0].ID; id != userID {
-		t.Errorf("Getting users failed: user ID %s and %s unequal", id.Hex(), userID.Hex())
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/tarkov-database/rest-api/core/database"
+	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/item"
 	"github.com/tarkov-database/rest-api/model/user"
 
@@ -88,8 +89,18 @@ func createItems() {
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 
-	itemA := item.Item{ID: createItemID(), Kind: "common"}
-	itemB := item.Item{ID: createItemID(), Kind: "common"}
+	itemA := item.Item{
+		ID:       createItemID(),
+		Name:     "item a",
+		Modified: model.Timestamp{time.Now()},
+		Kind:     "common",
+	}
+	itemB := item.Item{
+		ID:       createItemID(),
+		Name:     "item b",
+		Modified: model.Timestamp{time.Now()},
+		Kind:     "common",
+	}
 
 	if _, err := c.InsertMany(ctx, bson.A{itemA, itemB}); err != nil {
 		log.Fatalf("Database startup error: %s", err)

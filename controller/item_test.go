@@ -3,14 +3,91 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/tarkov-database/rest-api/model/item"
 
 	"github.com/julienschmidt/httprouter"
 )
+
+type itemResult struct {
+	Count int64       `json:"total"`
+	Items []item.Item `json:"items"`
+}
+
+func TestItemIndexGET(t *testing.T) {
+	req := httptest.NewRequest("GET", "http://example.com/v2/item", nil)
+
+	w := httptest.NewRecorder()
+
+	ItemIndexGET(w, req, httprouter.Params{})
+
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("Getting item failed: unexpcted response code %v", resp.StatusCode)
+	}
+	if resp.Header.Get("Content-Type") != contentTypeJSON {
+		t.Error("Getting item failed: content type is invalid")
+	}
+
+	output := &item.Index{}
+
+	if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
+		t.Fatalf("Getting item failed: %s", err)
+	}
+
+	if output.Total == 0 {
+		t.Error("Getting item index failed: total count is invalid")
+	}
+	if output.Modified.IsZero() {
+		t.Error("Getting item index failed: global modified date is invalid")
+	}
+
+	if output.Kinds[item.KindCommon].Count == 0 {
+		t.Error("Getting item index failed: kind count is invalid")
+	}
+	if output.Kinds[item.KindCommon].Modified.IsZero() {
+		t.Error("Getting item index failed: kind modified date is invalid")
+	}
+
+	keyword := "item"
+
+	val := url.Values{}
+	val.Add("search", keyword)
+
+	uri := fmt.Sprintf("http://example.com/v2/item?%s", val.Encode())
+	req = httptest.NewRequest("GET", uri, nil)
+
+	w = httptest.NewRecorder()
+
+	ItemIndexGET(w, req, httprouter.Params{})
+
+	resp = w.Result()
+	defer resp.Body.Close()
+
+	res := &itemResult{}
+
+	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
+		t.Fatalf("Getting items failed: %s", err)
+	}
+
+	if res.Count < 1 {
+		t.Error("Getting items failed: result count invalid")
+	}
+	if len(res.Items) == 0 {
+		t.Fatal("Getting items failed: result empty")
+	}
+	if name := res.Items[0].Name; !strings.HasPrefix(name, keyword) {
+		t.Error("Getting items failed: item name prefix invalid")
+	}
+}
 
 func TestItemGET(t *testing.T) {
 	itemID := itemIDs[0]
@@ -40,25 +117,18 @@ func TestItemGET(t *testing.T) {
 		t.Error("Getting item failed: content type is invalid")
 	}
 
-	itm := &item.Item{}
+	output := &item.Item{}
 
-	if err := json.NewDecoder(resp.Body).Decode(itm); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
 		t.Fatalf("Getting item failed: %s", err)
 	}
 
-	if itm.ID != itemID {
+	if output.ID != itemID {
 		t.Error("Getting item failed: item ID invalid")
 	}
 }
 
-type itemResult struct {
-	Count int64       `json:"total"`
-	Items []item.Item `json:"items"`
-}
-
 func TestItemsGET(t *testing.T) {
-	itemID := itemIDs[0]
-
 	req := httptest.NewRequest("GET", "http://example.com/v2/item", nil)
 
 	params := httprouter.Params{
@@ -93,9 +163,6 @@ func TestItemsGET(t *testing.T) {
 	}
 	if len(res.Items) == 0 {
 		t.Fatal("Getting items failed: result empty")
-	}
-	if id := res.Items[0].ID; id != itemID {
-		t.Errorf("Getting items failed: item ID %s and %s unequal", id.Hex(), itemID.Hex())
 	}
 }
 

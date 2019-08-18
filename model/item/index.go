@@ -16,9 +16,9 @@ import (
 
 // Index describes the entity of an the item root endpoint
 type Index struct {
-	Total    int64                 `json:"total" bson:"total"`
-	Modified timestamp             `json:"modified" bson:"modified"`
-	Kinds    map[string]*KindStats `json:"kinds" bson:"kinds"`
+	Total    int64               `json:"total" bson:"total"`
+	Modified timestamp           `json:"modified" bson:"modified"`
+	Kinds    map[Kind]*KindStats `json:"kinds" bson:"kinds"`
 }
 
 // KindStats describes the statistics of a kind
