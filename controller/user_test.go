@@ -21,28 +21,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const (
-	mongoURI = "mongodb://127.0.0.1:27017/rest-api-testing"
-	mongoDB  = "rest-api-testing"
-
-	contentTypeJSON = "application/json"
-)
+const contentTypeJSON = "application/json"
 
 var userIDs []primitive.ObjectID
 
 func init() {
 	logger.Init("default", false, false, ioutil.Discard)
-
-	if env := os.Getenv("MONGO_URI"); len(env) == 0 {
-		if err := os.Setenv("MONGO_URI", mongoURI); err != nil {
-			log.Fatal(err)
-		}
-	}
-	if env := os.Getenv("MONGO_DB"); len(env) == 0 {
-		if err := os.Setenv("MONGO_DB", mongoDB); err != nil {
-			log.Fatal(err)
-		}
-	}
 }
 
 func mongoStartup() {
@@ -58,8 +42,7 @@ func mongoStartup() {
 	userA := user.User{ID: createObjectID()}
 	userB := user.User{ID: createObjectID()}
 
-	_, err := c.InsertMany(ctx, bson.A{userA, userB})
-	if err != nil {
+	if _, err := c.InsertMany(ctx, bson.A{userA, userB}); err != nil {
 		log.Fatalf("Database startup error: %s", err)
 	}
 }
@@ -70,9 +53,12 @@ func mongoCleanup() {
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 
-	_, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": userIDs}})
-	if err != nil {
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": userIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
+	}
+
+	if err := database.Shutdown(); err != nil {
+		log.Fatalf("Database shutdown error: %s", err)
 	}
 }
 
