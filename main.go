@@ -17,13 +17,11 @@ func main() {
 	defLog := logger.Init("default", true, false, ioutil.Discard)
 	defer defLog.Close()
 
-	err := database.Init()
-	if err != nil {
+	if err := database.Init(); err != nil {
 		logger.Fatalf("Database initiation error: %s", err)
 	}
 
-	err = server.ListenAndServe()
-	if err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		logger.Fatalf("HTTP server error: %s", err)
 	}
 }

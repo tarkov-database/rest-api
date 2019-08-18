@@ -29,8 +29,8 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 			return
 		}
 
-		l, o := getLimitOffset(r)
-		opts := &item.Options{Limit: l, Offset: o}
+		opts := &item.Options{}
+		opts.Limit, opts.Offset = getLimitOffset(r)
 
 		i, err = item.GetByText(txt, opts)
 		if err != nil {
@@ -85,13 +85,8 @@ func ItemsGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	l, o := getLimitOffset(r)
-
-	opts := &item.Options{
-		Sort:   getSort("-_modified", r),
-		Limit:  l,
-		Offset: o,
-	}
+	opts := &item.Options{Sort: getSort("-_modified", r)}
+	opts.Limit, opts.Offset = getLimitOffset(r)
 
 Loop:
 	for p, v := range r.URL.Query() {
