@@ -42,11 +42,12 @@ func (u *User) Validate() error {
 	return nil
 }
 
-const collection = "users"
+// Collection indicates the MongoDB user collection
+const Collection = "users"
 
 func getOneByFilter(filter interface{}) (*User, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -83,7 +84,7 @@ type Options struct {
 
 func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -147,7 +148,7 @@ func GetByLockedState(locked bool, opts *Options) (*model.Result, error) {
 // Create creates a new entity
 func Create(user *User) error {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	if user.ID.IsZero() {
 		user.ID = primitive.NewObjectID()
@@ -183,7 +184,7 @@ func Replace(id string, user *User) error {
 	user.Modified = timestamp{time.Now()}
 
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	opts := options.FindOneAndReplace()
 	opts.SetUpsert(false)
@@ -211,7 +212,7 @@ func Remove(id string) error {
 	}
 
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
