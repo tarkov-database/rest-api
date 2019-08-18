@@ -20,8 +20,13 @@ func main() {
 	if err := database.Init(); err != nil {
 		logger.Fatalf("Database initiation error: %s", err)
 	}
+	defer func() {
+		if err := database.Shutdown(); err != nil {
+			logger.Errorf("Database shutdown error: %s", err)
+		}
+	}()
 
 	if err := server.ListenAndServe(); err != nil {
-		logger.Fatalf("HTTP server error: %s", err)
+		logger.Errorf("HTTP server error: %s", err)
 	}
 }
