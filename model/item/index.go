@@ -143,7 +143,7 @@ func (i *Index) WithoutKinds(c *mongo.Collection) error {
 // GetIndex returns the data of the item root endpoint
 func GetIndex(skipKinds bool) (*Index, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	var err error
 
