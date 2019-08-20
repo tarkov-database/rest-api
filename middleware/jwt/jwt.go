@@ -3,12 +3,12 @@ package jwt
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-	"log"
 
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/view"
