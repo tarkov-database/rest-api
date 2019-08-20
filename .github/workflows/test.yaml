@@ -29,6 +29,6 @@ jobs:
       env:
         MONGO_URI: mongodb://127.0.0.1:27017/rest-api
         MONGO_DB: rest-api
-        JWT_KEY: testkey
-        JWT_AUDIENCE: testing
+        JWT_KEY: SKbVAbC4GqtRSnjiKCSH27Pu
+        JWT_AUDIENCE: testing-workflow
       run: go test -v ./...
