@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
 
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/view"
@@ -87,18 +88,20 @@ func init() {
 	if env := os.Getenv("JWT_KEY"); len(env) >= 8 {
 		key = []byte(env)
 	} else {
-		logger.Fatal(errors.New("JWT key is not set or too short"))
+		log.Fatal("JWT key is not set or too short")
 	}
 
 	if env := os.Getenv("JWT_AUDIENCE"); len(env) >= 3 {
 		audience = env
 	} else {
-		logger.Fatal(errors.New("JWT audience is not set or too short"))
+		log.Fatal("JWT audience is not set or too short")
 	}
 
 	if env := os.Getenv("JWT_EXPIRATION"); len(env) > 0 {
 		if s, err := strconv.ParseInt(env, 10, 64); err == nil {
 			expTime = s * 60
+		} else {
+			log.Fatal("JWT expiration value is not an valid integer")
 		}
 	}
 }
