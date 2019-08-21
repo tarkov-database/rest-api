@@ -280,8 +280,6 @@ func Create(e Entity) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
 }
 
@@ -314,8 +312,6 @@ func Replace(id string, e Entity) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
 }
 
@@ -338,88 +334,5 @@ func Remove(id string) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
-}
-
-func createIndexes(c *mongo.Collection) {
-	index := c.Indexes()
-
-	indexModels := []mongo.IndexModel{}
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"_modified", -1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"_kind", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"name", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"shortName", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"_kind", 1}, {"name", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"_kind", 1}, {"shortName", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"type", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"class", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"armor.class", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"armor.material.name", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"caliber", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"damage", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"penetration", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"armorDamage", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"fragmentation.chance", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"ergonomics", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"_kind", 1}, {"capacity", 1}},
-		Options: options.Index().SetSparse(true),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"name", "text"}, {"shortName", "text"}, {"description", "text"}},
-		Options: options.Index().SetWeights(bson.D{
-			{"shortName", 10},
-			{"name", 8},
-			{"description", 4},
-		}),
-	})
-
-	_, err := index.CreateMany(context.Background(), indexModels)
-	if err != nil {
-		logger.Errorf("Error while creating indexes: %v", err)
-	}
 }
