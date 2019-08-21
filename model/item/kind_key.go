@@ -7,7 +7,7 @@ const (
 
 // Key describes the entity of an key item
 type Key struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Location string `json:"location" bson:"location"`
 }

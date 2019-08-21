@@ -7,7 +7,7 @@ const (
 
 // Magazine describes the entity of an magazine item
 type Magazine struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Capacity      int64            `json:"capacity" bson:"capacity"`
 	Caliber       string           `json:"caliber" bson:"caliber"`

@@ -108,8 +108,8 @@ func init() {
 
 // Claims represents the claims of a token
 type Claims struct {
-	jwt.StandardClaims `json:",inline"`
-	Scope              []string `json:"scope"`
+	jwt.StandardClaims
+	Scope []string `json:"scope"`
 }
 
 // ValidateCustom validates the custom claims of a token

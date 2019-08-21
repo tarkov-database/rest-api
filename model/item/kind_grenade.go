@@ -7,7 +7,7 @@ const (
 
 // Grenade describes the entity of an grenade item
 type Grenade struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type              string  `json:"type" bson:"type"`
 	Delay             float64 `json:"delay" bson:"delay"`

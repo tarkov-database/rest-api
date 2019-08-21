@@ -7,7 +7,7 @@ const (
 
 // Container describes the entity of an container item
 type Container struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Grids []Grid `json:"grids" bson:"grids"`
 }

@@ -58,7 +58,7 @@ const (
 
 // Modification represents the basic data of modification item
 type Modification struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Ergonomics    int64        `json:"ergonomics" bson:"ergonomics"`
 	RaidModdable  int64        `json:"raidModdable" bson:"raidModdable"`
@@ -72,7 +72,7 @@ type Modification struct {
 
 // Barrel describes the entity of an barrel item
 type Barrel struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Length     float64 `json:"length" bson:"length"`
 	Accuracy   float64 `json:"accuracy" bson:"accuracy"`
@@ -83,19 +83,19 @@ type Barrel struct {
 
 // Bipod describes the entity of an bipod item
 type Bipod struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Charge describes the entity of an charging handle item
 type Charge struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 }
 
 // Device describes the entity of an tactical device item
 type Device struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Type  string   `json:"type" bson:"type"`
 	Modes []string `json:"modes" bson:"modes"`
@@ -103,26 +103,26 @@ type Device struct {
 
 // Foregrip describes the entity of an foregrip item
 type Foregrip struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // GasBlock describes the entity of an gas block item
 type GasBlock struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 }
 
 // Handguard describes the entity of an handguard item
 type Handguard struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Launcher describes the entity of an launcher item
 type Launcher struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil  float64 `json:"recoil" bson:"recoil"`
 	Caliber string  `json:"caliber" bson:"caliber"`
@@ -130,12 +130,12 @@ type Launcher struct {
 
 // Mount describes the entity of an mount item
 type Mount struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 }
 
 // Muzzle describes the entity of an muzzle item
 type Muzzle struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Type     string  `json:"type" bson:"type"`
 	Accuracy float64 `json:"accuracy" bson:"accuracy"`
@@ -145,19 +145,19 @@ type Muzzle struct {
 
 // PistolGrip describes the entity of an pistol grip item
 type PistolGrip struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Receiver describes the entity of an receiver item
 type Receiver struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 }
 
 // Sight describes the entity of an sight item
 type Sight struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Type          string   `json:"type" bson:"type"`
 	Magnification []string `json:"magnification" bson:"magnification"`
@@ -167,13 +167,13 @@ type Sight struct {
 
 // SightSpecial describes the entity of an special sights item
 type SightSpecial struct {
-	Sight        `json:",inline" bson:",inline"`
-	OpticSpecial `json:",inline" bson:",inline"`
+	Sight        `bson:",inline"`
+	OpticSpecial `bson:",inline"`
 }
 
 // Stock describes the entity of an stock item
 type Stock struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Recoil           float64 `json:"recoil" bson:"recoil"`
 	FoldRectractable bool    `json:"foldRectractable" bson:"foldRectractable"`
@@ -183,15 +183,15 @@ type Stock struct {
 
 // Goggles describes the entity of an goggles item
 type Goggles struct {
-	Modification `json:",inline" bson:",inline"`
+	Modification `bson:",inline"`
 
 	Type string `json:"type" bson:"type"`
 }
 
 // GogglesSpecial describes the entity of an special goggles item
 type GogglesSpecial struct {
-	Goggles      `json:",inline" bson:",inline"`
-	OpticSpecial `json:",inline" bson:",inline"`
+	Goggles      `bson:",inline"`
+	OpticSpecial `bson:",inline"`
 }
 
 // Properties //

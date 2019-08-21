@@ -7,7 +7,7 @@ const (
 
 // Firearm describes the entity of an firearm item
 type Firearm struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type              string   `json:"type" bson:"type"`
 	Class             string   `json:"class" bson:"class"`

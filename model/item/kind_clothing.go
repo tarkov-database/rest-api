@@ -7,7 +7,7 @@ const (
 
 // Clothing describes the entity of an clothing item
 type Clothing struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type      string    `json:"type" bson:"type"`
 	Blocking  []string  `json:"blocking" bson:"blocking"`
