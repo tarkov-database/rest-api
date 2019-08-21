@@ -41,7 +41,6 @@ func newConfig() (*config, error) {
 	if env := os.Getenv("MONGO_URI"); len(env) > 0 {
 		if !strings.HasPrefix(env, "mongodb://") && !strings.HasPrefix(env, "mongodb+srv://") {
 			return c, errors.New("mongo uri invalid")
-
 		}
 		c.URI = env
 	} else {
@@ -68,7 +67,6 @@ func newConfig() (*config, error) {
 				c.PrivateKey = env
 			} else {
 				return c, errors.New("mongo database not set")
-
 			}
 
 			if env := os.Getenv("MONGO_CA"); len(env) > 0 {
