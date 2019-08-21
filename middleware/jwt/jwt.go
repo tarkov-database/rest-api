@@ -158,7 +158,7 @@ func GetToken(r *http.Request) (string, error) {
 // VerifyToken verifies a token
 func VerifyToken(tokenStr string) (*Claims, error) {
 	parser := jwt.Parser{SkipClaimsValidation: true}
-	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(_ *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
 	if err != nil {
