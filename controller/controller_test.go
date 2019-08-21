@@ -93,13 +93,13 @@ func createItems() {
 		ID:       createItemID(),
 		Name:     "item a",
 		Modified: model.Timestamp{time.Now()},
-		Kind:     "common",
+		Kind:     item.KindCommon,
 	}
 	itemB := item.Item{
 		ID:       createItemID(),
 		Name:     "item b",
 		Modified: model.Timestamp{time.Now()},
-		Kind:     "common",
+		Kind:     item.KindCommon,
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{itemA, itemB}); err != nil {
