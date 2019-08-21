@@ -165,8 +165,6 @@ func Create(user *User) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
 }
 
@@ -199,8 +197,6 @@ func Replace(id string, user *User) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
 }
 
@@ -223,27 +219,5 @@ func Remove(id string) error {
 		return model.MongoToAPIError(err)
 	}
 
-	go createIndexes(c)
-
 	return nil
-}
-
-func createIndexes(c *mongo.Collection) {
-	index := c.Indexes()
-
-	indexModels := []mongo.IndexModel{}
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"_modified", -1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.M{"email": 1},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.M{"locked": 1},
-	})
-
-	_, err := index.CreateMany(context.Background(), indexModels)
-	if err != nil {
-		logger.Errorf("Error while creating indexes: %v", err)
-	}
 }
