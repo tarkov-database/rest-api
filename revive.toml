@@ -1,5 +1,5 @@
 ignoreGeneratedHeader = false
-severity = "warning"
+severity = "error"
 confidence = 0.8
 errorCode = 1
 warningCode = 0
@@ -12,6 +12,7 @@ warningCode = 0
 [rule.error-strings]
 [rule.error-naming]
 [rule.exported]
+severity = "warning"
 [rule.if-return]
 [rule.increment-decrement]
 [rule.var-naming]
@@ -25,8 +26,18 @@ warningCode = 0
 [rule.errorf]
 [rule.argument-limit]
 arguments = [4]
+[rule.function-result-limit]
+arguments = [3]
 [rule.empty-block]
 [rule.confusing-naming]
 [rule.superfluous-else]
 [rule.unused-parameter]
 [rule.unreachable-code]
+[rule.unnecessary-stmt]
+[rule.struct-tag]
+[rule.atomic]
+[rule.empty-lines]
+[rule.duplicated-imports]
+[rule.import-shadowing]
+[rule.confusing-results]
+[rule.modifies-parameter]
