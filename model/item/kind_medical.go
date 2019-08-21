@@ -7,7 +7,7 @@ const (
 
 // Medical describes the entity of an medical item
 type Medical struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type         string  `json:"type" bson:"type"`
 	Resources    int64   `json:"resources" bson:"resources"`

@@ -7,7 +7,7 @@ const (
 
 // Food describes the entity of an food item
 type Food struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type      string  `json:"type" bson:"type"`
 	Resources int64   `json:"resources" bson:"resources"`

@@ -7,7 +7,7 @@ const (
 
 // Backpack describes the entity of an backpack item
 type Backpack struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Grids     []Grid    `json:"grids" bson:"grids"`
 	Penalties Penalties `json:"penalties" bson:"penalties"`

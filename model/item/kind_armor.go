@@ -7,7 +7,7 @@ const (
 
 // Armor describes the entity of an armor item
 type Armor struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Type          string     `json:"type" bson:"type"`
 	Armor         ArmorProps `json:"armor" bson:"armor"`

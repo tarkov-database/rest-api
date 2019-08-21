@@ -7,5 +7,5 @@ const (
 
 // Money describes the entity of an money item
 type Money struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 }

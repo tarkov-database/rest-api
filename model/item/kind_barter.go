@@ -7,5 +7,5 @@ const (
 
 // Barter describes the entity of an barter item
 type Barter struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 }

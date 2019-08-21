@@ -7,7 +7,7 @@ const (
 
 // Headphone describes the entity of an headphone item
 type Headphone struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	AmbientVolume  float64    `json:"ambientVol" bson:"ambientVol"`
 	DryVolume      float64    `json:"dryVol" bson:"dryVol"`

@@ -7,5 +7,5 @@ const (
 
 // Map describes the entity of an map item
 type Map struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 }

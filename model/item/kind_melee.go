@@ -7,7 +7,7 @@ const (
 
 // Melee describes the entity of an melee item
 type Melee struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Slash MeleeAttack `json:"slash" bson:"slash"`
 	Stab  MeleeAttack `json:"stab" bson:"stab"`

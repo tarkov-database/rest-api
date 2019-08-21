@@ -7,7 +7,7 @@ const (
 
 // Ammunition describes the entity of an ammunition item
 type Ammunition struct {
-	Item `json:",inline" bson:",inline"`
+	Item `bson:",inline"`
 
 	Caliber             string   `json:"caliber" bson:"caliber"`
 	Type                string   `json:"type" bson:"type"`
