@@ -1,0 +1,33 @@
+name: Testing
+on: [push]
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:4.2
+        ports:
+        - 27017:27017
+    steps:
+
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.12
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+
+    - name: Run tests
+      env:
+        MONGO_URI: mongodb://127.0.0.1:27017/rest-api
+        MONGO_DB: rest-api
+        JWT_KEY: SKbVAbC4GqtRSnjiKCSH27Pu
+        JWT_AUDIENCE: testing-workflow
+      run: go test -v ./...

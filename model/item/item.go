@@ -17,11 +17,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const collection = "items"
+// Collection indicates the MongoDB item collection
+const Collection = "items"
 
 func getOneByFilter(filter interface{}, k Kind) (Entity, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -61,7 +62,7 @@ type Options struct {
 
 func getManyByFilter(filter interface{}, k Kind, opts *Options) (*model.Result, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -141,7 +142,7 @@ func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
 // GetByText returns a result based on given keyword
 func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -262,7 +263,7 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 // Create creates a new entity
 func Create(e Entity) error {
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	if e.GetID().IsZero() {
 		e.SetID(primitive.NewObjectID())
@@ -298,7 +299,7 @@ func Replace(id string, e Entity) error {
 	e.SetModified(timestamp{time.Now()})
 
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	opts := options.FindOneAndReplace()
 	opts.SetUpsert(false)
@@ -326,7 +327,7 @@ func Remove(id string) error {
 	}
 
 	db := database.GetDB()
-	c := db.Collection(collection)
+	c := db.Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

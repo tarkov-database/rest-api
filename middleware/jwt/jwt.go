@@ -3,6 +3,7 @@ package jwt
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -87,18 +88,20 @@ func init() {
 	if env := os.Getenv("JWT_KEY"); len(env) >= 8 {
 		key = []byte(env)
 	} else {
-		logger.Fatal(errors.New("JWT key is not set or too short"))
+		log.Fatal("JWT key is not set or too short")
 	}
 
 	if env := os.Getenv("JWT_AUDIENCE"); len(env) >= 3 {
 		audience = env
 	} else {
-		logger.Fatal(errors.New("JWT audience is not set or too short"))
+		log.Fatal("JWT audience is not set or too short")
 	}
 
 	if env := os.Getenv("JWT_EXPIRATION"); len(env) > 0 {
 		if s, err := strconv.ParseInt(env, 10, 64); err == nil {
 			expTime = s * 60
+		} else {
+			log.Fatal("JWT expiration value is not an valid integer")
 		}
 	}
 }
@@ -127,37 +130,6 @@ func (c *Claims) ValidateCustom() error {
 	return nil
 }
 
-// VerifyToken verifies a token
-func VerifyToken(tokenStr string) (*Claims, error) {
-	parser := jwt.Parser{SkipClaimsValidation: true}
-	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return key, nil
-	})
-	if err != nil {
-		logger.Error(err)
-		return &Claims{}, err
-	}
-
-	claims, ok := token.Claims.(*Claims)
-	if !ok {
-		logger.Error("JWT claims parsing error")
-		return claims, errors.New("claims parsing error")
-	}
-	if err := claims.Valid(); err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok && ve.Errors&(jwt.ValidationErrorExpired) != 0 {
-			return claims, ErrExpiredToken
-		}
-		logger.Errorf("JWT with subject \"%v\" is invalid: %v", claims.Subject, err)
-		return claims, err
-	}
-	if !claims.VerifyAudience(audience, true) {
-		logger.Errorf("JWT with subject \"%v\" is not valid", claims.Subject)
-		return claims, ErrInvalidAudience
-	}
-
-	return claims, nil
-}
-
 // CreateToken creates a new token
 func CreateToken(c *Claims) (string, error) {
 	c.Audience = audience
@@ -183,6 +155,33 @@ func GetToken(r *http.Request) (string, error) {
 	return strings.TrimSpace(strings.TrimPrefix(headerString, "Bearer")), nil
 }
 
+// VerifyToken verifies a token
+func VerifyToken(tokenStr string) (*Claims, error) {
+	parser := jwt.Parser{SkipClaimsValidation: true}
+	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	if err != nil {
+		return &Claims{}, err
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		return claims, errors.New("claims parsing error")
+	}
+	if err := claims.Valid(); err != nil {
+		if ve, ok := err.(*jwt.ValidationError); ok && ve.Errors&(jwt.ValidationErrorExpired) != 0 {
+			return claims, ErrExpiredToken
+		}
+		return claims, err
+	}
+	if !claims.VerifyAudience(audience, true) {
+		return claims, ErrInvalidAudience
+	}
+
+	return claims, nil
+}
+
 // AuhtorizationHandler returns a JWT authorization handler
 func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -194,6 +193,9 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 
 		claims, err := VerifyToken(token)
 		if err != nil {
+			if err != ErrExpiredToken {
+				logger.Error(err)
+			}
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
 			return
 		}
