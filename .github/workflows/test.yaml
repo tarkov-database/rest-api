@@ -13,11 +13,11 @@ jobs:
           go-version: 1.12
         id: go
 
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v1
-
       - name: Get linter
         run: go get -v -u github.com/mgechev/revive
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
 
       - name: Run linter
         run: revive -config revive.toml -formatter friendly ./...
