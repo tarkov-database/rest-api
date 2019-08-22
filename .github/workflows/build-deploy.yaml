@@ -1,8 +1,5 @@
 name: Building/Deploying
-on:
-  push:
-    tags:
-    - v*
+on: release
 jobs:
 
   build:
