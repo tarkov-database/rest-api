@@ -1,0 +1,42 @@
+name: Building/Deploying
+on:
+  push:
+    tags:
+    - v*
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Login to Registry
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+
+      - name: Build image
+        run: docker build -t tarkovdatabase/rest-api:${GITHUB_REF} .
+
+      - name: Publish image
+        run: docker push tarkovdatabase/rest-api:${GITHUB_REF}
+
+      - name: Logout
+        run: docker logout
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+      - name: Set up config
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: echo $KUBE_CONFIG | base64 -d > $KUBECONFIG
+
+      - name: Deploy image
+        env:
+          CONTAINER_IMAGE: tarkovdatabase/rest-api:${GITHUB_REF}
+        run: kubectl set image deployment/api api-v2=$CONTAINER_IMAGE
