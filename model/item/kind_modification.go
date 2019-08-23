@@ -37,9 +37,6 @@ const (
 	// KindModificationGoggles represents the kind of Goggles
 	KindModificationGoggles Kind = "modificationGoggles"
 
-	// KindModificationGogglesSpecial represents the kind of GogglesSpecial
-	KindModificationGogglesSpecial Kind = "modificationGogglesSpecial"
-
 	// KindModificationPistolgrip represents the kind of PistolGrip
 	KindModificationPistolgrip Kind = "modificationPistolgrip"
 
@@ -186,11 +183,7 @@ type Goggles struct {
 	Modification `bson:",inline"`
 
 	Type string `json:"type" bson:"type"`
-}
 
-// GogglesSpecial describes the entity of an special goggles item
-type GogglesSpecial struct {
-	Goggles      `bson:",inline"`
 	OpticSpecial `bson:",inline"`
 }
 

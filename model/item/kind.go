@@ -114,8 +114,6 @@ func (k Kind) GetEntity() (Entity, error) {
 		e = &GasBlock{}
 	case KindModificationGoggles:
 		e = &Goggles{}
-	case KindModificationGogglesSpecial:
-		e = &GogglesSpecial{}
 	case KindModificationHandguard:
 		e = &Handguard{}
 	case KindModificationLauncher:
@@ -171,7 +169,6 @@ var KindList = [...]Kind{
 	KindModificationForegrip,
 	KindModificationGasblock,
 	KindModificationGoggles,
-	KindModificationGogglesSpecial,
 	KindModificationHandguard,
 	KindModificationLauncher,
 	KindModificationMount,

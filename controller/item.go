@@ -163,7 +163,7 @@ Loop:
 			err = getQueryCaliber(r.URL, qs)
 		case item.KindMagazine:
 			err = getQueryCaliber(r.URL, qs)
-		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles, item.KindModificationGogglesSpecial:
+		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
 			err = getQueryType(r.URL, qs)
 		}
 		if err != nil {
