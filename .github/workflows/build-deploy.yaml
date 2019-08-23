@@ -1,4 +1,4 @@
-name: Building/Deploying
+name: Build & Deploy
 on: release
 jobs:
 
