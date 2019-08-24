@@ -15,12 +15,12 @@ jobs:
 
       - name: Build image
         run: |
-          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g")
+          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\/v//g")
           docker build -t tarkovdatabase/rest-api:${IMAGE_TAG} .
 
       - name: Publish image
         run: |
-          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g")
+          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\/v//g")
           docker push tarkovdatabase/rest-api:${IMAGE_TAG}
 
       - name: Logout
@@ -35,9 +35,11 @@ jobs:
       - name: Set up config
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-        run: echo $KUBE_CONFIG | base64 -d > $KUBECONFIG
+        run: |
+          export KUBECONFIG=${HOME}/.kube/config
+          echo $KUBE_CONFIG | base64 -d > $KUBECONFIG
 
       - name: Deploy image
         run: |
-          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g")
-          kubectl set image deployment/api api-v2=tarkovdatabase/rest-api:${IMAGE_TAG}
+          export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\/v//g")
+          kubectl set image deployment/rest-api rest-api=tarkovdatabase/rest-api:${IMAGE_TAG}
