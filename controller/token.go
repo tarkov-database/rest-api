@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/tarkov-database/rest-api/middleware/jwt"
@@ -46,7 +47,7 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	token, err = jwt.CreateToken(clm)
 	if err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Creation error: %s", err.Error())).Render(w)
 		return
 	}
 
@@ -90,16 +91,16 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	clm := &jwt.Claims{}
-	err = parseJSONBody(r.Body, clm)
-	if err != nil {
+
+	if err := parseJSONBody(r.Body, clm); err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
 		return
 	}
 
 	if err := clm.ValidateCustom(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
 		return
 	}
 
@@ -120,7 +121,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	token, err := jwt.CreateToken(clm)
 	if err != nil {
 		s := &Status{}
-		s.InternalServerError(err.Error()).Render(w)
+		s.InternalServerError(fmt.Sprintf("Creation error: %s", err.Error())).Render(w)
 		return
 	}
 
