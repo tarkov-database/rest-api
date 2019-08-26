@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -82,21 +83,20 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	usr := &user.User{}
-	err := parseJSONBody(r.Body, usr)
-	if err != nil {
+
+	if err := parseJSONBody(r.Body, usr); err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
 		return
 	}
 
-	err = user.Create(usr)
-	if err != nil {
+	if err := user.Create(usr); err != nil {
 		handleError(err, w)
 		return
 	}
@@ -115,16 +115,16 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	usr := &user.User{}
-	err := parseJSONBody(r.Body, usr)
-	if err != nil {
+
+	if err := parseJSONBody(r.Body, usr); err != nil {
 		s := &Status{}
-		s.BadRequest(err.Error()).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(err.Error()).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
 		return
 	}
 
@@ -136,8 +136,7 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	err = user.Replace(id, usr)
-	if err != nil {
+	if err := user.Replace(id, usr); err != nil {
 		handleError(err, w)
 		return
 	}
@@ -149,11 +148,14 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 // UserDELETE handles a DELETE request on a user entity endpoint
 func UserDELETE(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
-	err := user.Remove(ps.ByName("id"))
-	if err != nil {
+	id := ps.ByName("id")
+
+	if err := user.Remove(id); err != nil {
 		handleError(err, w)
 		return
 	}
+
+	logger.Infof("User %s removed", id)
 
 	w.WriteHeader(http.StatusNoContent)
 }
