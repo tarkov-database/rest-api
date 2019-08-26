@@ -54,8 +54,7 @@ func getOneByFilter(filter interface{}) (*User, error) {
 
 	u := &User{}
 
-	err := c.FindOne(ctx, filter).Decode(u)
-	if err != nil {
+	if err := c.FindOne(ctx, filter).Decode(u); err != nil {
 		if err != mongo.ErrNoDocuments {
 			logger.Error(err)
 		}
@@ -83,8 +82,7 @@ type Options struct {
 }
 
 func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -103,6 +101,7 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 		logger.Error(err)
 		return r, model.MongoToAPIError(err)
 	}
+
 	if r.Count == 0 {
 		return r, nil
 	}
@@ -114,15 +113,20 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 		}
 		return r, model.MongoToAPIError(err)
 	}
+
 	defer cur.Close(ctx)
+
 	for cur.Next(ctx) {
 		user := &User{}
+
 		if err := cur.Decode(user); err != nil {
 			logger.Error(err)
 			return r, model.MongoToAPIError(err)
 		}
+
 		r.Items = append(r.Items, user)
 	}
+
 	if err := cur.Err(); err != nil {
 		return r, model.MongoToAPIError(err)
 	}
@@ -147,8 +151,7 @@ func GetByLockedState(locked bool, opts *Options) (*model.Result, error) {
 
 // Create creates a new entity
 func Create(user *User) error {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	if user.ID.IsZero() {
 		user.ID = primitive.NewObjectID()
@@ -159,8 +162,7 @@ func Create(user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	_, err := c.InsertOne(ctx, user)
-	if err != nil {
+	if _, err := c.InsertOne(ctx, user); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
@@ -181,8 +183,7 @@ func Replace(id string, user *User) error {
 
 	user.Modified = timestamp{time.Now()}
 
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	opts := options.FindOneAndReplace()
 	opts.SetUpsert(false)

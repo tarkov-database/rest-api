@@ -50,10 +50,9 @@ type Response struct {
 
 // NewResponse creates a new status response based on parameters
 func NewResponse(msg string, code int) *Response {
-	r := &Response{}
-	r.Status = http.StatusText(code)
-	r.Message = msg
-	r.StatusCode = code
-
-	return r
+	return &Response{
+		Status:     http.StatusText(code),
+		Message:    msg,
+		StatusCode: code,
+	}
 }
