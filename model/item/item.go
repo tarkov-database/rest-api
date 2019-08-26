@@ -21,8 +21,7 @@ import (
 const Collection = "items"
 
 func getOneByFilter(filter interface{}, k Kind) (Entity, error) {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -32,8 +31,7 @@ func getOneByFilter(filter interface{}, k Kind) (Entity, error) {
 		return e, err
 	}
 
-	err = c.FindOne(ctx, filter).Decode(e)
-	if err != nil {
+	if err := c.FindOne(ctx, filter).Decode(e); err != nil {
 		if err != mongo.ErrNoDocuments {
 			logger.Error(err)
 		}
@@ -61,8 +59,7 @@ type Options struct {
 }
 
 func getManyByFilter(filter interface{}, k Kind, opts *Options) (*model.Result, error) {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -141,8 +138,7 @@ func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
 
 // GetByText returns a result based on given keyword
 func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -262,8 +258,7 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 
 // Create creates a new entity
 func Create(e Entity) error {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	if e.GetID().IsZero() {
 		e.SetID(primitive.NewObjectID())
@@ -274,8 +269,7 @@ func Create(e Entity) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	_, err := c.InsertOne(ctx, e)
-	if err != nil {
+	if _, err := c.InsertOne(ctx, e); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
@@ -296,8 +290,7 @@ func Replace(id string, e Entity) error {
 
 	e.SetModified(timestamp{time.Now()})
 
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	opts := options.FindOneAndReplace()
 	opts.SetUpsert(false)
@@ -306,8 +299,8 @@ func Replace(id string, e Entity) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	err = c.FindOneAndReplace(ctx, bson.M{"_kind": e.GetKind(), "_id": objID}, e, opts).Decode(e)
-	if err != nil {
+	filter := bson.M{"_kind": e.GetKind(), "_id": objID}
+	if err := c.FindOneAndReplace(ctx, filter, e, opts).Decode(e); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
@@ -322,14 +315,12 @@ func Remove(id string) error {
 		return err
 	}
 
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	_, err = c.DeleteOne(ctx, bson.M{"_id": objID})
-	if err != nil {
+	if _, err := c.DeleteOne(ctx, bson.M{"_id": objID}); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
