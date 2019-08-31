@@ -1,5 +1,9 @@
 FROM golang:1.12
 
+LABEL homepage="https://tarkov-database.com"
+LABEL repository="https://github.com/tarkov-database/rest-api"
+LABEL maintainer="Markus Wiegand <mail@morphy2k.io>"
+
 EXPOSE 8080
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
