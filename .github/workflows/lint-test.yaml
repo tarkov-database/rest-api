@@ -2,9 +2,14 @@ name: Lint & Test
 on:
   push:
     paths:
-      - '*'
-      - '!*.md'
-      - '!Dockerfile'
+      - '*.go'
+      - '*/*.go'
+      - '*/*/*.go'
+      - '*/*/*/*.go'
+      - 'go.mod'
+      - 'go.sum'
+      - 'revive.toml'
+      - '.github/workflows/lint-test.yaml'
 
 jobs:
 
