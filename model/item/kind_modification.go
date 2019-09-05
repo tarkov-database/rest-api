@@ -150,6 +150,10 @@ type PistolGrip struct {
 // Receiver describes the entity of an receiver item
 type Receiver struct {
 	Modification `bson:",inline"`
+
+	Accuracy float64 `json:"accuracy" bson:"accuracy"`
+	Velocity float64 `json:"velocity" bson:"velocity"`
+	Recoil   float64 `json:"recoil" bson:"recoil"`
 }
 
 // Sight describes the entity of an sight item
