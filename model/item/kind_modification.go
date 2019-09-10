@@ -176,6 +176,7 @@ type SightSpecial struct {
 type Stock struct {
 	Modification `bson:",inline"`
 
+	Accuracy         float64 `json:"accuracy" bson:"accuracy"`
 	Recoil           float64 `json:"recoil" bson:"recoil"`
 	FoldRectractable bool    `json:"foldRectractable" bson:"foldRectractable"`
 }
