@@ -31,7 +31,7 @@ func getOneByFilter(filter interface{}, k Kind) (Entity, error) {
 		return e, err
 	}
 
-	if err := c.FindOne(ctx, filter).Decode(e); err != nil {
+	if err = c.FindOne(ctx, filter).Decode(e); err != nil {
 		if err != mongo.ErrNoDocuments {
 			logger.Error(err)
 		}

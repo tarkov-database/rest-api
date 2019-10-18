@@ -40,6 +40,7 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		}
 	default:
 		var skipKinds bool
+
 		if skip := r.URL.Query().Get("skipKinds"); len(skip) > 0 {
 			if skip == "1" {
 				skipKinds = true

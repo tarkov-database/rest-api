@@ -169,12 +169,14 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 	if !ok {
 		return claims, errors.New("claims parsing error")
 	}
+
 	if err := claims.Valid(); err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok && ve.Errors&(jwt.ValidationErrorExpired) != 0 {
 			return claims, ErrExpiredToken
 		}
 		return claims, err
 	}
+
 	if !claims.VerifyAudience(audience, true) {
 		return claims, ErrInvalidAudience
 	}

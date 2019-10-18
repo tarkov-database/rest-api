@@ -46,8 +46,7 @@ func (u *User) Validate() error {
 const Collection = "users"
 
 func getOneByFilter(filter interface{}) (*User, error) {
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -192,8 +191,7 @@ func Replace(id string, user *User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	err = c.FindOneAndReplace(ctx, bson.M{"_id": objID}, user, opts).Decode(user)
-	if err != nil {
+	if err = c.FindOneAndReplace(ctx, bson.M{"_id": objID}, user, opts).Decode(user); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
@@ -208,14 +206,12 @@ func Remove(id string) error {
 		return err
 	}
 
-	db := database.GetDB()
-	c := db.Collection(Collection)
+	c := database.GetDB().Collection(Collection)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	_, err = c.DeleteOne(ctx, bson.M{"_id": objID})
-	if err != nil {
+	if _, err = c.DeleteOne(ctx, bson.M{"_id": objID}); err != nil {
 		logger.Error(err)
 		return model.MongoToAPIError(err)
 	}
