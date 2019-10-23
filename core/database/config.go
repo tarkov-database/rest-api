@@ -59,7 +59,9 @@ func newConfig() (*config, error) {
 		} else {
 			return c, errors.New("invalid boolean in environment variable")
 		}
+	}
 
+	if c.TLS {
 		if env := os.Getenv("MONGO_CERT"); len(env) > 0 {
 			c.Certificate = env
 

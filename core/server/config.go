@@ -43,7 +43,9 @@ func newConfig() (*config, error) {
 		} else {
 			return c, errors.New("invalid boolean in environment variable")
 		}
+	}
 
+	if c.TLS {
 		if env := os.Getenv("SERVER_CERT"); len(env) > 0 {
 			c.Certificate = env
 		} else {
