@@ -26,6 +26,6 @@ type Ammunition struct {
 // AmmoFrag represents the fragmentation data of Ammunition
 type AmmoFrag struct {
 	Chance float64 `json:"chance" bson:"chance"`
-	Min    float64 `json:"min" bson:"min"`
-	Max    float64 `json:"max" bson:"max"`
+	Min    int64 `json:"min" bson:"min"`
+	Max    int64 `json:"max" bson:"max"`
 }
