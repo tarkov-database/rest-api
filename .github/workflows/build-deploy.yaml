@@ -17,12 +17,16 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Build image
+        env:
+          IMAGE_NAME: rest-api
         run: |
           export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\/v//g")
-          docker build -t docker.pkg.github.com/tarkov-database/rest-api/rest-api:${IMAGE_TAG} .
+          docker build -t docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG} .
 
       - name: Publish image
-        run: docker push docker.pkg.github.com/tarkov-database/rest-api/rest-api
+        env:
+          IMAGE_NAME: rest-api
+        run: docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}
 
       - name: Logout
         run: docker logout docker.pkg.github.com
@@ -44,7 +48,15 @@ jobs:
       - name: Deploy image
         env:
           DEPLOYMENT: rest-api
+          CONTAINER: rest-api
+          IMAGE_NAME: rest-api
         run: |
           export IMAGE_TAG=$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\/v//g")
-          kubectl set image deployment/${DEPLOYMENT} rest-api=docker.pkg.github.com/tarkov-database/rest-api/rest-api:${IMAGE_TAG}
-          kubectl rollout status deployment/${DEPLOYMENT} -w --timeout=3m || kubectl rollout undo deployment/${DEPLOYMENT}
+          kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}
+          kubectl rollout status deployment/${DEPLOYMENT} -w --timeout=3m
+
+      - name: Roll back
+        if: failure()
+        env:
+          DEPLOYMENT: rest-api
+        run: kubectl rollout undo deployment/${DEPLOYMENT}
