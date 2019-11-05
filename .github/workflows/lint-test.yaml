@@ -2,10 +2,7 @@ name: Lint & Test
 on:
   push:
     paths:
-      - '*.go'
-      - '*/*.go'
-      - '*/*/*.go'
-      - '*/*/*/*.go'
+      - '**.go'
       - 'go.mod'
       - 'go.sum'
       - 'revive.toml'
@@ -18,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: '1.13'
+
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
 
@@ -27,6 +29,9 @@ jobs:
         config: revive.toml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check formatting
+      run: test -z $(gofmt -l .) || (gofmt -l . && exit 1)
 
   test:
     name: Test
@@ -41,8 +46,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
-      id: go
+        go-version: '1.13'
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
