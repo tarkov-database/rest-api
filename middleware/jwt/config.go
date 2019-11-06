@@ -1,6 +1,8 @@
 package jwt
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -12,7 +14,13 @@ import (
 var cfg *config
 
 func init() {
-	cfg = newConfig()
+	var err error
+
+	cfg, err = newConfig()
+	if err != nil {
+		log.Printf("Configuration error: %s\n", err)
+		os.Exit(2)
+	}
 }
 
 type config struct {
@@ -21,7 +29,7 @@ type config struct {
 	ExpirationTime time.Duration
 }
 
-func newConfig() *config {
+func newConfig() (*config, error) {
 	c := &config{}
 
 	if env := os.Getenv("JWT_KEY"); len(env) > 0 {
@@ -35,22 +43,22 @@ func newConfig() *config {
 			c.Algorithm = jwt.NewHS256([]byte(env))
 		}
 	} else {
-		log.Fatal("JWT key is not set or too short")
+		return c, errors.New("jwt key is not set")
 	}
 
 	if env := os.Getenv("JWT_AUDIENCE"); len(env) >= 3 {
 		c.Audience = strings.Split(env, ",")
 	} else {
-		log.Fatal("JWT audience is not set or too short")
+		return c, errors.New("jwt audience is not set or too short")
 	}
 
 	if env := os.Getenv("JWT_EXPIRATION"); len(env) > 0 {
 		d, err := time.ParseDuration(env)
 		if err != nil {
-			log.Fatalf("JWT expiration value is not valid: %s", err)
+			return c, fmt.Errorf("jwt expiration value is not valid: %s", err)
 		}
 		c.ExpirationTime = d
 	}
 
-	return c
+	return c, nil
 }

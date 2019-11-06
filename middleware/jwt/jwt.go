@@ -29,6 +29,14 @@ var (
 	ErrExpiredToken = errors.New("token is expired")
 )
 
+var (
+	// ErrNoAuthHeader indicates that the authorization is not set
+	ErrNoAuthHeader = errors.New("authorization header not set")
+
+	// ErrInvalidAuthHeader indicates that the authorization is invalid
+	ErrInvalidAuthHeader = errors.New("invalid authorization header")
+)
+
 const (
 	// ScopeAllRead represents the global read permission scope
 	ScopeAllRead = "read:all"
@@ -116,15 +124,15 @@ func CreateToken(c *Claims) (string, error) {
 func GetToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
 	if len(header) == 0 {
-		return "", errors.New("authorization header not set")
+		return "", ErrNoAuthHeader
 	}
 
-	headerString := strings.TrimSpace(header)
+	headerStr := strings.TrimSpace(header)
 	if !strings.HasPrefix(header, "Bearer") {
-		return "", errors.New("invalid authorization header")
+		return "", ErrInvalidAuthHeader
 	}
 
-	return strings.TrimSpace(strings.TrimPrefix(headerString, "Bearer")), nil
+	return strings.TrimSpace(strings.TrimPrefix(headerStr, "Bearer")), nil
 }
 
 // VerifyToken verifies a token
@@ -163,7 +171,7 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 
 		claims, err := VerifyToken(token)
 		if err != nil {
-			if err != ErrExpiredToken {
+			if !errors.Is(err, ErrExpiredToken) {
 				logger.Error(err)
 			}
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
