@@ -3,17 +3,14 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/view"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"
 )
@@ -78,45 +75,14 @@ func isScopeValid(s string) bool {
 	return valid
 }
 
-var (
-	key      []byte
-	audience string
-	expTime  int64 = 30 * 60
-)
-
-func init() {
-	if env := os.Getenv("JWT_KEY"); len(env) >= 8 {
-		key = []byte(env)
-	} else {
-		log.Fatal("JWT key is not set or too short")
-	}
-
-	if env := os.Getenv("JWT_AUDIENCE"); len(env) >= 3 {
-		audience = env
-	} else {
-		log.Fatal("JWT audience is not set or too short")
-	}
-
-	if env := os.Getenv("JWT_EXPIRATION"); len(env) > 0 {
-		if s, err := strconv.ParseInt(env, 10, 64); err == nil {
-			expTime = s * 60
-		} else {
-			log.Fatal("JWT expiration value is not an valid integer")
-		}
-	}
-}
-
 // Claims represents the claims of a token
 type Claims struct {
-	jwt.StandardClaims
+	jwt.Payload
 	Scope []string `json:"scope"`
 }
 
 // ValidateCustom validates the custom claims of a token
 func (c *Claims) ValidateCustom() error {
-	if len(c.Subject) < 24 {
-		return ErrInvalidSubject
-	}
 	if len(c.Scope) == 0 {
 		return ErrInvalidScope
 	}
@@ -132,12 +98,18 @@ func (c *Claims) ValidateCustom() error {
 
 // CreateToken creates a new token
 func CreateToken(c *Claims) (string, error) {
-	c.Audience = audience
-	c.IssuedAt = time.Now().Unix()
-	c.ExpiresAt = time.Now().Unix() + expTime
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	now := time.Now()
 
-	return token.SignedString(key)
+	c.Audience = cfg.Audience
+	c.IssuedAt = jwt.NumericDate(now)
+	c.ExpirationTime = jwt.NumericDate(now.Add(cfg.ExpirationTime))
+
+	t, err := jwt.Sign(c, cfg.Algorithm)
+	if err != nil {
+		return "", err
+	}
+
+	return string(t), nil
 }
 
 // GetToken gets the token of an HTTP request
@@ -157,28 +129,24 @@ func GetToken(r *http.Request) (string, error) {
 
 // VerifyToken verifies a token
 func VerifyToken(tokenStr string) (*Claims, error) {
-	parser := jwt.Parser{SkipClaimsValidation: true}
-	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(_ *jwt.Token) (interface{}, error) {
-		return key, nil
-	})
-	if err != nil {
-		return &Claims{}, err
-	}
+	claims := &Claims{}
 
-	claims, ok := token.Claims.(*Claims)
-	if !ok {
-		return claims, errors.New("claims parsing error")
-	}
+	now := time.Now()
 
-	if err := claims.Valid(); err != nil {
-		if ve, ok := err.(*jwt.ValidationError); ok && ve.Errors&(jwt.ValidationErrorExpired) != 0 {
+	expVal := jwt.ExpirationTimeValidator(now)
+	audVal := jwt.AudienceValidator(cfg.Audience)
+
+	valPayload := jwt.ValidatePayload(&claims.Payload, expVal, audVal)
+
+	if _, err := jwt.Verify([]byte(tokenStr), cfg.Algorithm, claims, valPayload); err != nil {
+		switch err {
+		case jwt.ErrExpValidation:
 			return claims, ErrExpiredToken
+		case jwt.ErrAudValidation:
+			return claims, ErrInvalidAudience
+		default:
+			return claims, err
 		}
-		return claims, err
-	}
-
-	if !claims.VerifyAudience(audience, true) {
-		return claims, ErrInvalidAudience
 	}
 
 	return claims, nil
