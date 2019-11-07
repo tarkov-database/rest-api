@@ -62,21 +62,21 @@ jobs:
         JWT_AUDIENCE: testing-workflow
       run: go test -v ./...
 
-    security:
-      name: Security Check
-      runs-on: ubuntu-latest
-      steps:
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
 
-      - name: Set up Go
-        uses: actions/setup-go@v1
-        with:
-          go-version: '1.13'
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: '1.13'
 
-      - name: Install Gosec
-        run: go get github.com/securego/gosec/cmd/gosec
+    - name: Install Gosec
+      run: go get github.com/securego/gosec/cmd/gosec
 
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v1
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
 
-      - name: Run Gosec
-        run: gosec ./...
+    - name: Run Gosec
+      run: gosec ./...
