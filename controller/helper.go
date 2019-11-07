@@ -71,8 +71,6 @@ func isSupportedMediaType(r *http.Request) bool {
 }
 
 func parseJSONBody(body io.ReadCloser, target interface{}) error {
-	err := json.NewDecoder(body).Decode(target)
-	body.Close()
-
-	return err
+	defer body.Close()
+	return json.NewDecoder(body).Decode(target)
 }
