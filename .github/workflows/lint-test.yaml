@@ -79,4 +79,6 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Run Gosec
-      run: gosec ./...
+      run: |
+        export PATH=$PATH:$(go env GOPATH)/bin
+        gosec ./...
