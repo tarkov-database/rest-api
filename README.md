@@ -10,6 +10,4 @@ The API is used by Tarkov Database itself as well as third-party developers for 
 
 ---
 
-**This project is currently not final and still work in progress!**
-
-More information and a documentation will follow soon.
+A documentation will follow soon!
