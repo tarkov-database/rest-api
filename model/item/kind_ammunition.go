@@ -20,7 +20,8 @@ type Ammunition struct {
 	Penetration         float64        `json:"penetration" bson:"penetration"`
 	ArmorDamage         float64        `json:"armorDamage" bson:"armorDamage"`
 	Fragmentation       AmmoFrag       `json:"fragmentation" bson:"fragmentation"`
-	Pellets             int64          `json:"pellets,omitempty" bson:"pellets,omitempty"`
+	Projectiles         int64          `json:"projectiles" bson:"projectiles"`
+	Pellets             int64          `json:"pellets,omitempty" bson:"pellets,omitempty"` // deprecated
 	WeaponModifier      WeaponModifier `json:"weaponModifier" bson:"weaponModifier"`
 }
 
