@@ -58,6 +58,8 @@ type Modification struct {
 	Item `bson:",inline"`
 
 	Ergonomics    int64        `json:"ergonomics" bson:"ergonomics"`
+	Accuracy      float64      `json:"accuracy" bson:"accuracy"`
+	Recoil        float64      `json:"recoil" bson:"recoil"`
 	RaidModdable  int64        `json:"raidModdable" bson:"raidModdable"`
 	GridModifier  GridModifier `json:"gridModifier" bson:"gridModifier"`
 	Slots         Slots        `json:"slots" bson:"slots"`
@@ -72,17 +74,13 @@ type Barrel struct {
 	Modification `bson:",inline"`
 
 	Length     float64 `json:"length" bson:"length"`
-	Accuracy   float64 `json:"accuracy" bson:"accuracy"`
 	Velocity   float64 `json:"velocity" bson:"velocity"`
-	Recoil     float64 `json:"recoil" bson:"recoil"`
 	Suppressor bool    `json:"suppressor" bson:"suppressor"`
 }
 
 // Bipod describes the entity of an bipod item
 type Bipod struct {
 	Modification `bson:",inline"`
-
-	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Charge describes the entity of an charging handle item
@@ -101,8 +99,6 @@ type Device struct {
 // Foregrip describes the entity of an foregrip item
 type Foregrip struct {
 	Modification `bson:",inline"`
-
-	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // GasBlock describes the entity of an gas block item
@@ -113,16 +109,13 @@ type GasBlock struct {
 // Handguard describes the entity of an handguard item
 type Handguard struct {
 	Modification `bson:",inline"`
-
-	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Launcher describes the entity of an launcher item
 type Launcher struct {
 	Modification `bson:",inline"`
 
-	Recoil  float64 `json:"recoil" bson:"recoil"`
-	Caliber string  `json:"caliber" bson:"caliber"`
+	Caliber string `json:"caliber" bson:"caliber"`
 }
 
 // Mount describes the entity of an mount item
@@ -135,25 +128,19 @@ type Muzzle struct {
 	Modification `bson:",inline"`
 
 	Type     string  `json:"type" bson:"type"`
-	Accuracy float64 `json:"accuracy" bson:"accuracy"`
 	Velocity float64 `json:"velocity" bson:"velocity"`
-	Recoil   float64 `json:"recoil" bson:"recoil"`
 }
 
 // PistolGrip describes the entity of an pistol grip item
 type PistolGrip struct {
 	Modification `bson:",inline"`
-
-	Recoil float64 `json:"recoil" bson:"recoil"`
 }
 
 // Receiver describes the entity of an receiver item
 type Receiver struct {
 	Modification `bson:",inline"`
 
-	Accuracy float64 `json:"accuracy" bson:"accuracy"`
 	Velocity float64 `json:"velocity" bson:"velocity"`
-	Recoil   float64 `json:"recoil" bson:"recoil"`
 }
 
 // Sight describes the entity of an sight item
@@ -176,9 +163,7 @@ type SightSpecial struct {
 type Stock struct {
 	Modification `bson:",inline"`
 
-	Accuracy         float64 `json:"accuracy" bson:"accuracy"`
-	Recoil           float64 `json:"recoil" bson:"recoil"`
-	FoldRectractable bool    `json:"foldRectractable" bson:"foldRectractable"`
+	FoldRectractable bool `json:"foldRectractable" bson:"foldRectractable"`
 }
 
 // Gear modifications //
