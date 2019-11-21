@@ -58,6 +58,8 @@ func newConfig() (*config, error) {
 			return c, fmt.Errorf("jwt expiration value is not valid: %s", err)
 		}
 		c.ExpirationTime = d
+	} else {
+		c.ExpirationTime = 30 * time.Minute
 	}
 
 	return c, nil
