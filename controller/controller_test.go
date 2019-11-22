@@ -11,6 +11,7 @@ import (
 	"github.com/tarkov-database/rest-api/core/database"
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/item"
+	"github.com/tarkov-database/rest-api/model/location"
 	"github.com/tarkov-database/rest-api/model/user"
 
 	"github.com/google/logger"
@@ -21,8 +22,9 @@ import (
 const contentTypeJSON = "application/json"
 
 var (
-	itemIDs []primitive.ObjectID
-	userIDs []primitive.ObjectID
+	itemIDs     []primitive.ObjectID
+	userIDs     []primitive.ObjectID
+	locationIDs []primitive.ObjectID
 )
 
 func init() {
@@ -35,11 +37,13 @@ func mongoStartup() {
 	}
 
 	createItems()
+	createLocations()
 	createUsers()
 }
 
 func mongoCleanup() {
 	removeItems()
+	removeLocations()
 	removeUsers()
 
 	if err := database.Shutdown(); err != nil {
@@ -63,6 +67,24 @@ func removeItemID(id primitive.ObjectID) {
 	}
 
 	itemIDs = new
+}
+
+func createLocationID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	locationIDs = append(locationIDs, id)
+
+	return id
+}
+
+func removeLocationID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(locationIDs)-1)
+	for _, k := range locationIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	locationIDs = new
 }
 
 func createUserID() primitive.ObjectID {
@@ -114,6 +136,39 @@ func removeItems() {
 	defer cancel()
 
 	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": itemIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createLocations() {
+	c := database.GetDB().Collection(location.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	locationA := location.Location{
+		ID:       createLocationID(),
+		Name:     "location a",
+		Modified: model.Timestamp{time.Now()},
+	}
+	locationB := location.Location{
+		ID:       createLocationID(),
+		Name:     "location b",
+		Modified: model.Timestamp{time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{locationA, locationB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeLocations() {
+	c := database.GetDB().Collection(location.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": locationIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
 	}
 }
