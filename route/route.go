@@ -32,7 +32,7 @@ func routes() *httprouter.Router {
 	r.DELETE(prefix+"/item/:id", auth(jwt.ScopeItemWrite, cntrl.ItemDELETE))
 
 	// Location
-	r.GET(prefix+"/location", auth(jwt.ScopeUserRead, cntrl.LocationsGET))
+	r.GET(prefix+"/location", auth(jwt.ScopeLocationRead, cntrl.LocationsGET))
 	r.GET(prefix+"/location/:id", auth(jwt.ScopeLocationRead, cntrl.LocationGET))
 	r.POST(prefix+"/location", auth(jwt.ScopeLocationWrite, cntrl.LocationPOST))
 	r.PUT(prefix+"/location/:id", auth(jwt.ScopeLocationWrite, cntrl.LocationPUT))
