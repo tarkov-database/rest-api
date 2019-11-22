@@ -50,6 +50,12 @@ const (
 	// ScopeItemWrite represents the item write permission scope
 	ScopeItemWrite = "write:item"
 
+	// ScopeLocationRead represents the location read permission scope
+	ScopeLocationRead = "read:location"
+
+	// ScopeLocationWrite represents the location write permission scope
+	ScopeLocationWrite = "write:location"
+
 	// ScopeUserRead represents the user read permission scope
 	ScopeUserRead = "read:user"
 
