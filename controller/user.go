@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/user"
 	"github.com/tarkov-database/rest-api/view"
 
@@ -28,7 +29,7 @@ func UserGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 
 // UsersGET handles a GET request on the user root endpoint
 func UsersGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var usr interface{}
+	var result *model.Result
 	var err error
 
 	opts := &user.Options{Sort: getSort("-_modified", r)}
@@ -45,7 +46,7 @@ Loop:
 				return
 			}
 
-			usr, err = user.GetByLockedState(locked, opts)
+			result, err = user.GetByLockedState(locked, opts)
 			if err != nil {
 				handleError(err, w)
 				return
@@ -53,7 +54,7 @@ Loop:
 
 			break Loop
 		case "email":
-			usr, err = user.GetByEmail(v[0], opts)
+			result, err = user.GetByEmail(v[0], opts)
 			if err != nil {
 				handleError(err, w)
 				return
@@ -63,15 +64,15 @@ Loop:
 		}
 	}
 
-	if usr == nil {
-		usr, err = user.GetAll(opts)
+	if result == nil {
+		result, err = user.GetAll(opts)
 		if err != nil {
 			handleError(err, w)
 			return
 		}
 	}
 
-	view.RenderJSON(usr, http.StatusOK, w)
+	view.RenderJSON(result, http.StatusOK, w)
 }
 
 // UserPOST handles a POST request on the user root endpoint
