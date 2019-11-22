@@ -1,15 +1,17 @@
 package location
 
 import (
-  "context"
-	// "errors"
-	// "strings"
+	"context"
+	"errors"
+	"fmt"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/tarkov-database/rest-api/core/database"
 	"github.com/tarkov-database/rest-api/model"
 
-  "github.com/google/logger"
+	"github.com/google/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,11 +37,23 @@ type Location struct {
 	Modified       timestamp `json:"_modified" bson:"_modified"`
 }
 
-// // Validate validates the fields of a location
-// func (l *Location) Validate() error {
-//
-// 	return nil
-// }
+// Validate validates the fields of a location
+func (l *Location) Validate() error {
+	if len(l.Name) < 3 {
+		return errors.New("name is too short or not set")
+	}
+	if len(l.Description) < 8 {
+		return errors.New("description is too short or not set")
+	}
+	if l.MinimumPlayers < 1 {
+		return errors.New("minimum player count is too low")
+	}
+	if l.MaximumPlayers < 2 {
+		return errors.New("maximum player count is too low")
+	}
+
+	return nil
+}
 
 // Exit describes an exit of a location
 type Exit struct {
@@ -154,6 +168,77 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 // GetAll returns a result based on filters
 func GetAll(opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.D{}, opts)
+}
+
+// GetByAvailability returns a result based on availability
+func GetByAvailability(a bool, opts *Options) (*model.Result, error) {
+	return getManyByFilter(bson.M{"available": a}, opts)
+}
+
+// GetByText returns a result based on given keyword
+func GetByText(q string, opts *Options) (*model.Result, error) {
+	c := database.GetDB().Collection(Collection)
+
+	findOpts := options.Find()
+	findOpts.SetLimit(opts.Limit)
+	findOpts.SetSort(opts.Sort)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	r := &model.Result{}
+
+	q = regexp.QuoteMeta(q)
+	re := strings.Join(strings.Split(q, " "), ".")
+
+	var filter interface{}
+
+	filter = bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}}
+
+	count, err := c.CountDocuments(ctx, filter)
+	if err != nil {
+		logger.Error(err)
+		return r, model.MongoToAPIError(err)
+	}
+
+	re = strings.Join(strings.Split(q, " "), "|")
+
+	if count == 0 {
+		filter = bson.D{
+			{"$and", bson.A{
+				bson.M{"$text": bson.M{"$search": q}},
+				bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
+			}},
+		}
+	}
+
+	cur, err := c.Find(ctx, filter, findOpts)
+	if err != nil {
+		logger.Error(err)
+		return r, model.MongoToAPIError(err)
+	}
+
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		loc := &Location{}
+
+		if err := cur.Decode(loc); err != nil {
+			logger.Error(err)
+			return r, model.MongoToAPIError(err)
+		}
+
+		r.Items = append(r.Items, loc)
+	}
+
+	if err := cur.Err(); err != nil {
+		logger.Error(err)
+		return r, model.MongoToAPIError(err)
+	}
+
+	r.Count = int64(len(r.Items))
+
+	return r, nil
 }
 
 // Create creates a new entity

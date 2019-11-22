@@ -31,6 +31,13 @@ func routes() *httprouter.Router {
 	r.PUT(prefix+"/item/:kind/:id", auth(jwt.ScopeItemWrite, cntrl.ItemPUT))
 	r.DELETE(prefix+"/item/:id", auth(jwt.ScopeItemWrite, cntrl.ItemDELETE))
 
+	// Location
+	r.GET(prefix+"/location", auth(jwt.ScopeUserRead, cntrl.LocationsGET))
+	r.GET(prefix+"/location/:id", auth(jwt.ScopeLocationRead, cntrl.LocationGET))
+	r.POST(prefix+"/location", auth(jwt.ScopeLocationWrite, cntrl.LocationPOST))
+	r.PUT(prefix+"/location/:id", auth(jwt.ScopeLocationWrite, cntrl.LocationPUT))
+	r.DELETE(prefix+"/location/:id", auth(jwt.ScopeLocationWrite, cntrl.LocationDELETE))
+
 	// User
 	r.GET(prefix+"/user", auth(jwt.ScopeUserRead, cntrl.UsersGET))
 	r.GET(prefix+"/user/:id", auth(jwt.ScopeUserRead, cntrl.UserGET))
