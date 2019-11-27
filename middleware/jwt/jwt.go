@@ -78,6 +78,10 @@ func isScopeValid(s string) bool {
 		valid = true
 	case ScopeItemWrite:
 		valid = true
+	case ScopeLocationRead:
+		valid = true
+	case ScopeLocationWrite:
+		valid = true
 	case ScopeUserRead:
 		valid = true
 	case ScopeUserWrite:
