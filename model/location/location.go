@@ -63,7 +63,7 @@ type Exit struct {
 	MinimumTime      int64   `json:"minTime" bson:"minTime"`
 	MaximumTime      int64   `json:"maxTime" bson:"maxTime"`
 	ExfiltrationTime int64   `json:"exfilTime" bson:"exfilTime"`
-	Requirement      string  `json:"requirement" bson:"requirement"`
+	Requirement      string  `json:"requirement,omitempty" bson:"requirement,omitempty"`
 }
 
 // Boss describes a boss of a location

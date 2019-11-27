@@ -51,8 +51,7 @@ func (k *Kind) MarshalJSON() ([]byte, error) {
 func (k *Kind) UnmarshalJSON(b []byte) error {
 	var kind string
 
-	err := json.Unmarshal(b, &kind)
-	if err != nil {
+	if err := json.Unmarshal(b, &kind); err != nil {
 		return err
 	}
 
