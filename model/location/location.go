@@ -75,7 +75,7 @@ type Boss struct {
 }
 
 // Collection indicates the MongoDB location collection
-const Collection = "location"
+const Collection = "locations"
 
 func getOneByFilter(filter interface{}) (*Location, error) {
 	c := database.GetDB().Collection(Collection)
