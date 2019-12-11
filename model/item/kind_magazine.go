@@ -9,13 +9,13 @@ const (
 type Magazine struct {
 	Item `bson:",inline"`
 
-	Capacity      int64            `json:"capacity" bson:"capacity"`
-	Caliber       string           `json:"caliber" bson:"caliber"`
-	Ergonomics    float64          `json:"ergonomicsFP" bson:"ergonomicsFP"`
-	ErgonomicsOld int64            `json:"ergonomics" bson:"ergonomics"` // Deprecated
-	Modifier      MagazineModifier `json:"modifier" bson:"modifier"`
-	GridModifier  GridModifier     `json:"gridModifier" bson:"gridModifier"`
-	Compatibility List             `json:"compatibility" bson:"compatibility"`
+	Capacity        int64            `json:"capacity" bson:"capacity"`
+	Caliber         string           `json:"caliber" bson:"caliber"`
+	ErgonomicsFloat float64          `json:"ergonomicsFP" bson:"ergonomicsFP"`
+	Ergonomics      int64            `json:"ergonomics" bson:"ergonomics"` // Deprecated
+	Modifier        MagazineModifier `json:"modifier" bson:"modifier"`
+	GridModifier    GridModifier     `json:"gridModifier" bson:"gridModifier"`
+	Compatibility   List             `json:"compatibility" bson:"compatibility"`
 }
 
 // MagazineModifier describes the properties of Modifier in Magazine
