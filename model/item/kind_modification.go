@@ -57,14 +57,15 @@ const (
 type Modification struct {
 	Item `bson:",inline"`
 
-	Ergonomics    int64        `json:"ergonomics" bson:"ergonomics"`
-	Accuracy      float64      `json:"accuracy" bson:"accuracy"`
-	Recoil        float64      `json:"recoil" bson:"recoil"`
-	RaidModdable  int64        `json:"raidModdable" bson:"raidModdable"`
-	GridModifier  GridModifier `json:"gridModifier" bson:"gridModifier"`
-	Slots         Slots        `json:"slots" bson:"slots"`
-	Compatibility List         `json:"compatibility" bson:"compatibility"`
-	Conflicts     List         `json:"conflicts" bson:"conflicts"`
+	ErgonomicsFloat float64      `json:"ergonomicsFP" bson:"ergonomicsFP"`
+	Ergonomics      int64        `json:"ergonomics" bson:"ergonomics"` // Deprecated
+	Accuracy        float64      `json:"accuracy" bson:"accuracy"`
+	Recoil          float64      `json:"recoil" bson:"recoil"`
+	RaidModdable    int64        `json:"raidModdable" bson:"raidModdable"`
+	GridModifier    GridModifier `json:"gridModifier" bson:"gridModifier"`
+	Slots           Slots        `json:"slots" bson:"slots"`
+	Compatibility   List         `json:"compatibility" bson:"compatibility"`
+	Conflicts       List         `json:"conflicts" bson:"conflicts"`
 }
 
 // Weapon modifications //
