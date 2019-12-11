@@ -11,7 +11,8 @@ type Magazine struct {
 
 	Capacity      int64            `json:"capacity" bson:"capacity"`
 	Caliber       string           `json:"caliber" bson:"caliber"`
-	Ergonomics    int64            `json:"ergonomics" bson:"ergonomics"`
+	Ergonomics    float64          `json:"ergonomicsFP" bson:"ergonomicsFP"`
+	ErgonomicsOld int64            `json:"ergonomics" bson:"ergonomics"` // Deprecated
 	Modifier      MagazineModifier `json:"modifier" bson:"modifier"`
 	GridModifier  GridModifier     `json:"gridModifier" bson:"gridModifier"`
 	Compatibility List             `json:"compatibility" bson:"compatibility"`
