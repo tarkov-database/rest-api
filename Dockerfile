@@ -1,4 +1,4 @@
-FROM golang:1.13.7
+FROM golang:1.13.8
 
 LABEL homepage="https://tarkov-database.com"
 LABEL repository="https://github.com/tarkov-database/rest-api"
