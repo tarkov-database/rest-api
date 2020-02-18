@@ -38,6 +38,20 @@ func routes() *httprouter.Router {
 	r.PUT(prefix+"/location/:id", auth(jwt.ScopeLocationWrite, cntrl.LocationPUT))
 	r.DELETE(prefix+"/location/:id", auth(jwt.ScopeLocationWrite, cntrl.LocationDELETE))
 
+	// Location feature
+	r.GET(prefix+"/location/:id/feature", auth(jwt.ScopeLocationRead, cntrl.FeaturesGET))
+	r.GET(prefix+"/location/:id/feature/:fid", auth(jwt.ScopeLocationRead, cntrl.FeatureGET))
+	r.POST(prefix+"/location/:id/feature", auth(jwt.ScopeLocationWrite, cntrl.FeaturePOST))
+	r.PUT(prefix+"/location/:id/feature/:fid", auth(jwt.ScopeLocationWrite, cntrl.FeaturePUT))
+	r.DELETE(prefix+"/location/:id/feature/:fid", auth(jwt.ScopeLocationWrite, cntrl.FeatureDELETE))
+
+	// Location feature group
+	r.GET(prefix+"/location/:id/featuregroup", auth(jwt.ScopeLocationRead, cntrl.FeatureGroupsGET))
+	r.GET(prefix+"/location/:id/featuregroup/:gid", auth(jwt.ScopeLocationRead, cntrl.FeatureGroupGET))
+	r.POST(prefix+"/location/:id/featuregroup", auth(jwt.ScopeLocationWrite, cntrl.FeatureGroupPOST))
+	r.PUT(prefix+"/location/:id/featuregroup/:gid", auth(jwt.ScopeLocationWrite, cntrl.FeatureGroupPUT))
+	r.DELETE(prefix+"/location/:id/featuregroup/:gid", auth(jwt.ScopeLocationWrite, cntrl.FeatureGroupDELETE))
+
 	// User
 	r.GET(prefix+"/user", auth(jwt.ScopeUserRead, cntrl.UsersGET))
 	r.GET(prefix+"/user/:id", auth(jwt.ScopeUserRead, cntrl.UserGET))
