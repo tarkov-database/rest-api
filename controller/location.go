@@ -281,6 +281,16 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ft.Location = loc.ID
 	}
 
+	if _, err := featuregroup.GetByID(ft.Group.Hex(), lID); err != nil {
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Feature group doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
+		return
+	}
+
 	if err := feature.Create(ft); err != nil {
 		handleError(err, w)
 		return
@@ -337,6 +347,16 @@ func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if ft.Location.IsZero() {
 		ft.Location = loc.ID
+	}
+
+	if _, err := featuregroup.GetByID(ft.Group.Hex(), lID); err != nil {
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Feature group doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
+		return
 	}
 
 	if err := feature.Replace(fID, ft); err != nil {
