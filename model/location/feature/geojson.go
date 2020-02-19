@@ -3,32 +3,29 @@ package feature
 import (
 	"encoding/json"
 	"errors"
+
+	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 )
 
 var (
-	// ErrUnsupportedFeatureType ...
-	ErrUnsupportedFeatureType = errors.New("unsupported feature type")
-
-	// ErrBadFeatureSemantic ...
-	ErrBadFeatureSemantic = errors.New("bad geometry semantic")
-
-	// ErrBadGeometrySemantic ...
+	// ErrBadGeometrySemantic indicates that a GeoJSON geometry is semantically invalid
 	ErrBadGeometrySemantic = errors.New("bad geometry semantic")
 
-	// ErrUnknownGeometryType ...
+	// ErrUnknownGeometryType indicates that a GeoJSON geometry type is invalid
 	ErrUnknownGeometryType = errors.New("unknown geometry type")
 
-	// ErrBadGeometryCoords ...
+	// ErrBadGeometryCoords indicates that GeoJSON geometry coordinates are ivnalid
 	ErrBadGeometryCoords = errors.New("bad geometry coordinates")
 
-	// ErrEmtpyGeometryCollection ...
-	ErrEmtpyGeometryCollection = errors.New("empty geometry collection")
+	// ErrBadGeometryCollection indicates that a GeoJSON geometry collection are invalid
+	ErrBadGeometryCollection = errors.New("empty geometry collection")
 )
 
-// GeometryType ...
+// GeometryType represents an GeoJSON geometry type
 type GeometryType int
 
-// ...
+// Represents the GeoJSON geometry types
 const (
 	UnknownGeometry GeometryType = iota
 	Point
@@ -56,12 +53,12 @@ func (g GeometryType) String() string {
 	return geometryStrings[g]
 }
 
-// MarshalJSON ...
+// MarshalJSON implements the JSON marshaler
 func (g GeometryType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(g.String())
 }
 
-// UnmarshalJSON ...
+// UnmarshalJSON implements the JSON unmarshaler
 func (g *GeometryType) UnmarshalJSON(b []byte) error {
 	var t string
 
@@ -71,6 +68,33 @@ func (g *GeometryType) UnmarshalJSON(b []byte) error {
 
 	for i, k := range geometryStrings {
 		if k == t {
+			*g = GeometryType(i)
+			return nil
+		}
+	}
+
+	return ErrUnknownGeometryType
+}
+
+// MarshalBSONValue implements the BSON value marshaler
+func (g GeometryType) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	return bsontype.String, bsoncore.AppendString(nil, g.String()), nil
+}
+
+// UnmarshalBSONValue implements the BSON value unmarshaler
+func (g *GeometryType) UnmarshalBSONValue(t bsontype.Type, b []byte) error {
+	var s string
+
+	if t == bsontype.String {
+		if str, _, ok := bsoncore.ReadString(b); ok {
+			s = str
+		} else {
+			return bsoncore.InsufficientBytesError{}
+		}
+	}
+
+	for i, k := range geometryStrings {
+		if k == s {
 			*g = GeometryType(i)
 			return nil
 		}
@@ -109,14 +133,14 @@ func isCoords(a []interface{}) bool {
 	return true
 }
 
-// Geometry ...
+// Geometry describes a GeoJSON geometry object
 type Geometry struct {
 	Type        GeometryType `json:"type" bson:"type"`
 	Coordinates Coordinates  `json:"coordinates,omitempty" bson:"coordinates,omitempty"`
 	Geometries  []Geometry   `json:"geometries,omitempty" bson:"geometries,omitempty"`
 }
 
-// Validate ...
+// Validate validates a GeoJSON geometry object
 func (g Geometry) Validate() error {
 	var ok bool
 
@@ -135,7 +159,7 @@ func (g Geometry) Validate() error {
 		ok = isCoords(g.Coordinates)
 	case GeometryCollection:
 		if len(g.Geometries) == 0 {
-			return ErrEmtpyGeometryCollection
+			return ErrBadGeometryCollection
 		}
 	default:
 		return ErrUnknownGeometryType
