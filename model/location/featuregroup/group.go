@@ -22,7 +22,7 @@ type objectID = model.ObjectID
 
 type timestamp = model.Timestamp
 
-// Group ...
+// Group describes the entity of a feature group
 type Group struct {
 	ID          objectID  `json:"_id" bson:"_id"`
 	Name        string    `json:"name" bson:"name"`
@@ -32,7 +32,7 @@ type Group struct {
 	Modified    timestamp `json:"_modified" bson:"_modified"`
 }
 
-// Validate ...
+// Validate validates the fields of a feature group
 func (g Group) Validate() error {
 	if len(g.Name) < 3 {
 		return errors.New("name is too short or not set")
@@ -47,7 +47,7 @@ func (g Group) Validate() error {
 	return nil
 }
 
-// Collection ...
+// Collection indicates the MongoDB feature group collection
 const Collection = "featureGroups"
 
 func getOneByFilter(filter interface{}) (*Group, error) {

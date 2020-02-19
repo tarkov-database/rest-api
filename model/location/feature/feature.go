@@ -22,7 +22,7 @@ type objectID = model.ObjectID
 
 type timestamp = model.Timestamp
 
-// Feature ...
+// Feature describes the entity of a feature
 type Feature struct {
 	ID         objectID               `json:"_id" bson:"_id"`
 	Name       string                 `json:"name" bson:"name"`
@@ -33,7 +33,7 @@ type Feature struct {
 	Modified   timestamp              `json:"_modified" bson:"_modified"`
 }
 
-// Validate ...
+// Validate validates the fields of a feature
 func (f Feature) Validate() error {
 	if len(f.Name) < 3 {
 		return errors.New("name is too short or not set")
@@ -42,7 +42,7 @@ func (f Feature) Validate() error {
 	return f.Geometry.Validate()
 }
 
-// Collection ...
+// Collection indicates the MongoDB feature collection
 const Collection = "features"
 
 func getOneByFilter(filter interface{}) (*Feature, error) {
