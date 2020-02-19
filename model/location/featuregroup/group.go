@@ -27,6 +27,7 @@ type Group struct {
 	ID          objectID  `json:"_id" bson:"_id"`
 	Name        string    `json:"name" bson:"name"`
 	Description string    `json:"description" bson:"description"`
+	Tags        []string  `json:"tags" bson:"tags"`
 	Location    objectID  `json:"_location" bson:"_location"`
 	Modified    timestamp `json:"_modified" bson:"_modified"`
 }
@@ -38,6 +39,9 @@ func (g Group) Validate() error {
 	}
 	if len(g.Description) < 8 {
 		return errors.New("description is too short or not set")
+	}
+	if len(g.Tags) == 0 {
+		return errors.New("no tags specified")
 	}
 
 	return nil
