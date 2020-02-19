@@ -75,12 +75,12 @@ func GetByID(id, loc string) (*Group, error) {
 		return &Group{}, err
 	}
 
-	locID, err := model.ToObjectID(loc)
+	lID, err := model.ToObjectID(loc)
 	if err != nil {
 		return &Group{}, err
 	}
 
-	return getOneByFilter(bson.M{"_id": objID, "_location": locID})
+	return getOneByFilter(bson.M{"_id": objID, "_location": lID})
 }
 
 // Options represents the options for a database operation
@@ -145,12 +145,13 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 
 // GetAll returns a result based on filters
 func GetAll(loc string, opts *Options) (*model.Result, error) {
-	locID, err := model.ToObjectID(loc)
+	lID, err := model.ToObjectID(loc)
 	if err != nil {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.M{"_location": locID}, opts)
+	return getManyByFilter(bson.M{"_location": lID}, opts)
+}
 
 // GetByTags returns a result based on tag
 func GetByTags(tags []string, loc string, opts *Options) (*model.Result, error) {

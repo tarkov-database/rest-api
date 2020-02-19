@@ -79,31 +79,8 @@ func (g *GeometryType) UnmarshalJSON(b []byte) error {
 	return ErrUnknownGeometryType
 }
 
-type (
-	// Coordinates ...
-	Coordinates []interface{}
-
-	// LongLat ...
-	LongLat []interface{}
-
-	// CoordsPoint ...
-	CoordsPoint LongLat
-
-	// CoordsMultiPoint ...
-	CoordsMultiPoint []LongLat
-
-	// CoordsLineString ...
-	CoordsLineString []LongLat
-
-	// CoordsMultiLineString ...
-	CoordsMultiLineString [][]LongLat
-
-	// CoordsPolygon ...
-	CoordsPolygon [][]LongLat
-
-	// CoordsMultiPolygon ...
-	CoordsMultiPolygon [][][]LongLat
-)
+// Coordinates ...
+type Coordinates []interface{}
 
 func isLongLat(a []interface{}) bool {
 	if len(a) != 2 {

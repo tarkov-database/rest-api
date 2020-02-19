@@ -28,8 +28,8 @@ type Feature struct {
 	Name       string                 `json:"name" bson:"name"`
 	Geometry   Geometry               `json:"geometry" bson:"geometry"`
 	Properties map[string]interface{} `json:"properties" bson:"properties"`
-	Location   objectID               `json:"_location" bson:"_location"`
 	Group      objectID               `json:"group" bson:"group"`
+	Location   objectID               `json:"_location" bson:"_location"`
 	Modified   timestamp              `json:"_modified" bson:"_modified"`
 }
 
@@ -70,12 +70,12 @@ func GetByID(id, loc string) (*Feature, error) {
 		return &Feature{}, err
 	}
 
-	locID, err := model.ToObjectID(loc)
+	lID, err := model.ToObjectID(loc)
 	if err != nil {
 		return &Feature{}, err
 	}
 
-	return getOneByFilter(bson.M{"_id": objID, "_location": locID})
+	return getOneByFilter(bson.M{"_id": objID, "_location": lID})
 }
 
 // Options represents the options for a database operation
@@ -140,27 +140,27 @@ func getManyByFilter(filter interface{}, opts *Options) (*model.Result, error) {
 
 // GetAll returns a result based on filters
 func GetAll(loc string, opts *Options) (*model.Result, error) {
-	locID, err := model.ToObjectID(loc)
+	lID, err := model.ToObjectID(loc)
 	if err != nil {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.M{"_location": locID}, opts)
+	return getManyByFilter(bson.M{"_location": lID}, opts)
 }
 
-// GetByGroup returns a result based on location
+// GetByGroup returns a result based on feature group
 func GetByGroup(id, loc string, opts *Options) (*model.Result, error) {
 	objID, err := model.ToObjectID(id)
 	if err != nil {
 		return &model.Result{}, err
 	}
 
-	locID, err := model.ToObjectID(loc)
+	lID, err := model.ToObjectID(loc)
 	if err != nil {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.M{"group": objID, "_location": locID}, opts)
+	return getManyByFilter(bson.M{"group": objID, "_location": lID}, opts)
 }
 
 // GetByText returns a result based on given keyword
