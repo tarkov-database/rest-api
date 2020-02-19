@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/location"
@@ -196,18 +197,18 @@ Loop:
 	for p, v := range r.URL.Query() {
 		switch p {
 		case "text":
-			// txt, err := url.QueryUnescape(v[0])
-			// if err != nil {
-			// 	s := &Status{}
-			// 	s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
-			// 	return
-			// }
-			//
-			// result, err = feature.GetByText(txt, opts)
-			// if err != nil {
-			// 	handleError(err, w)
-			// 	return
-			// }
+			txt, err := url.QueryUnescape(v[0])
+			if err != nil {
+				s := &Status{}
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				return
+			}
+
+			result, err = feature.GetByText(txt, lID, opts)
+			if err != nil {
+				handleError(err, w)
+				return
+			}
 
 			break Loop
 		case "group":
@@ -381,29 +382,48 @@ func FeatureGroupsGET(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	opts := &featuregroup.Options{Sort: getSort("-_modified", r)}
 	opts.Limit, opts.Offset = getLimitOffset(r)
 
-	// Loop:
-	// 	for p, v := range r.URL.Query() {
-	// 		switch p {
-	// 		case "text":
-	// 			txt, err := url.QueryUnescape(v[0])
-	// 			if err != nil {
-	// 				s := &Status{}
-	// 				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
-	// 				return
-	// 			}
-	//
-	// 			result, err = featuregroup.GetByText(txt, opts)
-	// 			if err != nil {
-	// 				handleError(err, w)
-	// 				return
-	// 			}
-	//
-	// 			break Loop
-	// 		}
-	// 	}
+	lID := ps.ByName("id")
+
+Loop:
+	for p, v := range r.URL.Query() {
+		switch p {
+		case "text":
+			txt, err := url.QueryUnescape(v[0])
+			if err != nil {
+				s := &Status{}
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				return
+			}
+
+			result, err = featuregroup.GetByText(txt, lID, opts)
+			if err != nil {
+				handleError(err, w)
+				return
+			}
+
+			break Loop
+		case "tag":
+			q, err := url.QueryUnescape(v[0])
+			if err != nil {
+				s := &Status{}
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				return
+			}
+
+			tags := strings.Split(q, ",")
+
+			result, err = featuregroup.GetByTags(tags, lID, opts)
+			if err != nil {
+				handleError(err, w)
+				return
+			}
+
+			break Loop
+		}
+	}
 
 	if result == nil {
-		result, err = featuregroup.GetAll(ps.ByName("id"), opts)
+		result, err = featuregroup.GetAll(lID, opts)
 		if err != nil {
 			handleError(err, w)
 			return

@@ -151,11 +151,25 @@ func GetAll(loc string, opts *Options) (*model.Result, error) {
 	}
 
 	return getManyByFilter(bson.M{"_location": locID}, opts)
+
+// GetByTags returns a result based on tag
+func GetByTags(tags []string, loc string, opts *Options) (*model.Result, error) {
+	lID, err := model.ToObjectID(loc)
+	if err != nil {
+		return &model.Result{}, err
+	}
+
+	return getManyByFilter(bson.M{"tags": bson.M{"$all": tags}, "_location": lID}, opts)
 }
 
 // GetByText returns a result based on given keyword
-func GetByText(q string, opts *Options) (*model.Result, error) {
+func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 	c := database.GetDB().Collection(Collection)
+
+	lID, err := model.ToObjectID(loc)
+	if err != nil {
+		return &model.Result{}, err
+	}
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
@@ -169,9 +183,12 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 	q = regexp.QuoteMeta(q)
 	re := strings.Join(strings.Split(q, " "), ".")
 
-	var filter interface{}
+	var filter bson.D
 
-	filter = bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}}
+	filter = bson.D{
+		{"_location", lID},
+		{"name", primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+	}
 
 	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {
@@ -183,8 +200,10 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 
 	if count == 0 {
 		filter = bson.D{
+			{"_location", lID},
 			{"$and", bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
+				bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
 			}},
 		}
 	}
