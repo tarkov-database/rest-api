@@ -272,8 +272,12 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity("Location don't exist").Render(w)
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
 		return
 	}
 
@@ -340,8 +344,12 @@ func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity("Location don't exist").Render(w)
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
 		return
 	}
 
@@ -485,8 +493,12 @@ func FeatureGroupPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity("Location don't exist").Render(w)
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
 		return
 	}
 
@@ -543,8 +555,12 @@ func FeatureGroupPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity("Location don't exist").Render(w)
+		if errors.Is(err, model.ErrNoResult) {
+			s := &Status{}
+			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			return
+		}
+		handleError(err, w)
 		return
 	}
 
