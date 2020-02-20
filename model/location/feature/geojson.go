@@ -91,6 +91,8 @@ func (g *GeometryType) UnmarshalBSONValue(t bsontype.Type, b []byte) error {
 		} else {
 			return bsoncore.InsufficientBytesError{}
 		}
+	} else {
+		return errors.New("wrong bson type")
 	}
 
 	for i, k := range geometryStrings {
