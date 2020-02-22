@@ -12,6 +12,8 @@ import (
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/item"
 	"github.com/tarkov-database/rest-api/model/location"
+	"github.com/tarkov-database/rest-api/model/location/feature"
+	"github.com/tarkov-database/rest-api/model/location/featuregroup"
 	"github.com/tarkov-database/rest-api/model/user"
 
 	"github.com/google/logger"
@@ -22,9 +24,11 @@ import (
 const contentTypeJSON = "application/json"
 
 var (
-	itemIDs     []primitive.ObjectID
-	userIDs     []primitive.ObjectID
-	locationIDs []primitive.ObjectID
+	itemIDs         []primitive.ObjectID
+	userIDs         []primitive.ObjectID
+	locationIDs     []primitive.ObjectID
+	featureIDs      []primitive.ObjectID
+	featureGroupIDs []primitive.ObjectID
 )
 
 func init() {
@@ -36,14 +40,18 @@ func mongoStartup() {
 		log.Fatalf("Database startup error: %s", err)
 	}
 
+	createUsers()
 	createItems()
 	createLocations()
-	createUsers()
+	createFeatureGroups()
+	createFeatures()
 }
 
 func mongoCleanup() {
 	removeItems()
 	removeLocations()
+	removeFeatures()
+	removeFeatureGroups()
 	removeUsers()
 
 	if err := database.Shutdown(); err != nil {
@@ -85,6 +93,42 @@ func removeLocationID(id primitive.ObjectID) {
 	}
 
 	locationIDs = new
+}
+
+func createFeatureID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	featureIDs = append(featureIDs, id)
+
+	return id
+}
+
+func removeFeatureID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(featureIDs)-1)
+	for _, k := range featureIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	featureIDs = new
+}
+
+func createFeatureGroupID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	featureGroupIDs = append(featureGroupIDs, id)
+
+	return id
+}
+
+func removeFeatureGroupID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(featureGroupIDs)-1)
+	for _, k := range featureGroupIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	featureGroupIDs = new
 }
 
 func createUserID() primitive.ObjectID {
@@ -169,6 +213,100 @@ func removeLocations() {
 	defer cancel()
 
 	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": locationIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createFeatures() {
+	c := database.GetDB().Collection(feature.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	featureA := feature.Feature{
+		ID:    createFeatureID(),
+		Name:  "feature a",
+		Group: featureGroupIDs[0],
+		Geometry: feature.Geometry{
+			Type:        feature.Point,
+			Coordinates: createFeatureCoords(),
+		},
+		Location: locationIDs[0],
+		Modified: model.Timestamp{time.Now()},
+	}
+	featureB := feature.Feature{
+		ID:    createFeatureID(),
+		Name:  "feature b",
+		Group: featureGroupIDs[0],
+		Geometry: feature.Geometry{
+			Type:        feature.Point,
+			Coordinates: createFeatureCoords(),
+		},
+		Location: locationIDs[0],
+		Modified: model.Timestamp{time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{featureA, featureB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeFeatures() {
+	c := database.GetDB().Collection(feature.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": featureIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createFeatureCoords() feature.Coordinates {
+	c := []float64{0, 0}
+	fc := make(feature.Coordinates, len(c))
+	for i, v := range c {
+		fc[i] = v
+	}
+
+	return fc
+}
+
+func createFeatureGroups() {
+	c := database.GetDB().Collection(featuregroup.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	groupA := featuregroup.Group{
+		ID:          createFeatureGroupID(),
+		Name:        "group a",
+		Description: "description of a",
+		Tags:        []string{"test"},
+		Location:    locationIDs[0],
+		Modified:    model.Timestamp{time.Now()},
+	}
+	groupB := featuregroup.Group{
+		ID:          createFeatureGroupID(),
+		Name:        "group b",
+		Description: "description of b",
+		Tags:        []string{"test"},
+		Location:    locationIDs[0],
+		Modified:    model.Timestamp{time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{groupA, groupB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeFeatureGroups() {
+	c := database.GetDB().Collection(featuregroup.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": featureGroupIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
 	}
 }
