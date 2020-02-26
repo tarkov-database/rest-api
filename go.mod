@@ -1,6 +1,6 @@
 module github.com/tarkov-database/rest-api
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gbrlsnchs/jwt/v3 v3.0.0-rc.1
