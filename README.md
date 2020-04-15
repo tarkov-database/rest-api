@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Ftarkov-database%2Frest-api%2Fbadge&style=flat)](https://actions-badge.atrox.dev/tarkov-database/rest-api/goto)
+![Lint & Test](https://github.com/tarkov-database/rest-api/workflows/Lint%20&%20Test/badge.svg)
 [![Dependabot status](https://api.dependabot.com/badges/status?host=github&repo=tarkov-database/rest-api)](https://dependabot.com/)
 [![Lines of code](https://tokei.rs/b1/github/tarkov-database/rest-api)](https://github.com/XAMPPRocky/tokei)
 
