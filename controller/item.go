@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/tarkov-database/rest-api/model"
@@ -148,25 +147,27 @@ Loop:
 	}
 
 	if result == nil {
-		qs := make(map[string]interface{})
+		filter := make(map[string]interface{})
 
 		switch kind {
 		case item.KindArmor:
-			err = getQueryType(r.URL, qs)
-			err = getQueryArmorClass(r.URL, qs)
+			err = queryStrToFilter("type", r.URL, filter)
+			err = queryStrToFilter("armor.material.name", r.URL, filter)
+			err = queryIntToFilter("armor.class", r.URL, filter)
 		case item.KindFirearm:
-			err = getQueryType(r.URL, qs)
-			err = getQueryClass(r.URL, qs)
-			err = getQueryCaliber(r.URL, qs)
+			err = queryStrToFilter("type", r.URL, filter)
+			err = queryStrToFilter("class", r.URL, filter)
+			err = queryStrToFilter("caliber", r.URL, filter)
 		case item.KindTacticalrig:
-			err = getQueryArmorClass(r.URL, qs)
+			err = queryStrToFilter("armor.material.name", r.URL, filter)
+			err = queryIntToFilter("armor.class", r.URL, filter)
 		case item.KindAmmunition:
-			err = getQueryType(r.URL, qs)
-			err = getQueryCaliber(r.URL, qs)
+			err = queryStrToFilter("type", r.URL, filter)
+			err = queryStrToFilter("caliber", r.URL, filter)
 		case item.KindMagazine:
-			err = getQueryCaliber(r.URL, qs)
+			err = queryStrToFilter("caliber", r.URL, filter)
 		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
-			err = getQueryType(r.URL, qs)
+			err = queryStrToFilter("type", r.URL, filter)
 		}
 		if err != nil {
 			s := &Status{}
@@ -174,7 +175,7 @@ Loop:
 			return
 		}
 
-		result, err = item.GetAll(qs, kind, opts)
+		result, err = item.GetAll(filter, kind, opts)
 		if err != nil {
 			handleError(err, w)
 			return
@@ -291,54 +292,4 @@ func ItemDELETE(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	logger.Infof("Item %s removed", id)
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func getQueryType(u *url.URL, qs map[string]interface{}) error {
-	var err error
-	if tp := u.Query().Get("type"); len(tp) > 0 {
-		qs["type"], err = url.QueryUnescape(tp)
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-func getQueryCaliber(u *url.URL, qs map[string]interface{}) error {
-	var err error
-	if cal := u.Query().Get("caliber"); len(cal) > 0 {
-		qs["caliber"], err = url.QueryUnescape(cal)
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-func getQueryClass(u *url.URL, qs map[string]interface{}) error {
-	var err error
-	if cl := u.Query().Get("class"); len(cl) > 0 {
-		qs["class"], err = url.QueryUnescape(cl)
-		if err != nil {
-			return err
-		}
-	}
-
-	return err
-}
-
-func getQueryArmorClass(u *url.URL, qs map[string]interface{}) error {
-	if cl := u.Query().Get("class"); len(cl) > 0 {
-		if cl, err := url.QueryUnescape(cl); err == nil {
-			c, err := strconv.ParseInt(cl, 10, 64)
-			if err != nil {
-				return err
-			}
-			qs["armor"] = map[string]int64{"class": c}
-		}
-	}
-
-	return nil
 }

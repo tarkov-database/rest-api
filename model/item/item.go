@@ -116,9 +116,9 @@ func getManyByFilter(filter interface{}, k Kind, opts *Options) (*model.Result, 
 }
 
 // GetAll returns a result based on filters
-func GetAll(qs map[string]interface{}, k Kind, opts *Options) (*model.Result, error) {
-	qs["_kind"] = k
-	return getManyByFilter(qs, k, opts)
+func GetAll(filter map[string]interface{}, k Kind, opts *Options) (*model.Result, error) {
+	filter["_kind"] = k
+	return getManyByFilter(filter, k, opts)
 }
 
 // GetByIDs returns a result by given IDs

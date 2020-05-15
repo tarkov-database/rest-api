@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -42,6 +43,28 @@ func getSort(def string, r *http.Request) map[string]int64 {
 	}
 
 	return sort
+}
+
+func queryStrToFilter(k string, u *url.URL, m map[string]interface{}) error {
+	var err error
+	if v := u.Query().Get(k); len(v) > 0 {
+		m[k], err = url.QueryUnescape(v)
+	}
+
+	return err
+}
+
+func queryIntToFilter(k string, u *url.URL, m map[string]interface{}) error {
+	if v := u.Query().Get(k); len(v) > 0 {
+		if v, err := url.QueryUnescape(v); err == nil {
+			m[k], err = strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func handleError(err error, w http.ResponseWriter) {
