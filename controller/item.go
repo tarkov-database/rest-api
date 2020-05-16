@@ -163,23 +163,23 @@ Loop:
 
 		switch kind {
 		case item.KindArmor:
-			err = filter.AddString(r.URL.Query().Get("type"), "type")
-			err = filter.AddInt(r.URL.Query().Get("armor.class"), "armor.class")
-			err = filter.AddString(r.URL.Query().Get("armor.material.name"), "armor.material.name")
+			err = filter.AddString("type", r.URL.Query().Get("type"))
+			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
+			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
 		case item.KindFirearm:
-			err = filter.AddString(r.URL.Query().Get("type"), "type")
-			err = filter.AddString(r.URL.Query().Get("class"), "class")
-			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
+			err = filter.AddString("type", r.URL.Query().Get("type"))
+			err = filter.AddString("class", r.URL.Query().Get("class"))
+			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
 		case item.KindTacticalrig:
-			err = filter.AddInt(r.URL.Query().Get("armor.class"), "armor.class")
-			err = filter.AddString(r.URL.Query().Get("armor.material.name"), "armor.material.name")
+			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
+			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
 		case item.KindAmmunition:
-			err = filter.AddString(r.URL.Query().Get("type"), "type")
-			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
+			err = filter.AddString("type", r.URL.Query().Get("type"))
+			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
 		case item.KindMagazine:
-			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
+			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
 		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
-			err = filter.AddString(r.URL.Query().Get("type"), "type")
+			err = filter.AddString("type", r.URL.Query().Get("type"))
 		}
 		if err != nil {
 			s := &Status{}

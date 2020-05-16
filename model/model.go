@@ -62,25 +62,25 @@ func NewResponse(msg string, code int) *Response {
 type Filter map[string]interface{}
 
 // AddString adds a string to the given MongoDB field
-func (f Filter) AddString(val, path string) error {
+func (f Filter) AddString(field, value string) error {
 	var err error
-	if val != "" {
-		f[path], err = url.QueryUnescape(val)
+	if value != "" {
+		f[field], err = url.QueryUnescape(value)
 	}
 
 	return err
 }
 
 // AddInt adds an integer to the given MongoDB field
-func (f Filter) AddInt(val, path string) error {
-	if val != "" {
+func (f Filter) AddInt(field, value string) error {
+	if value != "" {
 		var err error
-		val, err = url.QueryUnescape(val)
+		value, err = url.QueryUnescape(value)
 		if err != nil {
 			return err
 		}
 
-		f[path], err = strconv.ParseInt(val, 10, 64)
+		f[field], err = strconv.ParseInt(value, 10, 64)
 		if err != nil {
 			return err
 		}
@@ -90,15 +90,15 @@ func (f Filter) AddInt(val, path string) error {
 }
 
 // AddFloat adds a float to the given MongoDB field
-func (f Filter) AddFloat(val, path string) error {
-	if val != "" {
+func (f Filter) AddFloat(field, value string) error {
+	if value != "" {
 		var err error
-		val, err = url.QueryUnescape(val)
+		value, err = url.QueryUnescape(value)
 		if err != nil {
 			return err
 		}
 
-		f[path], err = strconv.ParseFloat(val, 64)
+		f[field], err = strconv.ParseFloat(value, 64)
 		if err != nil {
 			return err
 		}
