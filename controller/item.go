@@ -147,27 +147,27 @@ Loop:
 	}
 
 	if result == nil {
-		filter := make(map[string]interface{})
+		filter := model.Filter{}
 
 		switch kind {
 		case item.KindArmor:
-			err = queryStrToFilter("type", r.URL, filter)
-			err = queryStrToFilter("armor.material.name", r.URL, filter)
-			err = queryIntToFilter("armor.class", r.URL, filter)
+			err = filter.AddString(r.URL.Query().Get("type"), "type")
+			err = filter.AddInt(r.URL.Query().Get("armor.class"), "armor.class")
+			err = filter.AddString(r.URL.Query().Get("armor.material.name"), "armor.material.name")
 		case item.KindFirearm:
-			err = queryStrToFilter("type", r.URL, filter)
-			err = queryStrToFilter("class", r.URL, filter)
-			err = queryStrToFilter("caliber", r.URL, filter)
+			err = filter.AddString(r.URL.Query().Get("type"), "type")
+			err = filter.AddString(r.URL.Query().Get("class"), "class")
+			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
 		case item.KindTacticalrig:
-			err = queryStrToFilter("armor.material.name", r.URL, filter)
-			err = queryIntToFilter("armor.class", r.URL, filter)
+			err = filter.AddInt(r.URL.Query().Get("armor.class"), "armor.class")
+			err = filter.AddString(r.URL.Query().Get("armor.material.name"), "armor.material.name")
 		case item.KindAmmunition:
-			err = queryStrToFilter("type", r.URL, filter)
-			err = queryStrToFilter("caliber", r.URL, filter)
+			err = filter.AddString(r.URL.Query().Get("type"), "type")
+			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
 		case item.KindMagazine:
-			err = queryStrToFilter("caliber", r.URL, filter)
+			err = filter.AddString(r.URL.Query().Get("caliber"), "caliber")
 		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
-			err = queryStrToFilter("type", r.URL, filter)
+			err = filter.AddString(r.URL.Query().Get("type"), "type")
 		}
 		if err != nil {
 			s := &Status{}

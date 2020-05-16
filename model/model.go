@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -54,4 +56,53 @@ func NewResponse(msg string, code int) *Response {
 		Message:    msg,
 		StatusCode: code,
 	}
+}
+
+// Filter represents an MongoDB query filter
+type Filter map[string]interface{}
+
+// AddString adds a string to the given MongoDB field
+func (f Filter) AddString(val, path string) error {
+	var err error
+	if val != "" {
+		f[path], err = url.QueryUnescape(val)
+	}
+
+	return err
+}
+
+// AddInt adds an integer to the given MongoDB field
+func (f Filter) AddInt(val, path string) error {
+	if val != "" {
+		var err error
+		val, err = url.QueryUnescape(val)
+		if err != nil {
+			return err
+		}
+
+		f[path], err = strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// AddFloat adds a float to the given MongoDB field
+func (f Filter) AddFloat(val, path string) error {
+	if val != "" {
+		var err error
+		val, err = url.QueryUnescape(val)
+		if err != nil {
+			return err
+		}
+
+		f[path], err = strconv.ParseFloat(val, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
