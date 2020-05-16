@@ -29,6 +29,12 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 			return
 		}
 
+		if !isAlnumBlankPunct(txt) {
+			s := &Status{}
+			s.BadRequest("Query string contains invalid characters").Render(w)
+			return
+		}
+
 		opts := &item.Options{}
 		opts.Limit, opts.Offset = getLimitOffset(r)
 
@@ -133,6 +139,12 @@ Loop:
 			if err != nil {
 				s := &Status{}
 				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(txt) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 

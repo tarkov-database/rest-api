@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -44,7 +45,10 @@ func getSort(def string, r *http.Request) map[string]int64 {
 	return sort
 }
 
+var regexNonAlnumBlankPunct = regexp.MustCompile(`[^[:alnum:][:blank:][:punct:]]`)
 
+func isAlnumBlankPunct(s string) bool {
+	return !regexNonAlnumBlankPunct.MatchString(s)
 }
 
 func handleError(err error, w http.ResponseWriter) {
