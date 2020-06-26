@@ -11,7 +11,7 @@ type Medical struct {
 
 	Type         string  `json:"type" bson:"type"`
 	Resources    int64   `json:"resources" bson:"resources"`
-	ResourceRate int64   `json:"resourceRate" bson:"resourceRate"`
+	ResourceRate int64   `json:"resourceRate" bson:"resourceRate"` // deprecated
 	UseTime      float64 `json:"useTime" bson:"useTime"`
 	Effects      Effects `json:"effects" bson:"effects"`
 }
