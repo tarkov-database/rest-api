@@ -1,3 +1,5 @@
+-include .env
+
 OUT := apiserver
 VERSION := $(shell git describe --tags)
 REPO_PATH := tarkov-database/rest-api
@@ -22,7 +24,7 @@ test:
 	go test -v ./...
 
 run: bin
-	./${OUT}
+	env MONGO_DB="${MONGO_DB}-test" ./${OUT}
 
 clean:
 	-@rm ${OUT} ${OUT}-v*
