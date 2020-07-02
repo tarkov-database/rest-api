@@ -87,13 +87,13 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, usr); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -119,13 +119,13 @@ func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, usr); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 

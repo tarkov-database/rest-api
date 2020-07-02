@@ -25,7 +25,7 @@ func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		txt, err := url.QueryUnescape(search)
 		if err != nil {
 			s := &Status{}
-			s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+			s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 			return
 		}
 
@@ -102,7 +102,7 @@ Loop:
 			q, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -138,7 +138,7 @@ Loop:
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -225,7 +225,7 @@ Loop:
 		}
 		if err != nil {
 			s := &Status{}
-			s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+			s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 			return
 		}
 
@@ -257,13 +257,13 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -302,13 +302,13 @@ func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 

@@ -46,7 +46,7 @@ Loop:
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -98,13 +98,13 @@ func LocationPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, loc); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := loc.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -130,13 +130,13 @@ func LocationPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, loc); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := loc.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -200,7 +200,7 @@ Loop:
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -215,7 +215,7 @@ Loop:
 			grp, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -254,13 +254,13 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, ft); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := ft.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -320,13 +320,13 @@ func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if err := parseJSONBody(r.Body, ft); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := ft.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -419,7 +419,7 @@ Loop:
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -434,7 +434,7 @@ Loop:
 			q, err := url.QueryUnescape(v[0])
 			if err != nil {
 				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err.Error())).Render(w)
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -475,13 +475,13 @@ func FeatureGroupPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	if err := parseJSONBody(r.Body, fg); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := fg.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -531,13 +531,13 @@ func FeatureGroupPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 	if err := parseJSONBody(r.Body, fg); err != nil {
 		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err.Error())).Render(w)
+		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := fg.Validate(); err != nil {
 		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err.Error())).Render(w)
+		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
