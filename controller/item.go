@@ -164,22 +164,64 @@ Loop:
 		switch kind {
 		case item.KindArmor:
 			err = filter.AddString("type", r.URL.Query().Get("type"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
+			if err != nil {
+				break
+			}
 		case item.KindFirearm:
 			err = filter.AddString("type", r.URL.Query().Get("type"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("class", r.URL.Query().Get("class"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
+			if err != nil {
+				break
+			}
 		case item.KindTacticalrig:
 			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
+			if err != nil {
+				break
+			}
 		case item.KindAmmunition:
 			err = filter.AddString("type", r.URL.Query().Get("type"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
+			if err != nil {
+				break
+			}
 		case item.KindMagazine:
 			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
+			if err != nil {
+				break
+			}
 		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
 			err = filter.AddString("type", r.URL.Query().Get("type"))
+			if err != nil {
+				break
+			}
 		}
 		if err != nil {
 			s := &Status{}

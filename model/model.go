@@ -2,8 +2,10 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -61,14 +63,23 @@ func NewResponse(msg string, code int) *Response {
 // Filter represents an MongoDB query filter
 type Filter map[string]interface{}
 
+var regexNotAllowedFieldChars = regexp.MustCompile(`[^[:alnum:][:blank:]!#%&'()*+,\-./:;?_~]`)
+
 // AddString adds a string to the given MongoDB field
 func (f Filter) AddString(field, value string) error {
-	var err error
 	if value != "" {
+		if regexNotAllowedFieldChars.MatchString(value) {
+			return fmt.Errorf("%w: field \"%s\" contains invalid characters", ErrInvalidInput, field)
+		}
+
+		var err error
 		f[field], err = url.QueryUnescape(value)
+		if err != nil {
+			return err
+		}
 	}
 
-	return err
+	return nil
 }
 
 // AddInt adds an integer to the given MongoDB field
