@@ -21,10 +21,10 @@ fmt:
 	go fmt ./...
 
 test:
-	go test -v ./...
+	env MONGO_DB="${MONGO_DB}-test" go test -v ./...
 
 run: bin
-	env MONGO_DB="${MONGO_DB}-test" ./${OUT}
+	./${OUT}
 
 clean:
 	-@rm ${OUT} ${OUT}-v*
