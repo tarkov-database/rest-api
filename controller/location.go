@@ -50,6 +50,18 @@ Loop:
 				return
 			}
 
+			if l := len(txt); l < 3 || l > 32 {
+				s := &Status{}
+				s.BadRequest("Query string has an invalid length").Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(txt) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
+				return
+			}
+
 			result, err = location.GetByText(txt, opts)
 			if err != nil {
 				handleError(err, w)
@@ -201,6 +213,18 @@ Loop:
 			if err != nil {
 				s := &Status{}
 				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			if l := len(txt); l < 3 || l > 32 {
+				s := &Status{}
+				s.BadRequest("Query string has an invalid length").Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(txt) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -420,6 +444,18 @@ Loop:
 			if err != nil {
 				s := &Status{}
 				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			if l := len(txt); l < 3 || l > 32 {
+				s := &Status{}
+				s.BadRequest("Query string has an invalid length").Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(txt) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
