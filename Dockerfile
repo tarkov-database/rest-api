@@ -1,19 +1,20 @@
-FROM golang:1.14.6
-
-LABEL homepage="https://tarkov-database.com"
-LABEL repository="https://github.com/tarkov-database/rest-api"
-LABEL maintainer="Markus Wiegand <mail@morphy2k.dev>"
-
-EXPOSE 8080
+FROM golang:1.14.6 as build-env
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
 
 RUN make bin && \
     mkdir -p /usr/share/tarkov-database/rest-api && \
-    mv -t /usr/share/tarkov-database/rest-api apiserver && \
-    rm -rf /tmp/github.com/tarkov-database/rest-api
+    mv -t /usr/share/tarkov-database/rest-api apiserver
 
-WORKDIR /usr/share/tarkov-database/rest-api
+FROM gcr.io/distroless/base
 
-CMD ["/usr/share/tarkov-database/rest-api/apiserver"]
+LABEL homepage="https://tarkov-database.com"
+LABEL repository="https://github.com/tarkov-database/rest-api"
+LABEL maintainer="Markus Wiegand <mail@morphy2k.dev>"
+
+COPY --from=build-env /usr/share/tarkov-database/rest-api /
+
+EXPOSE 8080
+
+CMD ["/apiserver"]
