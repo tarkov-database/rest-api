@@ -24,6 +24,8 @@ type Effects struct {
 	LootSpeed         *Effect  `json:"lootSpeed,omitempty" bson:"lootSpeed,omitempty"`
 	UnlockSpeed       *Effect  `json:"unlockSpeed,omitempty" bson:"unlockSpeed,omitempty"`
 	DestroyedPart     *Effect  `json:"destroyedPart,omitempty" bson:"destroyedPart,omitempty"`
+	WeightLimit       *Effect  `json:"weightLimit,omitempty" bson:"weightLimit,omitempty"`
+	DamageModifier    *Effect  `json:"damageModifier,omitempty" bson:"damageModifier,omitempty"`
 	Skill             []Effect `json:"skill,omitempty" bson:"skill,omitempty"`
 }
 
