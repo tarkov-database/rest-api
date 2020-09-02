@@ -7,7 +7,7 @@ RUN make bin && \
     mkdir -p /usr/share/tarkov-database/rest-api && \
     mv -t /usr/share/tarkov-database/rest-api apiserver
 
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base-debian10
 
 LABEL homepage="https://tarkov-database.com"
 LABEL repository="https://github.com/tarkov-database/rest-api"
