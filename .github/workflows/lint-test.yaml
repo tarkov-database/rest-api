@@ -18,7 +18,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.14'
+        go-version: '1.15'
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:4.2
+        image: mongo:4.4
         ports:
         - 27017:27017
     steps:
