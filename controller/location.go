@@ -474,6 +474,18 @@ Loop:
 				return
 			}
 
+			if l := len(q); l < 2 || l > 100 {
+				s := &Status{}
+				s.BadRequest("Query string has an invalid length").Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(q) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
+				return
+			}
+
 			tags := strings.Split(q, ",")
 
 			result, err = featuregroup.GetByTags(tags, lID, opts)

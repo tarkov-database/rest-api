@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/tarkov-database/rest-api/model"
@@ -39,7 +40,14 @@ Loop:
 	for p, v := range r.URL.Query() {
 		switch p {
 		case "locked":
-			locked, err := strconv.ParseBool(v[0])
+			s, err := url.QueryUnescape(v[0])
+			if err != nil {
+				s := &Status{}
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			locked, err := strconv.ParseBool(s)
 			if err != nil {
 				s := &Status{}
 				s.BadRequest(err.Error()).Render(w)
@@ -54,7 +62,26 @@ Loop:
 
 			break Loop
 		case "email":
-			result, err = user.GetByEmail(v[0], opts)
+			addr, err := url.QueryUnescape(v[0])
+			if err != nil {
+				s := &Status{}
+				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			if l := len(addr); l < 3 || l > 100 {
+				s := &Status{}
+				s.BadRequest("Query string has an invalid length").Render(w)
+				return
+			}
+
+			if !isAlnumBlankPunct(addr) {
+				s := &Status{}
+				s.BadRequest("Query string contains invalid characters").Render(w)
+				return
+			}
+
+			result, err = user.GetByEmail(addr, opts)
 			if err != nil {
 				handleError(err, w)
 				return
