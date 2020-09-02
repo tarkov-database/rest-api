@@ -24,13 +24,14 @@ type timestamp = model.Timestamp
 
 // Feature describes the entity of a feature
 type Feature struct {
-	ID         objectID               `json:"_id" bson:"_id"`
-	Name       string                 `json:"name" bson:"name"`
-	Geometry   Geometry               `json:"geometry" bson:"geometry"`
-	Properties map[string]interface{} `json:"properties" bson:"properties"`
-	Group      objectID               `json:"group" bson:"group"`
-	Location   objectID               `json:"_location" bson:"_location"`
-	Modified   timestamp              `json:"_modified" bson:"_modified"`
+	ID          objectID               `json:"_id" bson:"_id"`
+	Name        string                 `json:"name" bson:"name"`
+	Description string                 `json:"description" bson:"description"`
+	Geometry    Geometry               `json:"geometry" bson:"geometry"`
+	Properties  map[string]interface{} `json:"properties" bson:"properties"`
+	Group       objectID               `json:"group" bson:"group"`
+	Location    objectID               `json:"_location" bson:"_location"`
+	Modified    timestamp              `json:"_modified" bson:"_modified"`
 }
 
 // Validate validates the fields of a feature
