@@ -16,6 +16,7 @@ type Magazine struct {
 	Modifier        MagazineModifier `json:"modifier" bson:"modifier"`
 	GridModifier    GridModifier     `json:"gridModifier" bson:"gridModifier"`
 	Compatibility   List             `json:"compatibility" bson:"compatibility"`
+	Conflicts       List             `json:"conflicts" bson:"conflicts"`
 }
 
 // MagazineModifier describes the properties of Modifier in Magazine
