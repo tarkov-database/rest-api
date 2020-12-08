@@ -21,6 +21,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+
     steps:
 
     - name: Set up Go
@@ -49,12 +50,24 @@ jobs:
         image: mongo:4.4
         ports:
         - 27017:27017
+
     steps:
 
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: '1.15'
+
+    - uses: actions/cache@v2
+      env:
+        cache-name: test
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: go-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          go-${{ env.cache-name }}-
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
