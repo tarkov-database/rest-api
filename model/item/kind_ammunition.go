@@ -20,6 +20,7 @@ type Ammunition struct {
 	Penetration         float64                `json:"penetration" bson:"penetration"`
 	ArmorDamage         float64                `json:"armorDamage" bson:"armorDamage"`
 	Fragmentation       AmmoFrag               `json:"fragmentation" bson:"fragmentation"`
+	Effects             AmmoEffects            `json:"effects" bson:"effects"`
 	Projectiles         int64                  `json:"projectiles" bson:"projectiles"`
 	Pellets             int64                  `json:"pellets,omitempty" bson:"pellets,omitempty"` // deprecated
 	WeaponModifier      WeaponModifier         `json:"weaponModifier" bson:"weaponModifier"`
@@ -31,6 +32,12 @@ type AmmoFrag struct {
 	Chance float64 `json:"chance" bson:"chance"`
 	Min    int64   `json:"min" bson:"min"`
 	Max    int64   `json:"max" bson:"max"`
+}
+
+// AmmoEffects holds the effects of Ammunition
+type AmmoEffects struct {
+	LightBleedingChance float64 `json:"lightBleedingChance,omitempty" bson:"lightBleedingChance,omitempty"`
+	HeavyBleedingChance float64 `json:"heavyBleedingChance,omitempty" bson:"heavyBleedingChance,omitempty"`
 }
 
 // WeaponModifier contains the weapon modifiers of Ammunition
