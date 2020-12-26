@@ -130,6 +130,7 @@ type Muzzle struct {
 
 	Type     string  `json:"type" bson:"type"`
 	Velocity float64 `json:"velocity" bson:"velocity"`
+	Loudness float64 `json:"loudness" bson:"loudness"`
 }
 
 // PistolGrip describes the entity of an pistol grip item
