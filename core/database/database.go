@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/logger"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var db *mongo.Database
@@ -36,7 +35,7 @@ func Init() error {
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+	if err := client.Ping(ctx, nil); err != nil {
 		return fmt.Errorf("connection error: %s", err)
 	}
 
@@ -58,6 +57,17 @@ func Shutdown() error {
 
 	if err := client.Disconnect(ctx); err != nil {
 		return fmt.Errorf("shutdown error: %s", err)
+	}
+
+	return nil
+}
+
+// Ping sends a ping command to verify the DB connection
+func Ping(ctx context.Context) error {
+	client := db.Client()
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return fmt.Errorf("connection error: %s", err)
 	}
 
 	return nil

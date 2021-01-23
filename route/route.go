@@ -23,6 +23,9 @@ func routes() *httprouter.Router {
 	r.GET(prefix, cntrl.IndexGET)
 	r.Handler("GET", "/", http.RedirectHandler(prefix, http.StatusMovedPermanently))
 
+	// Health
+	r.GET(prefix+"/health", cntrl.HealthGET)
+
 	// Item
 	r.GET(prefix+"/item", auth(jwt.ScopeItemRead, cntrl.ItemIndexGET))
 	r.GET(prefix+"/item/:kind", auth(jwt.ScopeItemRead, cntrl.ItemsGET))
