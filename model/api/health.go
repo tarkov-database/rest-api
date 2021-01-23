@@ -2,10 +2,27 @@ package api
 
 import (
 	"context"
+	"log"
+	"os"
 	"time"
 
 	"github.com/tarkov-database/rest-api/core/database"
 )
+
+var latencyThreshold time.Duration
+
+func init() {
+	if env := os.Getenv("UNHEALTHY_LATENCY"); len(env) > 0 {
+		d, err := time.ParseDuration(env)
+		if err != nil {
+			log.Printf("Unhealthy latency value is not valid: %s\n", err)
+			os.Exit(2)
+		}
+		latencyThreshold = d
+	} else {
+		latencyThreshold = 300 * time.Millisecond
+	}
+}
 
 // Status represents the status code of a service
 type Status int
@@ -66,7 +83,7 @@ func getDatabaseStatus() (Status, error) {
 		return Failure, err
 	}
 
-	if time.Since(start).Seconds() > 3 {
+	if time.Since(start) > latencyThreshold {
 		return Warning, nil
 	}
 
