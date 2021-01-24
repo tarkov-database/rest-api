@@ -27,6 +27,15 @@ var (
 
 	// ErrExpiredToken indicates that the token is expired
 	ErrExpiredToken = errors.New("token is expired")
+
+	// ErrNotBefore indicates that the token is not yet valid
+	ErrNotBefore = errors.New("token is not yet valid")
+
+	// ErrMalformed indicates that the token is malformed
+	ErrMalformed = errors.New("token is malformed")
+
+	// ErrInvalidToken indicates that the token is invalid
+	ErrInvalidToken = errors.New("token is invalid")
 )
 
 var (
@@ -160,10 +169,16 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 		switch err {
 		case jwt.ErrExpValidation:
 			return claims, ErrExpiredToken
+		case jwt.ErrNbfValidation:
+			return claims, ErrNotBefore
 		case jwt.ErrAudValidation:
 			return claims, ErrInvalidAudience
+		case jwt.ErrSubValidation:
+			return claims, ErrInvalidSubject
+		case jwt.ErrMalformed:
+			return claims, ErrMalformed
 		default:
-			return claims, err
+			return claims, ErrInvalidToken
 		}
 	}
 
@@ -175,35 +190,58 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		token, err := GetToken(r)
 		if err != nil {
+			AddAuthenticateHeader(w, err, scope)
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
 			return
 		}
+
+		allScope := fmt.Sprintf("%s:all", strings.SplitN(scope, ":", 2)[0])
 
 		claims, err := VerifyToken(token)
 		if err != nil {
 			if !errors.Is(err, ErrExpiredToken) {
 				logger.Error(err)
 			}
+			AddAuthenticateHeader(w, err, scope, allScope)
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
 			return
 		}
 
 		var ok bool
-		all := fmt.Sprintf("%s:all", strings.Split(scope, ":")[0])
 		for _, s := range claims.Scope {
-			if s == scope || s == all {
+			if s == scope || s == allScope {
 				ok = true
 				break
 			}
 		}
 
 		if !ok {
+			AddAuthenticateHeader(w, ErrInvalidScope, scope, allScope)
 			statusHandler("Insufficient permissions", http.StatusForbidden, w)
 			return
 		}
 
 		h(w, r, ps)
 	}
+}
+
+const (
+	authenticateInvalid      = "invalid_token"
+	authenticateInsufficient = "insufficient_scope"
+)
+
+// AddAuthenticateHeader adds the "WWW-Authenticate" header to the response
+func AddAuthenticateHeader(w http.ResponseWriter, err error, scopes ...string) {
+	value := fmt.Sprintf("Bearer scope=\"%s\"", strings.Join(scopes, " "))
+
+	switch err {
+	case ErrExpiredToken, ErrNotBefore, ErrInvalidAudience, ErrInvalidSubject, ErrMalformed, ErrInvalidToken:
+		value += fmt.Sprintf(", error=\"%s\"", authenticateInvalid)
+	case ErrInvalidScope:
+		value += fmt.Sprintf(", error=\"%s\"", authenticateInsufficient)
+	}
+
+	w.Header().Add("WWW-Authenticate", value)
 }
 
 func statusHandler(msg string, status int, w http.ResponseWriter) {
