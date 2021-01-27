@@ -16,56 +16,21 @@ import (
 
 // ItemIndexGET handles a GET request on the item root endpoint
 func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var err error
-	var i interface{}
+	var skipKinds bool
 
-	search := r.URL.Query().Get("search")
-	switch {
-	case len(search) > 0:
-		txt, err := url.QueryUnescape(search)
-		if err != nil {
-			s := &Status{}
-			s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
-			return
-		}
-
-		if l := len(txt); l < 3 || l > 32 {
-			s := &Status{}
-			s.BadRequest("Query string has an invalid length").Render(w)
-			return
-		}
-
-		if !isAlnumBlankPunct(txt) {
-			s := &Status{}
-			s.BadRequest("Query string contains invalid characters").Render(w)
-			return
-		}
-
-		opts := &item.Options{}
-		opts.Limit, opts.Offset = getLimitOffset(r)
-
-		i, err = item.GetByText(txt, opts)
-		if err != nil {
-			handleError(err, w)
-			return
-		}
-	default:
-		var skipKinds bool
-
-		if skip := r.URL.Query().Get("skipKinds"); len(skip) > 0 {
-			if skip == "1" {
-				skipKinds = true
-			}
-		}
-
-		i, err = item.GetIndex(skipKinds)
-		if err != nil {
-			handleError(err, w)
-			return
+	if skip := r.URL.Query().Get("skipKinds"); len(skip) > 0 {
+		if skip == "1" || skip == "true" {
+			skipKinds = true
 		}
 	}
 
-	view.RenderJSON(i, http.StatusOK, w)
+	idx, err := item.GetIndex(skipKinds)
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+
+	view.RenderJSON(idx, http.StatusOK, w)
 }
 
 // ItemGET handles a GET request on a item entity endpoint
