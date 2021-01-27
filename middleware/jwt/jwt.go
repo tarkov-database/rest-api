@@ -138,11 +138,11 @@ func GetToken(r *http.Request) (string, error) {
 	}
 
 	headerStr := strings.TrimSpace(header)
-	if !strings.HasPrefix(header, "Bearer") {
+	if !strings.HasPrefix(header, "Bearer ") {
 		return "", ErrInvalidAuthHeader
 	}
 
-	return strings.TrimSpace(strings.TrimPrefix(headerStr, "Bearer")), nil
+	return strings.TrimPrefix(headerStr, "Bearer "), nil
 }
 
 // VerifyToken verifies a token
