@@ -13,7 +13,8 @@ import (
 
 // Token represents the body of a token creation response
 type Token struct {
-	Token string `json:"token"`
+	Token   string `json:"token"`
+	Expires int64  `json:"expires"`
 }
 
 // TokenGET handles a GET request on the token endpoint
@@ -51,7 +52,7 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(Token{token}, http.StatusCreated, w)
+	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }
 
 // TokenPOST handles a POST request on the token endpoint
@@ -125,5 +126,5 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	view.RenderJSON(Token{token}, http.StatusCreated, w)
+	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }
