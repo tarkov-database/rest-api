@@ -3,11 +3,8 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
-	"strings"
 	"testing"
 
 	"github.com/tarkov-database/rest-api/model/item"
@@ -55,37 +52,6 @@ func TestItemIndexGET(t *testing.T) {
 	}
 	if output.Kinds[item.KindCommon].Modified.IsZero() {
 		t.Error("Getting item index failed: kind modified date is invalid")
-	}
-
-	keyword := "item"
-
-	val := url.Values{}
-	val.Add("search", keyword)
-
-	uri := fmt.Sprintf("http://example.com/v2/item?%s", val.Encode())
-	req = httptest.NewRequest("GET", uri, nil)
-
-	w = httptest.NewRecorder()
-
-	ItemIndexGET(w, req, httprouter.Params{})
-
-	resp = w.Result()
-	defer resp.Body.Close()
-
-	res := &itemResult{}
-
-	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
-		t.Fatalf("Getting items failed: %s", err)
-	}
-
-	if res.Count < 1 {
-		t.Error("Getting items failed: result count invalid")
-	}
-	if len(res.Items) == 0 {
-		t.Fatal("Getting items failed: result empty")
-	}
-	if name := res.Items[0].Name; !strings.HasPrefix(name, keyword) {
-		t.Error("Getting items failed: item name prefix invalid")
 	}
 }
 
