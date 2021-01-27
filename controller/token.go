@@ -21,15 +21,13 @@ type Token struct {
 func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	token, err := jwt.GetToken(r)
 	if err != nil {
-		s := &Status{}
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	clm, err := jwt.VerifyToken(token)
 	if err != nil && err != jwt.ErrExpiredToken {
-		s := &Status{}
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
@@ -40,15 +38,13 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if usr.Locked {
-		s := &Status{}
-		s.Forbidden("User is locked").Render(w)
+		StatusForbidden("User is locked").Render(w)
 		return
 	}
 
 	token, err = jwt.CreateToken(clm)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
@@ -58,22 +54,19 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // TokenPOST handles a POST request on the token endpoint
 func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	issToken, err := jwt.GetToken(r)
 	if err != nil {
-		s := &Status{}
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	issClaims, err := jwt.VerifyToken(issToken)
 	if err != nil {
-		s := &Status{}
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
@@ -86,22 +79,19 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if !ok {
-		s := &Status{}
-		s.Forbidden("Insufficient permissions").Render(w)
+		StatusForbidden("Insufficient permissions").Render(w)
 		return
 	}
 
 	clm := &jwt.Claims{}
 
 	if err := parseJSONBody(r.Body, clm); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := clm.ValidateCustom(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -112,8 +102,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if usr.Locked {
-		s := &Status{}
-		s.Forbidden("User is locked").Render(w)
+		StatusForbidden("User is locked").Render(w)
 		return
 	}
 
@@ -121,8 +110,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	token, err := jwt.CreateToken(clm)
 	if err != nil {
-		s := &Status{}
-		s.InternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
+		StatusInternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 

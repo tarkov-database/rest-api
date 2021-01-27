@@ -19,73 +19,81 @@ func (s *Status) Render(w http.ResponseWriter) {
 	view.RenderJSON(res, s.Code, w)
 }
 
-// OK fills Status with an HTTP 200 status and message
-func (s *Status) OK(msg string) *Status {
-	s.Code, s.Message = http.StatusOK, msg
-
-	return s
+// StatusOK fills Status with an HTTP 200 status and message
+func StatusOK(msg string) *Status {
+	return &Status{
+		Code:    http.StatusOK,
+		Message: msg,
+	}
 }
 
-// Created fills Status with an HTTP 201 status and message
-func (s *Status) Created(msg string) *Status {
-	s.Code, s.Message = http.StatusCreated, msg
-
-	return s
+// StatusCreated fills Status with an HTTP 201 status and message
+func StatusCreated(msg string) *Status {
+	return &Status{
+		Code:    http.StatusCreated,
+		Message: msg,
+	}
 }
 
-// BadRequest fills Status with an HTTP 400 status and message
-func (s *Status) BadRequest(msg string) *Status {
-	s.Code, s.Message = http.StatusBadRequest, msg
-
-	return s
+// StatusBadRequest fills Status with an HTTP 400 status and message
+func StatusBadRequest(msg string) *Status {
+	return &Status{
+		Code:    http.StatusBadRequest,
+		Message: msg,
+	}
 }
 
-// Unauthorized fills Status with an HTTP 401 status and message
-func (s *Status) Unauthorized(msg string) *Status {
-	s.Code, s.Message = http.StatusUnauthorized, msg
-
-	return s
+// StatusUnauthorized fills Status with an HTTP 401 status and message
+func StatusUnauthorized(msg string) *Status {
+	return &Status{
+		Code:    http.StatusUnauthorized,
+		Message: msg,
+	}
 }
 
-// Forbidden fills Status with an HTTP 403 status and message
-func (s *Status) Forbidden(msg string) *Status {
-	s.Code, s.Message = http.StatusForbidden, msg
-
-	return s
+// StatusForbidden fills Status with an HTTP 403 status and message
+func StatusForbidden(msg string) *Status {
+	return &Status{
+		Code:    http.StatusForbidden,
+		Message: msg,
+	}
 }
 
-// NotFound fills Status with an HTTP 404 status and message
-func (s *Status) NotFound(msg string) *Status {
-	s.Code, s.Message = http.StatusNotFound, msg
-
-	return s
+// StatusNotFound fills Status with an HTTP 404 status and message
+func StatusNotFound(msg string) *Status {
+	return &Status{
+		Code:    http.StatusNotFound,
+		Message: msg,
+	}
 }
 
-// UnsupportedMediaType fills Status with an HTTP 415 status and message
-func (s *Status) UnsupportedMediaType(msg string) *Status {
-	s.Code, s.Message = http.StatusUnsupportedMediaType, msg
-
-	return s
+// StatusUnsupportedMediaType fills Status with an HTTP 415 status and message
+func StatusUnsupportedMediaType(msg string) *Status {
+	return &Status{
+		Code:    http.StatusUnsupportedMediaType,
+		Message: msg,
+	}
 }
 
-// UnprocessableEntity fills Status with an HTTP 422 status and message
-func (s *Status) UnprocessableEntity(msg string) *Status {
-	s.Code, s.Message = http.StatusUnprocessableEntity, msg
-
-	return s
+// StatusUnprocessableEntity fills Status with an HTTP 422 status and message
+func StatusUnprocessableEntity(msg string) *Status {
+	return &Status{
+		Code:    http.StatusUnprocessableEntity,
+		Message: msg,
+	}
 }
 
-// InternalServerError fills Status with an HTTP 500 status and message
-func (s *Status) InternalServerError(msg string) *Status {
-	s.Code, s.Message = http.StatusInternalServerError, msg
-
-	return s
+// StatusInternalServerError fills Status with an HTTP 500 status and message
+func StatusInternalServerError(msg string) *Status {
+	return &Status{
+		Code:    http.StatusInternalServerError,
+		Message: msg,
+	}
 }
 
 // StatusNotFoundHandler returns a HTTP 404 handler
 func StatusNotFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		s := &Status{}
-		s.NotFound("Endpoint not found").Render(w)
+		StatusNotFound("Endpoint not found").Render(w)
 	})
 }

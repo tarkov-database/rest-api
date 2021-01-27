@@ -45,20 +45,17 @@ Loop:
 		case "text":
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(txt); l < 3 || l > 32 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(txt) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -72,8 +69,7 @@ Loop:
 		case "available":
 			available, err := strconv.ParseBool(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(err.Error()).Render(w)
+				StatusBadRequest(err.Error()).Render(w)
 				return
 			}
 
@@ -101,22 +97,19 @@ Loop:
 // LocationPOST handles a POST request on the location root endpoint
 func LocationPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	loc := &location.Location{}
 
 	if err := parseJSONBody(r.Body, loc); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := loc.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -133,30 +126,26 @@ func LocationPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // LocationPUT handles a PUT request on a location entity endpoint
 func LocationPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	loc := &location.Location{}
 
 	if err := parseJSONBody(r.Body, loc); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := loc.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	id := ps.ByName("id")
 
 	if !loc.ID.IsZero() && loc.ID.Hex() != id {
-		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Render(w)
+		StatusUnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
@@ -211,20 +200,17 @@ Loop:
 		case "text":
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(txt); l < 3 || l > 32 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(txt) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -238,8 +224,7 @@ Loop:
 		case "group":
 			grp, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
@@ -267,8 +252,7 @@ Loop:
 // FeaturePOST handles a POST request on the feature root endpoint
 func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -277,28 +261,24 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ft := &feature.Feature{}
 
 	if err := parseJSONBody(r.Body, ft); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := ft.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if !ft.Location.IsZero() && ft.Location.Hex() != lID {
-		s := &Status{}
-		s.UnprocessableEntity("Location ID mismatch").Render(w)
+		StatusUnprocessableEntity("Location ID mismatch").Render(w)
 		return
 	}
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			StatusUnprocessableEntity("Location doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
@@ -311,8 +291,7 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if _, err := featuregroup.GetByID(ft.Group.Hex(), lID); err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Feature group doesn't exist").Render(w)
+			StatusUnprocessableEntity("Feature group doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
@@ -332,8 +311,7 @@ func FeaturePOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 // FeaturePUT handles a PUT request on a feature entity endpoint
 func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -343,34 +321,29 @@ func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ft := &feature.Feature{}
 
 	if err := parseJSONBody(r.Body, ft); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := ft.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if !ft.Location.IsZero() && ft.Location.Hex() != lID {
-		s := &Status{}
-		s.UnprocessableEntity("Location mismatch").Render(w)
+		StatusUnprocessableEntity("Location mismatch").Render(w)
 		return
 	}
 
 	if !ft.ID.IsZero() && ft.ID.Hex() != fID {
-		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Render(w)
+		StatusUnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			StatusUnprocessableEntity("Location doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
@@ -383,8 +356,7 @@ func FeaturePUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if _, err := featuregroup.GetByID(ft.Group.Hex(), lID); err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Feature group doesn't exist").Render(w)
+			StatusUnprocessableEntity("Feature group doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
@@ -442,20 +414,17 @@ Loop:
 		case "text":
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(txt); l < 3 || l > 32 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(txt) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -469,20 +438,17 @@ Loop:
 		case "tag":
 			q, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(q); l < 2 || l > 100 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(q) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -512,8 +478,7 @@ Loop:
 // FeatureGroupPOST handles a POST request on the featuregroup root endpoint
 func FeatureGroupPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -522,28 +487,24 @@ func FeatureGroupPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	fg := &featuregroup.Group{}
 
 	if err := parseJSONBody(r.Body, fg); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := fg.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if !fg.Location.IsZero() && fg.Location.Hex() != lID {
-		s := &Status{}
-		s.UnprocessableEntity("Location ID mismatch").Render(w)
+		StatusUnprocessableEntity("Location ID mismatch").Render(w)
 		return
 	}
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			StatusUnprocessableEntity("Location doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
@@ -567,8 +528,7 @@ func FeatureGroupPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 // FeatureGroupPUT handles a PUT request on a feature group entity endpoint
 func FeatureGroupPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -578,34 +538,29 @@ func FeatureGroupPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	fg := &featuregroup.Group{}
 
 	if err := parseJSONBody(r.Body, fg); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := fg.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if !fg.Location.IsZero() && fg.Location.Hex() != lID {
-		s := &Status{}
-		s.UnprocessableEntity("Location mismatch").Render(w)
+		StatusUnprocessableEntity("Location mismatch").Render(w)
 		return
 	}
 
 	if !fg.ID.IsZero() && fg.ID.Hex() != fID {
-		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Render(w)
+		StatusUnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
 	loc, err := location.GetByID(lID)
 	if err != nil {
 		if errors.Is(err, model.ErrNoResult) {
-			s := &Status{}
-			s.UnprocessableEntity("Location doesn't exist").Render(w)
+			StatusUnprocessableEntity("Location doesn't exist").Render(w)
 			return
 		}
 		handleError(err, w)
