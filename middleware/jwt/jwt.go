@@ -11,7 +11,6 @@ import (
 	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/gbrlsnchs/jwt/v3"
-	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -181,9 +180,6 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 
 		claims, err := VerifyToken(token)
 		if err != nil {
-			if !errors.Is(err, ErrExpiredToken) {
-				logger.Error(err)
-			}
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
 			return
 		}
