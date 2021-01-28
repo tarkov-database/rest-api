@@ -21,12 +21,14 @@ type Token struct {
 func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	token, err := jwt.GetToken(r)
 	if err != nil {
+		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	clm, err := jwt.VerifyToken(token)
 	if err != nil && err != jwt.ErrExpiredToken {
+		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
@@ -60,12 +62,14 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	issToken, err := jwt.GetToken(r)
 	if err != nil {
+		jwt.AddAuthenticateHeader(w, err, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	issClaims, err := jwt.VerifyToken(issToken)
 	if err != nil {
+		jwt.AddAuthenticateHeader(w, err, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
@@ -79,6 +83,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if !ok {
+		jwt.AddAuthenticateHeader(w, jwt.ErrInvalidScope, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
 		StatusForbidden("Insufficient permissions").Render(w)
 		return
 	}
