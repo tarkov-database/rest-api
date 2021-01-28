@@ -13,24 +13,23 @@ import (
 
 // Token represents the body of a token creation response
 type Token struct {
-	Token string `json:"token"`
+	Token   string `json:"token"`
+	Expires int64  `json:"expires"`
 }
 
 // TokenGET handles a GET request on the token endpoint
 func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	token, err := jwt.GetToken(r)
 	if err != nil {
-		s := &Status{}
 		jwt.AddAuthenticateHeader(w, err)
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	clm, err := jwt.VerifyToken(token)
 	if err != nil && err != jwt.ErrExpiredToken {
-		s := &Status{}
 		jwt.AddAuthenticateHeader(w, err)
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
@@ -41,42 +40,37 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if usr.Locked {
-		s := &Status{}
-		s.Forbidden("User is locked").Render(w)
+		StatusForbidden("User is locked").Render(w)
 		return
 	}
 
 	token, err = jwt.CreateToken(clm)
 	if err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(Token{token}, http.StatusCreated, w)
+	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }
 
 // TokenPOST handles a POST request on the token endpoint
 func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	issToken, err := jwt.GetToken(r)
 	if err != nil {
-		s := &Status{}
 		jwt.AddAuthenticateHeader(w, err, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
 	issClaims, err := jwt.VerifyToken(issToken)
 	if err != nil {
-		s := &Status{}
 		jwt.AddAuthenticateHeader(w, err, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
-		s.Unauthorized(err.Error()).Render(w)
+		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
@@ -89,23 +83,20 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if !ok {
-		s := &Status{}
 		jwt.AddAuthenticateHeader(w, jwt.ErrInvalidScope, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
-		s.Forbidden("Insufficient permissions").Render(w)
+		StatusForbidden("Insufficient permissions").Render(w)
 		return
 	}
 
 	clm := &jwt.Claims{}
 
 	if err := parseJSONBody(r.Body, clm); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := clm.ValidateCustom(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -116,8 +107,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if usr.Locked {
-		s := &Status{}
-		s.Forbidden("User is locked").Render(w)
+		StatusForbidden("User is locked").Render(w)
 		return
 	}
 
@@ -125,10 +115,9 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	token, err := jwt.CreateToken(clm)
 	if err != nil {
-		s := &Status{}
-		s.InternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
+		StatusInternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(Token{token}, http.StatusCreated, w)
+	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }

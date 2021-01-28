@@ -11,7 +11,6 @@ import (
 	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/gbrlsnchs/jwt/v3"
-	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -147,11 +146,11 @@ func GetToken(r *http.Request) (string, error) {
 	}
 
 	headerStr := strings.TrimSpace(header)
-	if !strings.HasPrefix(header, "Bearer") {
+	if !strings.HasPrefix(header, "Bearer ") {
 		return "", ErrInvalidAuthHeader
 	}
 
-	return strings.TrimSpace(strings.TrimPrefix(headerStr, "Bearer")), nil
+	return strings.TrimPrefix(headerStr, "Bearer "), nil
 }
 
 // VerifyToken verifies a token
@@ -199,9 +198,6 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 
 		claims, err := VerifyToken(token)
 		if err != nil {
-			if !errors.Is(err, ErrExpiredToken) {
-				logger.Error(err)
-			}
 			AddAuthenticateHeader(w, err, scope, allScope)
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
 			return

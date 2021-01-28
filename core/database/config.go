@@ -62,6 +62,10 @@ func newConfig() (*config, error) {
 	}
 
 	if c.TLS {
+		if env := os.Getenv("MONGO_CA"); len(env) > 0 {
+			c.RootCA = env
+		}
+
 		if env := os.Getenv("MONGO_CERT"); len(env) > 0 {
 			c.Certificate = env
 
@@ -69,10 +73,6 @@ func newConfig() (*config, error) {
 				c.PrivateKey = env
 			} else {
 				return c, errors.New("mongo database not set")
-			}
-
-			if env := os.Getenv("MONGO_CA"); len(env) > 0 {
-				c.RootCA = env
 			}
 		}
 	}

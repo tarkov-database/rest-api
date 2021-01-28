@@ -16,64 +16,28 @@ import (
 
 // ItemIndexGET handles a GET request on the item root endpoint
 func ItemIndexGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var err error
-	var i interface{}
+	var skipKinds bool
 
-	search := r.URL.Query().Get("search")
-	switch {
-	case len(search) > 0:
-		txt, err := url.QueryUnescape(search)
-		if err != nil {
-			s := &Status{}
-			s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
-			return
-		}
-
-		if l := len(txt); l < 3 || l > 32 {
-			s := &Status{}
-			s.BadRequest("Query string has an invalid length").Render(w)
-			return
-		}
-
-		if !isAlnumBlankPunct(txt) {
-			s := &Status{}
-			s.BadRequest("Query string contains invalid characters").Render(w)
-			return
-		}
-
-		opts := &item.Options{}
-		opts.Limit, opts.Offset = getLimitOffset(r)
-
-		i, err = item.GetByText(txt, opts)
-		if err != nil {
-			handleError(err, w)
-			return
-		}
-	default:
-		var skipKinds bool
-
-		if skip := r.URL.Query().Get("skipKinds"); len(skip) > 0 {
-			if skip == "1" {
-				skipKinds = true
-			}
-		}
-
-		i, err = item.GetIndex(skipKinds)
-		if err != nil {
-			handleError(err, w)
-			return
+	if skip := r.URL.Query().Get("skipKinds"); len(skip) > 0 {
+		if skip == "1" || skip == "true" {
+			skipKinds = true
 		}
 	}
 
-	view.RenderJSON(i, http.StatusOK, w)
+	idx, err := item.GetIndex(skipKinds)
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+
+	view.RenderJSON(idx, http.StatusOK, w)
 }
 
 // ItemGET handles a GET request on a item entity endpoint
 func ItemGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	kind := item.Kind(ps.ByName("kind"))
 	if !kind.IsValid() {
-		s := &Status{}
-		s.NotFound("Kind not found").Render(w)
+		StatusNotFound("Kind not found").Render(w)
 		return
 	}
 
@@ -93,8 +57,7 @@ func ItemsGET(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	kind := item.Kind(ps.ByName("kind"))
 	if !kind.IsValid() {
-		s := &Status{}
-		s.NotFound("Kind not found").Render(w)
+		StatusNotFound("Kind not found").Render(w)
 		return
 	}
 
@@ -107,35 +70,36 @@ Loop:
 		case "id":
 			q, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if len(q) < 24 {
-				s := &Status{}
-				s.BadRequest("ID is not valid").Render(w)
+				StatusBadRequest("ID is not valid").Render(w)
 				return
 			}
 
 			ids := strings.Split(q, ",")
 			if len(ids) > 100 {
-				s := &Status{}
-				s.BadRequest("ID limit exceeded").Render(w)
+				StatusBadRequest("ID limit exceeded").Render(w)
 				return
 			}
 
 			result, err = item.GetByIDs(ids, kind, opts)
 			if err != nil {
-				s := &Status{}
+				var res *Status
+
 				switch err {
 				case model.ErrInvalidInput:
-					s.UnprocessableEntity("Query contains an invalid ID").Render(w)
+					res = StatusUnprocessableEntity("Query contains an invalid ID")
 				case model.ErrInternalError:
-					s.InternalServerError("Network or database error").Render(w)
+					res = StatusInternalServerError("Network or database error")
 				default:
-					s.InternalServerError("Internal error").Render(w)
+					res = StatusInternalServerError("Internal error")
 				}
+
+				res.Render(w)
+
 				return
 			}
 
@@ -143,20 +107,17 @@ Loop:
 		case "text":
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(txt); l < 3 || l > 32 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(txt) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -236,8 +197,7 @@ Loop:
 			}
 		}
 		if err != nil {
-			s := &Status{}
-			s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+			StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 			return
 		}
 
@@ -254,8 +214,7 @@ Loop:
 // ItemPOST handles a POST request on a item kind endpoint
 func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -268,25 +227,21 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if entity.GetKind() != kind {
-		s := &Status{}
-		s.UnprocessableEntity("Kind mismatch").Render(w)
+		StatusUnprocessableEntity("Kind mismatch").Render(w)
 		return
 	}
 
-	err = item.Create(entity)
-	if err != nil {
+	if err = item.Create(entity); err != nil {
 		handleError(err, w)
 		return
 	}
@@ -299,8 +254,7 @@ func ItemPOST(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 // ItemPUT handles a PUT request on a item entity endpoint
 func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
@@ -313,26 +267,22 @@ func ItemPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	if err := parseJSONBody(r.Body, entity); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := entity.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	if docID := entity.GetID(); !docID.IsZero() && docID.Hex() != id {
-		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Render(w)
+		StatusUnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 
 	if entity.GetKind() != kind {
-		s := &Status{}
-		s.UnprocessableEntity("Kind mismatch").Render(w)
+		StatusUnprocessableEntity("Kind mismatch").Render(w)
 		return
 	}
 

@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/logger"
 	"github.com/tarkov-database/rest-api/core/database"
 )
 
@@ -50,42 +51,38 @@ type Service struct {
 }
 
 // GetHealth performs a self-check and returns the result
-func GetHealth() (*Health, error) {
-	var err error
-	var ok = true
-
+func GetHealth() *Health {
 	svc := &Service{}
 
-	svc.Database, err = getDatabaseStatus()
-	if err != nil {
-		return nil, err
-	}
-
-	if svc.Database != OK {
-		ok = false
-	}
-
 	health := &Health{
-		OK:      ok,
+		OK:      true,
 		Service: svc,
 	}
 
-	return health, nil
+	svc.Database = getDatabaseStatus()
+	if svc.Database != OK {
+		health.OK = false
+	}
+
+	return health
 }
 
-func getDatabaseStatus() (Status, error) {
+func getDatabaseStatus() Status {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	start := time.Now()
 
 	if err := database.Ping(ctx); err != nil {
-		return Failure, err
+		logger.Errorf("Error while checking database connection: %s", err)
+		return Failure
 	}
 
-	if time.Since(start) > latencyThreshold {
-		return Warning, nil
+	latency := time.Since(start)
+	if latency > latencyThreshold {
+		logger.Warningf("Database latency exceeds threshold with %s", latency)
+		return Warning
 	}
 
-	return OK, nil
+	return OK
 }

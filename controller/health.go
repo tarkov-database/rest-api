@@ -11,9 +11,9 @@ import (
 
 // HealthGET handles a GET request on the health endpoint
 func HealthGET(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-	h, err := api.GetHealth()
+	h := api.GetHealth()
 
-	if err != nil || !h.OK {
+	if !h.OK {
 		view.RenderJSON(h, http.StatusInternalServerError, w)
 	} else {
 		view.RenderJSON(h, http.StatusOK, w)

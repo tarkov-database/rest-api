@@ -42,15 +42,13 @@ Loop:
 		case "locked":
 			s, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			locked, err := strconv.ParseBool(s)
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(err.Error()).Render(w)
+				StatusBadRequest(err.Error()).Render(w)
 				return
 			}
 
@@ -64,20 +62,17 @@ Loop:
 		case "email":
 			addr, err := url.QueryUnescape(v[0])
 			if err != nil {
-				s := &Status{}
-				s.BadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 				return
 			}
 
 			if l := len(addr); l < 3 || l > 100 {
-				s := &Status{}
-				s.BadRequest("Query string has an invalid length").Render(w)
+				StatusBadRequest("Query string has an invalid length").Render(w)
 				return
 			}
 
 			if !isAlnumBlankPunct(addr) {
-				s := &Status{}
-				s.BadRequest("Query string contains invalid characters").Render(w)
+				StatusBadRequest("Query string contains invalid characters").Render(w)
 				return
 			}
 
@@ -105,22 +100,19 @@ Loop:
 // UserPOST handles a POST request on the user root endpoint
 func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	usr := &user.User{}
 
 	if err := parseJSONBody(r.Body, usr); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
@@ -137,30 +129,26 @@ func UserPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // UserPUT handles a PUT request on a user entity endpoint
 func UserPUT(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if !isSupportedMediaType(r) {
-		s := &Status{}
-		s.UnsupportedMediaType("Wrong content type").Render(w)
+		StatusUnsupportedMediaType("Wrong content type").Render(w)
 		return
 	}
 
 	usr := &user.User{}
 
 	if err := parseJSONBody(r.Body, usr); err != nil {
-		s := &Status{}
-		s.BadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
 
 	if err := usr.Validate(); err != nil {
-		s := &Status{}
-		s.UnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
+		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
 
 	id := ps.ByName("id")
 
 	if !usr.ID.IsZero() && usr.ID.Hex() != id {
-		s := &Status{}
-		s.UnprocessableEntity("ID mismatch").Render(w)
+		StatusUnprocessableEntity("ID mismatch").Render(w)
 		return
 	}
 

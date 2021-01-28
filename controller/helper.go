@@ -52,21 +52,24 @@ func isAlnumBlankPunct(s string) bool {
 }
 
 func handleError(err error, w http.ResponseWriter) {
-	s := &Status{}
+	var res *Status
+
 	switch err {
 	case model.ErrNoResult:
-		s.NotFound("Resource(s) not found").Render(w)
+		res = StatusNotFound("Resource(s) not found")
 	case model.ErrInvalidKind:
-		s.NotFound("Kind is not valid").Render(w)
+		res = StatusNotFound("Kind is not valid")
 	case model.ErrInvalidObjectID:
-		s.NotFound("Resource ID is not valid").Render(w)
+		res = StatusNotFound("Resource ID is not valid")
 	case model.ErrInvalidInput:
-		s.UnprocessableEntity("Input is not valid").Render(w)
+		res = StatusUnprocessableEntity("Input is not valid")
 	case model.ErrInternalError:
-		s.InternalServerError("Backend error").Render(w)
+		res = StatusInternalServerError("Backend error")
 	default:
-		s.InternalServerError("Internal error").Render(w)
+		res = StatusInternalServerError("Internal error")
 	}
+
+	res.Render(w)
 }
 
 func isSupportedMediaType(r *http.Request) bool {

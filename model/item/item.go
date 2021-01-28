@@ -137,32 +137,12 @@ func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
 }
 
 // GetByText returns a result based on given keyword
-func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
+func GetByText(q string, opts *Options, kind Kind) (*model.Result, error) {
 	c := database.GetDB().Collection(Collection)
 
 	findOpts := options.Find()
 	findOpts.SetLimit(opts.Limit)
 	findOpts.SetSort(opts.Sort)
-
-	var kind Kind
-	if len(k) > 0 {
-		kind = k[0]
-	}
-
-	if kind.IsEmpty() {
-		findOpts.SetProjection(bson.M{
-			"name":        1,
-			"shortName":   1,
-			"description": 1,
-			"price":       1,
-			"weight":      1,
-			"maxStack":    1,
-			"rarity":      1,
-			"grid":        1,
-			"_modified":   1,
-			"_kind":       1,
-		})
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -172,23 +152,12 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	q = regexp.QuoteMeta(q)
 	re := strings.Join(strings.Split(q, " "), ".")
 
-	var filter bson.D
-
-	if !kind.IsEmpty() {
-		filter = bson.D{
-			{"_kind", kind},
-			{"$or", bson.A{
-				bson.M{"shortName": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
-				bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
-			}},
-		}
-	} else {
-		filter = bson.D{
-			{"$or", bson.A{
-				bson.M{"shortName": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
-				bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
-			}},
-		}
+	filter := bson.D{
+		{"_kind", kind},
+		{"$or", bson.A{
+			bson.M{"shortName": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+			bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+		}},
 	}
 
 	count, err := c.CountDocuments(ctx, filter)
@@ -200,21 +169,12 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	re = strings.Join(strings.Split(q, " "), "|")
 
 	if count == 0 {
-		if !kind.IsEmpty() {
-			filter = bson.D{
-				{"_kind", kind},
-				{"$and", bson.A{
-					bson.M{"$text": bson.M{"$search": q}},
-					bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
-				}},
-			}
-		} else {
-			filter = bson.D{
-				{"$and", bson.A{
-					bson.M{"$text": bson.M{"$search": q}},
-					bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
-				}},
-			}
+		filter = bson.D{
+			{"_kind", kind},
+			{"$and", bson.A{
+				bson.M{"$text": bson.M{"$search": q}},
+				bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
+			}},
 		}
 	}
 
@@ -227,15 +187,9 @@ func GetByText(q string, opts *Options, k ...Kind) (*model.Result, error) {
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
-		var item Entity
-
-		if !kind.IsEmpty() {
-			item, err = kind.GetEntity()
-			if err != nil {
-				return r, err
-			}
-		} else {
-			item = &Item{}
+		item, err := kind.GetEntity()
+		if err != nil {
+			return r, err
 		}
 
 		if err := cur.Decode(item); err != nil {
