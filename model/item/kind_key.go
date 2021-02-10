@@ -10,4 +10,5 @@ type Key struct {
 	Item `bson:",inline"`
 
 	Location string `json:"location" bson:"location"`
+	Usages   int64  `json:"usages,omitempty" bson:"usages,omitempty"`
 }
