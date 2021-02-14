@@ -159,7 +159,7 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 
 	now := time.Now()
 
-	expVal := jwt.ExpirationTimeValidator(now)
+	expVal := jwt.ExpirationTimeValidator(now.Add(-cfg.Leeway))
 	audVal := jwt.AudienceValidator(cfg.Audience)
 
 	valPayload := jwt.ValidatePayload(&claims.Payload, expVal, audVal)

@@ -27,6 +27,7 @@ type config struct {
 	Algorithm      jwt.Algorithm
 	Audience       jwt.Audience
 	ExpirationTime time.Duration
+	Leeway         time.Duration
 }
 
 func newConfig() (*config, error) {
@@ -60,6 +61,16 @@ func newConfig() (*config, error) {
 		c.ExpirationTime = d
 	} else {
 		c.ExpirationTime = 30 * time.Minute
+	}
+
+	if env := os.Getenv("JWT_LEEWAY"); len(env) > 0 {
+		d, err := time.ParseDuration(env)
+		if err != nil {
+			return c, fmt.Errorf("jwt leeway value is not valid: %s", err)
+		}
+		c.Leeway = d
+	} else {
+		c.Leeway = 30 * time.Second
 	}
 
 	return c, nil
