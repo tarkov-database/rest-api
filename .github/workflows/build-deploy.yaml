@@ -24,7 +24,7 @@ jobs:
         run: docker build -t docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${GITHUB_REF#refs/tags/v} .
 
       - name: Publish image
-        run: docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}
+        run: docker push --all-tags docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}
 
       - name: Logout
         run: docker logout docker.pkg.github.com
