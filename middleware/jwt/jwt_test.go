@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	logger.Init("default", false, false, ioutil.Discard)
+	logger.Init("default", false, false, io.Discard)
 }
 
 const badToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/tarkov-database/rest-api/core/database"
 	"github.com/tarkov-database/rest-api/core/server"
@@ -14,7 +14,7 @@ import (
 func main() {
 	fmt.Printf("Starting up Tarkov Database REST API %s\n\n", api.Version)
 
-	defLog := logger.Init("default", true, false, ioutil.Discard)
+	defLog := logger.Init("default", true, false, io.Discard)
 	defer defLog.Close()
 
 	if err := database.Init(); err != nil {

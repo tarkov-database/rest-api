@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"testing"
@@ -32,7 +32,7 @@ var (
 )
 
 func init() {
-	logger.Init("default", false, false, ioutil.Discard)
+	logger.Init("default", false, false, io.Discard)
 }
 
 func mongoStartup() {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -101,7 +101,7 @@ func TestParseJSONBody(t *testing.T) {
 
 	testOut := testObject{}
 
-	err = parseJSONBody(ioutil.NopCloser(bytes.NewReader(b)), &testOut)
+	err = parseJSONBody(io.NopCloser(bytes.NewReader(b)), &testOut)
 	if err != nil {
 		t.Errorf("Parsing JSON body failed: %s", err)
 	}
