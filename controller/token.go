@@ -92,7 +92,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	lt, err := rb.Duration()
 	if err != nil {
-		StatusUnprocessableEntity(fmt.Sprintf("Parsing error: %s", err)).Render(w)
+		StatusBadRequest(fmt.Sprintf("Parsing error: %s", err)).Render(w)
 		return
 	}
 
