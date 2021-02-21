@@ -109,10 +109,6 @@ type Claims struct {
 
 // ValidateCustom validates the custom claims of a token
 func (c *Claims) ValidateCustom() error {
-	if len(c.Scope) == 0 {
-		return ErrInvalidScope
-	}
-
 	for _, s := range c.Scope {
 		if !isScopeValid(s) {
 			return ErrInvalidScope
@@ -199,7 +195,10 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 			return
 		}
 
-		allScope := fmt.Sprintf("%s:all", strings.SplitN(scope, ":", 2)[0])
+		var allScope string
+		if scope != "" {
+			allScope = fmt.Sprintf("%s:all", strings.SplitN(scope, ":", 2)[0])
+		}
 
 		claims, err := VerifyToken(token)
 		if err != nil {
@@ -209,10 +208,14 @@ func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 		}
 
 		var ok bool
-		for _, s := range claims.Scope {
-			if s == scope || s == allScope {
-				ok = true
-				break
+		if scope == "" {
+			ok = true
+		} else {
+			for _, s := range claims.Scope {
+				if s == scope || s == allScope {
+					ok = true
+					break
+				}
 			}
 		}
 
