@@ -21,7 +21,7 @@ const badToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwI
 func TestTokenCreateVerify(t *testing.T) {
 	claimsIn := &Claims{}
 
-	token, err := CreateToken(claimsIn)
+	token, err := CreateToken(claimsIn, nil)
 	if err != nil {
 		t.Errorf("Token creation failed: %v", err)
 	}
@@ -61,7 +61,7 @@ func TestAuhtorizationHandler(t *testing.T) {
 		},
 	}
 
-	validToken, err := CreateToken(validClaims)
+	validToken, err := CreateToken(validClaims, nil)
 	if err != nil {
 		t.Fatalf("Getting token failed: %s", err)
 	}
@@ -103,7 +103,7 @@ func TestAuhtorizationHandler(t *testing.T) {
 		},
 	}
 
-	invalidToken, err := CreateToken(invalidClaims)
+	invalidToken, err := CreateToken(invalidClaims, nil)
 	if err != nil {
 		t.Fatalf("Authorization handler failed: %s", err)
 	}

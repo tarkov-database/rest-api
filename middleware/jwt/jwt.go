@@ -123,12 +123,17 @@ func (c *Claims) ValidateCustom() error {
 }
 
 // CreateToken creates a new token
-func CreateToken(c *Claims) (string, error) {
+func CreateToken(c *Claims, d *time.Duration) (string, error) {
 	now := time.Now()
 
 	c.Audience = cfg.Audience
 	c.IssuedAt = jwt.NumericDate(now)
-	c.ExpirationTime = jwt.NumericDate(now.Add(cfg.ExpirationTime))
+
+	if d != nil {
+		c.ExpirationTime = jwt.NumericDate(now.Add(*d))
+	} else {
+		c.ExpirationTime = jwt.NumericDate(now.Add(cfg.ExpirationTime))
+	}
 
 	t, err := jwt.Sign(c, cfg.Algorithm)
 	if err != nil {

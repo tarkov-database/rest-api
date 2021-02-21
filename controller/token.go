@@ -5,28 +5,23 @@ import (
 	"net/http"
 
 	"github.com/tarkov-database/rest-api/middleware/jwt"
+	"github.com/tarkov-database/rest-api/model/token"
 	"github.com/tarkov-database/rest-api/model/user"
 	"github.com/tarkov-database/rest-api/view"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-// Token represents the body of a token creation response
-type Token struct {
-	Token   string `json:"token"`
-	Expires int64  `json:"expires"`
-}
-
 // TokenGET handles a GET request on the token endpoint
 func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	token, err := jwt.GetToken(r)
+	t, err := jwt.GetToken(r)
 	if err != nil {
 		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
 	}
 
-	clm, err := jwt.VerifyToken(token)
+	clm, err := jwt.VerifyToken(t)
 	if err != nil && err != jwt.ErrExpiredToken {
 		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
@@ -44,13 +39,13 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	token, err = jwt.CreateToken(clm)
+	t, err = jwt.CreateToken(clm, nil)
 	if err != nil {
 		StatusUnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
+	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }
 
 // TokenPOST handles a POST request on the token endpoint
@@ -88,12 +83,20 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	clm := &jwt.Claims{}
+	rb := &token.Request{}
 
-	if err := parseJSONBody(r.Body, clm); err != nil {
+	if err := parseJSONBody(r.Body, rb); err != nil {
 		StatusBadRequest(fmt.Sprintf("JSON parsing error: %s", err)).Render(w)
 		return
 	}
+
+	lt, err := rb.Duration()
+	if err != nil {
+		StatusUnprocessableEntity(fmt.Sprintf("Parsing error: %s", err)).Render(w)
+		return
+	}
+
+	clm := rb.ToClaims()
 
 	if err := clm.ValidateCustom(); err != nil {
 		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
@@ -113,11 +116,11 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	clm.Issuer = issClaims.Issuer
 
-	token, err := jwt.CreateToken(clm)
+	t, err := jwt.CreateToken(clm, lt)
 	if err != nil {
 		StatusInternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(Token{token, clm.ExpirationTime.Unix()}, http.StatusCreated, w)
+	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpirationTime.Unix()}, http.StatusCreated, w)
 }

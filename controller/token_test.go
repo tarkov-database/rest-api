@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/tarkov-database/rest-api/middleware/jwt"
+	"github.com/tarkov-database/rest-api/model/token"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -19,13 +21,13 @@ func TestTokenGET(t *testing.T) {
 	clmIn := &jwt.Claims{}
 	clmIn.Subject = userID.Hex()
 
-	token, err := jwt.CreateToken(clmIn)
+	tkn, err := jwt.CreateToken(clmIn, nil)
 	if err != nil {
 		t.Fatalf("Getting token failed: %s", err)
 	}
 
 	header := http.Header{}
-	header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	header.Add("Authorization", fmt.Sprintf("Bearer %s", tkn))
 
 	w := httptest.NewRecorder()
 
@@ -41,7 +43,7 @@ func TestTokenGET(t *testing.T) {
 		t.Error("Getting token failed: content type is invalid")
 	}
 
-	output := &Token{}
+	output := &token.Response{}
 
 	if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
 		t.Fatalf("Getting token failed: %s", err)
@@ -69,16 +71,17 @@ func TestTokenPOST(t *testing.T) {
 	}
 	clm.Subject = userID.Hex()
 
-	token, err := jwt.CreateToken(clm)
+	tkn, err := jwt.CreateToken(clm, nil)
 	if err != nil {
 		t.Fatalf("Creating token failed: %s", err)
 	}
 
-	input := &jwt.Claims{
+	input := &token.Request{
 		Scope: []string{
 			jwt.ScopeAllRead,
 			jwt.ScopeAllWrite,
 		},
+		ExpiresIn: "24h",
 	}
 	input.Subject = userID.Hex()
 
@@ -88,7 +91,7 @@ func TestTokenPOST(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "http://example.com/v2/token", buf)
 	req.Header.Set("Content-Type", contentTypeJSON)
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tkn))
 
 	w := httptest.NewRecorder()
 
@@ -104,7 +107,7 @@ func TestTokenPOST(t *testing.T) {
 		t.Error("Creating token failed: content type is invalid")
 	}
 
-	output := &Token{}
+	output := &token.Response{}
 
 	if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
 		t.Fatalf("Creating token failed: %s", err)
@@ -117,5 +120,11 @@ func TestTokenPOST(t *testing.T) {
 
 	if clmOut.Subject != input.Subject {
 		t.Error("Getting token failed: subject invalid")
+	}
+
+	d := clmOut.ExpirationTime.Sub(time.Now())
+
+	if d.Round(time.Hour) != 24*time.Hour {
+		t.Error("Getting token failed: lifetime mismatch")
 	}
 }
