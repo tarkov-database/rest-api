@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/tarkov-database/rest-api/core/database"
+	"github.com/tarkov-database/rest-api/core/health"
 	"github.com/tarkov-database/rest-api/core/server"
 	"github.com/tarkov-database/rest-api/model/api"
 
@@ -25,6 +26,8 @@ func main() {
 			logger.Errorf("Database shutdown error: %s", err)
 		}
 	}()
+
+	health.InitChecks()
 
 	if err := server.ListenAndServe(); err != nil {
 		logger.Errorf("HTTP server error: %s", err)

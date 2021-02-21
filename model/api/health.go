@@ -24,7 +24,7 @@ func GetHealth() *Health {
 		Service: svc,
 	}
 
-	svc.Database = health.GetDBStatus()
+	svc.Database = health.DatabaseStatus()
 	if svc.Database != health.OK {
 		h.OK = false
 	}

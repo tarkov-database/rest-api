@@ -11,11 +11,11 @@ import (
 )
 
 var (
-	databaseStatus = Failure
+	databaseStatus = OK
 )
 
-// GetDBStatus returns the database status of the last health check
-func GetDBStatus() Status {
+// DatabaseStatus returns the database status of the last health check
+func DatabaseStatus() Status {
 	return databaseStatus
 }
 
@@ -23,7 +23,7 @@ func scheduler(t *time.Ticker, c chan os.Signal) {
 	for {
 		select {
 		case <-t.C:
-			databaseStatus = getDatabaseStatus()
+			updateStatus()
 		case <-c:
 			t.Stop()
 			return
@@ -31,8 +31,17 @@ func scheduler(t *time.Ticker, c chan os.Signal) {
 	}
 }
 
+func updateStatus() {
+	databaseStatus = getDatabaseStatus()
+}
+
 func getDatabaseStatus() Status {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	timeout := 30 * time.Second
+	if cfg.updateInterval < timeout {
+		timeout = cfg.updateInterval
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	start := time.Now()
@@ -43,7 +52,7 @@ func getDatabaseStatus() Status {
 	}
 
 	latency := time.Since(start)
-	if latency > latencyThreshold {
+	if latency > cfg.latencyThreshold {
 		logger.Warningf("Database latency exceeds threshold with %s", latency)
 		return Warning
 	}
