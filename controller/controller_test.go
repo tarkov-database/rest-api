@@ -10,6 +10,8 @@ import (
 
 	"github.com/tarkov-database/rest-api/core/database"
 	"github.com/tarkov-database/rest-api/model"
+	"github.com/tarkov-database/rest-api/model/hideout/module"
+	"github.com/tarkov-database/rest-api/model/hideout/production"
 	"github.com/tarkov-database/rest-api/model/item"
 	"github.com/tarkov-database/rest-api/model/location"
 	"github.com/tarkov-database/rest-api/model/location/feature"
@@ -26,6 +28,8 @@ const contentTypeJSON = "application/json"
 var (
 	itemIDs         []primitive.ObjectID
 	userIDs         []primitive.ObjectID
+	moduleIDs       []primitive.ObjectID
+	productionIDs   []primitive.ObjectID
 	locationIDs     []primitive.ObjectID
 	featureIDs      []primitive.ObjectID
 	featureGroupIDs []primitive.ObjectID
@@ -42,6 +46,8 @@ func mongoStartup() {
 
 	createUsers()
 	createItems()
+	createModules()
+	createProductions()
 	createLocations()
 	createFeatureGroups()
 	createFeatures()
@@ -49,6 +55,8 @@ func mongoStartup() {
 
 func mongoCleanup() {
 	removeItems()
+	removeModules()
+	removeProductions()
 	removeLocations()
 	removeFeatures()
 	removeFeatureGroups()
@@ -75,6 +83,42 @@ func removeItemID(id primitive.ObjectID) {
 	}
 
 	itemIDs = new
+}
+
+func createModuleID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	moduleIDs = append(moduleIDs, id)
+
+	return id
+}
+
+func removeModuleID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(moduleIDs)-1)
+	for _, k := range moduleIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	moduleIDs = new
+}
+
+func createProductionID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	productionIDs = append(productionIDs, id)
+
+	return id
+}
+
+func removeProductionID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(productionIDs)-1)
+	for _, k := range productionIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	productionIDs = new
 }
 
 func createLocationID() primitive.ObjectID {
@@ -180,6 +224,70 @@ func removeItems() {
 	defer cancel()
 
 	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": itemIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createModules() {
+	c := database.GetDB().Collection(module.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	moduleA := module.Module{
+		ID:       createModuleID(),
+		Name:     "module a",
+		Modified: model.Timestamp{time.Now()},
+	}
+	moduleB := module.Module{
+		ID:       createModuleID(),
+		Name:     "module b",
+		Modified: model.Timestamp{time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{moduleA, moduleB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeModules() {
+	c := database.GetDB().Collection(module.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": moduleIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createProductions() {
+	c := database.GetDB().Collection(production.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	prodA := production.Production{
+		ID:       createProductionID(),
+		Modified: model.Timestamp{time.Now()},
+	}
+	prodB := production.Production{
+		ID:       createProductionID(),
+		Modified: model.Timestamp{time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{prodA, prodB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeProductions() {
+	c := database.GetDB().Collection(production.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": moduleIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
 	}
 }
