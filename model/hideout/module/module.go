@@ -252,14 +252,19 @@ func GetAll(opts *Options) (*model.Result, error) {
 	return getManyByFilter(bson.D{}, opts)
 }
 
-// GetByModule returns a result based on module
-func GetByModule(id string, opts *Options) (*model.Result, error) {
-	objID, err := model.ToObjectID(id)
-	if err != nil {
-		return &model.Result{}, err
+// GetByIDs returns a result by given IDs
+func GetByIDs(ids []string, opts *Options) (*model.Result, error) {
+	objIDs := make([]objectID, len(ids))
+	for i, id := range ids {
+		objID, err := model.ToObjectID(id)
+		if err != nil {
+			return &model.Result{}, err
+		}
+
+		objIDs[i] = objID
 	}
 
-	return getManyByFilter(bson.M{"module": objID}, opts)
+	return getManyByFilter(bson.M{"_id": bson.M{"$in": objIDs}}, opts)
 }
 
 // GetByMaterial returns a result based on stage materials

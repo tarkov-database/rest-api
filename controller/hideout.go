@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/model/hideout/module"
@@ -36,6 +37,43 @@ func ModulesGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 Loop:
 	for p, v := range r.URL.Query() {
 		switch p {
+		case "id":
+			q, err := url.QueryUnescape(v[0])
+			if err != nil {
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			if len(q) < 24 {
+				StatusBadRequest("ID is not valid").Render(w)
+				return
+			}
+
+			ids := strings.Split(q, ",")
+			if len(ids) > 100 {
+				StatusBadRequest("ID limit exceeded").Render(w)
+				return
+			}
+
+			result, err = module.GetByIDs(ids, opts)
+			if err != nil {
+				var res *Status
+
+				switch err {
+				case model.ErrInvalidInput:
+					res = StatusUnprocessableEntity("Query contains an invalid ID")
+				case model.ErrInternalError:
+					res = StatusInternalServerError("Network or database error")
+				default:
+					res = StatusInternalServerError("Internal error")
+				}
+
+				res.Render(w)
+
+				return
+			}
+
+			break Loop
 		case "text":
 			txt, err := url.QueryUnescape(v[0])
 			if err != nil {
@@ -189,6 +227,43 @@ func ProductionsGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 Loop:
 	for p, v := range r.URL.Query() {
 		switch p {
+		case "id":
+			q, err := url.QueryUnescape(v[0])
+			if err != nil {
+				StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
+				return
+			}
+
+			if len(q) < 24 {
+				StatusBadRequest("ID is not valid").Render(w)
+				return
+			}
+
+			ids := strings.Split(q, ",")
+			if len(ids) > 100 {
+				StatusBadRequest("ID limit exceeded").Render(w)
+				return
+			}
+
+			result, err = production.GetByIDs(ids, opts)
+			if err != nil {
+				var res *Status
+
+				switch err {
+				case model.ErrInvalidInput:
+					res = StatusUnprocessableEntity("Query contains an invalid ID")
+				case model.ErrInternalError:
+					res = StatusInternalServerError("Network or database error")
+				default:
+					res = StatusInternalServerError("Internal error")
+				}
+
+				res.Render(w)
+
+				return
+			}
+
+			break Loop
 		case "module":
 			mod, err := url.QueryUnescape(v[0])
 			if err != nil {
