@@ -50,6 +50,7 @@ func (m Module) Validate() error {
 // Stage describes a stage of a module
 type Stage struct {
 	Description      string        `json:"description" bson:"description"`
+	Bonuses          []Bonus       `json:"bonuses" bson:"bonuses"`
 	Requirements     []Requirement `json:"requirements" bson:"requirements"`
 	RequiredModules  []Ref         `json:"requiredMods" bson:"requiredMods"`
 	Materials        []ItemRef     `json:"materials" bson:"materials"`
@@ -79,6 +80,25 @@ func (s Stage) Validate() error {
 	return nil
 }
 
+// Bonus describes a bonus of a stage
+type Bonus struct {
+	Description string  `json:"description" bson:"description"`
+	Value       float64 `json:"value,omitempty" bson:"value,omitempty"`
+	Type        string  `json:"type" bson:"type"`
+}
+
+// Validate validates the fields of a module bonus
+func (b Bonus) Validate() error {
+	if b.Type == "" {
+		return errors.New("type is missing")
+	}
+	if len(b.Description) < 3 {
+		return errors.New("name is too short or not set")
+	}
+
+	return nil
+}
+
 // Requirement describes a requirement of different types of a stage
 type Requirement struct {
 	Name  string `json:"name" bson:"name"`
@@ -86,7 +106,7 @@ type Requirement struct {
 	Type  string `json:"type" bson:"type"`
 }
 
-// Validate validates the fields of a module
+// Validate validates the fields of a module requirement
 func (r Requirement) Validate() error {
 	if r.Type == "" {
 		return errors.New("type is missing")
