@@ -58,6 +58,12 @@ const (
 	// ScopeItemWrite represents the item write permission scope
 	ScopeItemWrite = "write:item"
 
+	// ScopeHideoutRead represents the hideout read permission scope
+	ScopeHideoutRead = "read:hideout"
+
+	// ScopeHideoutWrite represents the hideout write permission scope
+	ScopeHideoutWrite = "write:hideout"
+
 	// ScopeLocationRead represents the location read permission scope
 	ScopeLocationRead = "read:location"
 

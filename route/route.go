@@ -34,6 +34,20 @@ func routes() *httprouter.Router {
 	r.PUT(prefix+"/item/:kind/:id", auth(jwt.ScopeItemWrite, cntrl.ItemPUT))
 	r.DELETE(prefix+"/item/:id", auth(jwt.ScopeItemWrite, cntrl.ItemDELETE))
 
+	// Hideout module
+	r.GET(prefix+"/hideout/module", auth(jwt.ScopeHideoutRead, cntrl.ModulesGET))
+	r.GET(prefix+"/hideout/module/:id", auth(jwt.ScopeHideoutRead, cntrl.ModuleGET))
+	r.POST(prefix+"/hideout/module", auth(jwt.ScopeHideoutWrite, cntrl.ModulePOST))
+	r.PUT(prefix+"/hideout/module/:id", auth(jwt.ScopeHideoutWrite, cntrl.ModulePUT))
+	r.DELETE(prefix+"/hideout/module/:id", auth(jwt.ScopeHideoutWrite, cntrl.ModuleDELETE))
+
+	// Hideout production
+	r.GET(prefix+"/hideout/production", auth(jwt.ScopeHideoutRead, cntrl.ProductionsGET))
+	r.GET(prefix+"/hideout/production/:id", auth(jwt.ScopeHideoutRead, cntrl.ProductionGET))
+	r.POST(prefix+"/hideout/production", auth(jwt.ScopeHideoutWrite, cntrl.ProductionPOST))
+	r.PUT(prefix+"/hideout/production/:id", auth(jwt.ScopeHideoutWrite, cntrl.ProductionPUT))
+	r.DELETE(prefix+"/hideout/production/:id", auth(jwt.ScopeHideoutWrite, cntrl.ProductionDELETE))
+
 	// Location
 	r.GET(prefix+"/location", auth(jwt.ScopeLocationRead, cntrl.LocationsGET))
 	r.GET(prefix+"/location/:id", auth(jwt.ScopeLocationRead, cntrl.LocationGET))
