@@ -322,14 +322,14 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
-		loc := &Module{}
+		mod := &Module{}
 
-		if err := cur.Decode(loc); err != nil {
+		if err := cur.Decode(mod); err != nil {
 			logger.Error(err)
 			return r, model.MongoToAPIError(err)
 		}
 
-		r.Items = append(r.Items, loc)
+		r.Items = append(r.Items, mod)
 	}
 
 	if err := cur.Err(); err != nil {
