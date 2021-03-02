@@ -123,14 +123,14 @@ func GetAll(filter map[string]interface{}, k Kind, opts *Options) (*model.Result
 
 // GetByIDs returns a result by given IDs
 func GetByIDs(ids []string, k Kind, opts *Options) (*model.Result, error) {
-	objIDs := make([]objectID, 0, len(ids))
-	for _, id := range ids {
+	objIDs := make([]objectID, len(ids))
+	for i, id := range ids {
 		objID, err := model.ToObjectID(id)
 		if err != nil {
 			return &model.Result{}, err
 		}
 
-		objIDs = append(objIDs, objID)
+		objIDs[i] = objID
 	}
 
 	return getManyByFilter(bson.M{"_id": bson.M{"$in": objIDs}, "_kind": k}, k, opts)
