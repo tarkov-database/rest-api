@@ -92,6 +92,10 @@ func isScopeValid(s string) bool {
 		valid = true
 	case ScopeItemWrite:
 		valid = true
+	case ScopeHideoutRead:
+		valid = true
+	case ScopeHideoutWrite:
+		valid = true
 	case ScopeLocationRead:
 		valid = true
 	case ScopeLocationWrite:
