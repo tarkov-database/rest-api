@@ -18,8 +18,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var errInvalidLocationID = errors.New("invalid location id")
-
 // LocationGET handles a GET request on a location entity endpoint
 func LocationGET(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	loc, err := location.GetByID(ps.ByName("id"))
