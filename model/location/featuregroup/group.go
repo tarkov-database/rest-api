@@ -187,8 +187,8 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 	var filter bson.D
 
 	filter = bson.D{
-		{"_location", lID},
-		{"name", primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+		{Key: "_location", Value: lID},
+		{Key: "name", Value: primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
 	}
 
 	count, err := c.CountDocuments(ctx, filter)
@@ -201,10 +201,10 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 
 	if count == 0 {
 		filter = bson.D{
-			{"_location", lID},
-			{"$and", bson.A{
+			{Key: "_location", Value: lID},
+			{Key: "$and", Value: bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
-				bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
+				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "gim"}},
 			}},
 		}
 	}
@@ -246,7 +246,7 @@ func Create(ft *Group) error {
 		ft.ID = primitive.NewObjectID()
 	}
 
-	ft.Modified = timestamp{time.Now()}
+	ft.Modified = timestamp{Time: time.Now()}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -270,7 +270,7 @@ func Replace(id string, fg *Group) error {
 		fg.ID = objID
 	}
 
-	fg.Modified = timestamp{time.Now()}
+	fg.Modified = timestamp{Time: time.Now()}
 
 	c := database.GetDB().Collection(Collection)
 

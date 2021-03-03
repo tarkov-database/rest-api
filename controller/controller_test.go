@@ -202,13 +202,13 @@ func createItems() {
 	itemA := item.Item{
 		ID:       createItemID(),
 		Name:     "item a",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 		Kind:     item.KindCommon,
 	}
 	itemB := item.Item{
 		ID:       createItemID(),
 		Name:     "item b",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 		Kind:     item.KindCommon,
 	}
 
@@ -237,12 +237,12 @@ func createModules() {
 	moduleA := module.Module{
 		ID:       createModuleID(),
 		Name:     "module a",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 	moduleB := module.Module{
 		ID:       createModuleID(),
 		Name:     "module b",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{moduleA, moduleB}); err != nil {
@@ -269,11 +269,11 @@ func createProductions() {
 
 	prodA := production.Production{
 		ID:       createProductionID(),
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 	prodB := production.Production{
 		ID:       createProductionID(),
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{prodA, prodB}); err != nil {
@@ -301,12 +301,12 @@ func createLocations() {
 	locationA := location.Location{
 		ID:       createLocationID(),
 		Name:     "location a",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 	locationB := location.Location{
 		ID:       createLocationID(),
 		Name:     "location b",
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{locationA, locationB}); err != nil {
@@ -340,7 +340,7 @@ func createFeatures() {
 			Coordinates: createFeatureCoords(),
 		},
 		Location: locationIDs[0],
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 	featureB := feature.Feature{
 		ID:    createFeatureID(),
@@ -351,7 +351,7 @@ func createFeatures() {
 			Coordinates: createFeatureCoords(),
 		},
 		Location: locationIDs[0],
-		Modified: model.Timestamp{time.Now()},
+		Modified: model.Timestamp{Time: time.Now()},
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{featureA, featureB}); err != nil {
@@ -392,7 +392,7 @@ func createFeatureGroups() {
 		Description: "description of a",
 		Tags:        []string{"test"},
 		Location:    locationIDs[0],
-		Modified:    model.Timestamp{time.Now()},
+		Modified:    model.Timestamp{Time: time.Now()},
 	}
 	groupB := featuregroup.Group{
 		ID:          createFeatureGroupID(),
@@ -400,7 +400,7 @@ func createFeatureGroups() {
 		Description: "description of b",
 		Tags:        []string{"test"},
 		Location:    locationIDs[0],
-		Modified:    model.Timestamp{time.Now()},
+		Modified:    model.Timestamp{Time: time.Now()},
 	}
 
 	if _, err := c.InsertMany(ctx, bson.A{groupA, groupB}); err != nil {

@@ -274,7 +274,7 @@ func GetByMaterial(id string, opts *Options) (*model.Result, error) {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.D{{"stages.materials.id", objID}}, opts)
+	return getManyByFilter(bson.D{{Key: "stages.materials.id", Value: objID}}, opts)
 }
 
 // GetByText returns a result based on given keyword
@@ -295,7 +295,7 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 
 	var filter interface{}
 
-	filter = bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}}
+	filter = bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}}
 
 	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {
@@ -307,7 +307,7 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 
 	if count == 0 {
 		filter = bson.D{
-			{"$and", bson.A{
+			{Key: "$and", Value: bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
 			}},
 		}
@@ -350,7 +350,7 @@ func Create(mod *Module) error {
 		mod.ID = primitive.NewObjectID()
 	}
 
-	mod.Modified = timestamp{time.Now()}
+	mod.Modified = timestamp{Time: time.Now()}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -374,7 +374,7 @@ func Replace(id string, mod *Module) error {
 		mod.ID = objID
 	}
 
-	mod.Modified = timestamp{time.Now()}
+	mod.Modified = timestamp{Time: time.Now()}
 
 	c := database.GetDB().Collection(Collection)
 

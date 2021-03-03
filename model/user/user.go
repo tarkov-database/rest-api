@@ -156,7 +156,7 @@ func Create(user *User) error {
 		user.ID = primitive.NewObjectID()
 	}
 
-	user.Modified = timestamp{time.Now()}
+	user.Modified = timestamp{Time: time.Now()}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -180,7 +180,7 @@ func Replace(id string, user *User) error {
 		user.ID = objID
 	}
 
-	user.Modified = timestamp{time.Now()}
+	user.Modified = timestamp{Time: time.Now()}
 
 	c := database.GetDB().Collection(Collection)
 

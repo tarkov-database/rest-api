@@ -64,7 +64,11 @@ func (i *Index) WithKinds(c *mongo.Collection) error {
 
 	s3["kinds"] = kinds
 
-	pipeline := mongo.Pipeline{{{"$sort", s1}}, {{"$facet", s2}}, {{"$project", s3}}}
+	pipeline := mongo.Pipeline{
+		{{Key: "$sort", Value: s1}},
+		{{Key: "$facet", Value: s2}},
+		{{Key: "$project", Value: s3}},
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

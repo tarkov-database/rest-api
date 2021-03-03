@@ -153,10 +153,10 @@ func GetByText(q string, opts *Options, kind Kind) (*model.Result, error) {
 	re := strings.Join(strings.Split(q, " "), ".")
 
 	filter := bson.D{
-		{"_kind", kind},
-		{"$or", bson.A{
-			bson.M{"shortName": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
-			bson.M{"name": primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+		{Key: "_kind", Value: kind},
+		{Key: "$or", Value: bson.A{
+			bson.M{"shortName": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
+			bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
 		}},
 	}
 
@@ -170,10 +170,10 @@ func GetByText(q string, opts *Options, kind Kind) (*model.Result, error) {
 
 	if count == 0 {
 		filter = bson.D{
-			{"_kind", kind},
-			{"$and", bson.A{
+			{Key: "_kind", Value: kind},
+			{Key: "$and", Value: bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
-				bson.M{"description": primitive.Regex{fmt.Sprintf("(%s)", re), "gim"}},
+				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "gim"}},
 			}},
 		}
 	}
@@ -218,7 +218,7 @@ func Create(e Entity) error {
 		e.SetID(primitive.NewObjectID())
 	}
 
-	e.SetModified(timestamp{time.Now()})
+	e.SetModified(timestamp{Time: time.Now()})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -242,7 +242,7 @@ func Replace(id string, e Entity) error {
 		e.SetID(objID)
 	}
 
-	e.SetModified(timestamp{time.Now()})
+	e.SetModified(timestamp{Time: time.Now()})
 
 	c := database.GetDB().Collection(Collection)
 

@@ -188,8 +188,8 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 	var filter bson.D
 
 	filter = bson.D{
-		{"_location", lID},
-		{"name", primitive.Regex{fmt.Sprintf("%s", re), "gi"}},
+		{Key: "_location", Value: lID},
+		{Key: "name", Value: primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
 	}
 
 	count, err := c.CountDocuments(ctx, filter)
@@ -202,8 +202,8 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 
 	if count == 0 {
 		filter = bson.D{
-			{"_location", lID},
-			{"$text", bson.M{"$search": q}},
+			{Key: "_location", Value: lID},
+			{Key: "$text", Value: bson.M{"$search": q}},
 		}
 	}
 
@@ -244,7 +244,7 @@ func Create(ft *Feature) error {
 		ft.ID = primitive.NewObjectID()
 	}
 
-	ft.Modified = timestamp{time.Now()}
+	ft.Modified = timestamp{Time: time.Now()}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -268,7 +268,7 @@ func Replace(id string, ft *Feature) error {
 		ft.ID = objID
 	}
 
-	ft.Modified = timestamp{time.Now()}
+	ft.Modified = timestamp{Time: time.Now()}
 
 	c := database.GetDB().Collection(Collection)
 

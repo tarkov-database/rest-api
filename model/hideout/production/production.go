@@ -222,7 +222,7 @@ func GetByMaterial(id string, opts *Options) (*model.Result, error) {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.D{{"materials.id", objID}}, opts)
+	return getManyByFilter(bson.D{{Key: "materials.id", Value: objID}}, opts)
 }
 
 // GetByOutcome returns a result based on outcome
@@ -232,7 +232,7 @@ func GetByOutcome(id string, opts *Options) (*model.Result, error) {
 		return &model.Result{}, err
 	}
 
-	return getManyByFilter(bson.D{{"outcome.id", objID}}, opts)
+	return getManyByFilter(bson.D{{Key: "outcome.id", Value: objID}}, opts)
 }
 
 // Create creates a new entity
@@ -243,7 +243,7 @@ func Create(prod *Production) error {
 		prod.ID = primitive.NewObjectID()
 	}
 
-	prod.Modified = timestamp{time.Now()}
+	prod.Modified = timestamp{Time: time.Now()}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -267,7 +267,7 @@ func Replace(id string, prod *Production) error {
 		prod.ID = objID
 	}
 
-	prod.Modified = timestamp{time.Now()}
+	prod.Modified = timestamp{Time: time.Now()}
 
 	c := database.GetDB().Collection(Collection)
 
