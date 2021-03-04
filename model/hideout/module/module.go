@@ -84,6 +84,7 @@ func (s Stage) Validate() error {
 type Bonus struct {
 	Description string  `json:"description" bson:"description"`
 	Value       float64 `json:"value,omitempty" bson:"value,omitempty"`
+	SkillType   string  `json:"skillType,omitempty" bson:"skillType,omitempty"`
 	Type        string  `json:"type" bson:"type"`
 }
 
