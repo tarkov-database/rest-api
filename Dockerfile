@@ -1,4 +1,4 @@
-FROM golang:1.16.1 as build-env
+FROM golang:1.16.2 as build-env
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
