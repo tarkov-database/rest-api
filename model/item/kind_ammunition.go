@@ -16,6 +16,7 @@ type Ammunition struct {
 	Subsonic            bool                   `json:"subsonic" bson:"subsonic"`
 	Velocity            float64                `json:"velocity" bson:"velocity"`
 	BallisticCoeficient float64                `json:"ballisticCoef" bson:"ballisticCoef"`
+	Retardation         float64                `json:"retardation" bson:"retardation"`
 	Damage              float64                `json:"damage" bson:"damage"`
 	Penetration         float64                `json:"penetration" bson:"penetration"`
 	ArmorDamage         float64                `json:"armorDamage" bson:"armorDamage"`
