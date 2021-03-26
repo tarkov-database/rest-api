@@ -11,7 +11,7 @@ jobs:
     steps:
 
       - name: Login to Registry
-        run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ secrets.CR_USER }} --password-stdin
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
