@@ -59,7 +59,7 @@ jobs:
       with:
         go-version: '1.16'
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v2.1.5
       env:
         cache-name: test
       with:
