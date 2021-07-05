@@ -128,9 +128,10 @@ type Mount struct {
 type Muzzle struct {
 	Modification `bson:",inline"`
 
-	Type     string  `json:"type" bson:"type"`
-	Velocity float64 `json:"velocity" bson:"velocity"`
-	Loudness float64 `json:"loudness" bson:"loudness"`
+	Type           string  `json:"type" bson:"type"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	Loudness       float64 `json:"loudness" bson:"loudness"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 }
 
 // PistolGrip describes the entity of an pistol grip item
