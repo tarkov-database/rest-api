@@ -23,5 +23,6 @@ type Firearm struct {
 	FoldRectractable  bool     `json:"foldRectractable" bson:"foldRectractable"`
 	RecoilVertical    int64    `json:"recoilVertical" bson:"recoilVertical"`
 	RecoilHorizontal  int64    `json:"recoilHorizontal" bson:"recoilHorizontal"`
+	DurabilityRatio   float64  `json:"durabilityRatio" bson:"durabilityRatio"`
 	Slots             Slots    `json:"slots" bson:"slots"`
 }
