@@ -74,9 +74,10 @@ type Modification struct {
 type Barrel struct {
 	Modification `bson:",inline"`
 
-	Length     float64 `json:"length" bson:"length"`
-	Velocity   float64 `json:"velocity" bson:"velocity"`
-	Suppressor bool    `json:"suppressor" bson:"suppressor"`
+	Length         float64 `json:"length" bson:"length"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	Suppressor     bool    `json:"suppressor" bson:"suppressor"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 }
 
 // Bipod describes the entity of an bipod item
@@ -105,6 +106,8 @@ type Foregrip struct {
 // GasBlock describes the entity of an gas block item
 type GasBlock struct {
 	Modification `bson:",inline"`
+
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 }
 
 // Handguard describes the entity of an handguard item
@@ -143,7 +146,8 @@ type PistolGrip struct {
 type Receiver struct {
 	Modification `bson:",inline"`
 
-	Velocity float64 `json:"velocity" bson:"velocity"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 }
 
 // Sight describes the entity of an sight item
