@@ -25,5 +25,6 @@ type Firearm struct {
 	RecoilHorizontal   int64    `json:"recoilHorizontal" bson:"recoilHorizontal"`
 	OperatingResources int64    `json:"operatingResources" bson:"operatingResources"`
 	DurabilityRatio    float64  `json:"durabilityRatio" bson:"durabilityRatio"`
+	HeatFactor         float64  `json:"heatFactor" bson:"heatFactor"`
 	Slots              Slots    `json:"slots" bson:"slots"`
 }
