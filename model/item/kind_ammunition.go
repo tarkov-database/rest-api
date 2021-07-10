@@ -43,8 +43,11 @@ type AmmoEffects struct {
 
 // WeaponModifier contains the weapon modifiers of Ammunition
 type WeaponModifier struct {
-	Accuracy float64 `json:"accuracy" bson:"accuracy"`
-	Recoil   float64 `json:"recoil" bson:"recoil"`
+	Accuracy          float64 `json:"accuracy" bson:"accuracy"`
+	Recoil            float64 `json:"recoil" bson:"recoil"`
+	MalfunctionChance float64 `json:"malfunctionChance" bson:"malfunctionChance"`
+	DurabilityBurn    float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor        float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // AmmoGrenadeProperties represents the grenade properties of Ammunition

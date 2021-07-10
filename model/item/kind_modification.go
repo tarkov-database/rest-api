@@ -74,9 +74,11 @@ type Modification struct {
 type Barrel struct {
 	Modification `bson:",inline"`
 
-	Length     float64 `json:"length" bson:"length"`
-	Velocity   float64 `json:"velocity" bson:"velocity"`
-	Suppressor bool    `json:"suppressor" bson:"suppressor"`
+	Length         float64 `json:"length" bson:"length"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	Suppressor     bool    `json:"suppressor" bson:"suppressor"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Bipod describes the entity of an bipod item
@@ -105,11 +107,16 @@ type Foregrip struct {
 // GasBlock describes the entity of an gas block item
 type GasBlock struct {
 	Modification `bson:",inline"`
+
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Handguard describes the entity of an handguard item
 type Handguard struct {
 	Modification `bson:",inline"`
+
+	HeatFactor float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Launcher describes the entity of an launcher item
@@ -122,15 +129,19 @@ type Launcher struct {
 // Mount describes the entity of an mount item
 type Mount struct {
 	Modification `bson:",inline"`
+
+	HeatFactor float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Muzzle describes the entity of an muzzle item
 type Muzzle struct {
 	Modification `bson:",inline"`
 
-	Type     string  `json:"type" bson:"type"`
-	Velocity float64 `json:"velocity" bson:"velocity"`
-	Loudness float64 `json:"loudness" bson:"loudness"`
+	Type           string  `json:"type" bson:"type"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	Loudness       float64 `json:"loudness" bson:"loudness"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // PistolGrip describes the entity of an pistol grip item
@@ -142,7 +153,9 @@ type PistolGrip struct {
 type Receiver struct {
 	Modification `bson:",inline"`
 
-	Velocity float64 `json:"velocity" bson:"velocity"`
+	Velocity       float64 `json:"velocity" bson:"velocity"`
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Sight describes the entity of an sight item
@@ -165,7 +178,8 @@ type SightSpecial struct {
 type Stock struct {
 	Modification `bson:",inline"`
 
-	FoldRectractable bool `json:"foldRectractable" bson:"foldRectractable"`
+	FoldRectractable bool    `json:"foldRectractable" bson:"foldRectractable"`
+	HeatFactor       float64 `json:"heatFactor" bson:"heatFactor"`
 }
 
 // Gear modifications //
