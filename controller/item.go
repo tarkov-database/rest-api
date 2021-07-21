@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/tarkov-database/rest-api/model"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/google/logger"
 	"github.com/julienschmidt/httprouter"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // ItemIndexGET handles a GET request on the item root endpoint
@@ -166,6 +168,12 @@ Loop:
 				break
 			}
 		case item.KindTacticalrig:
+			if v := r.URL.Query().Get("armored"); v != "" {
+				if v, err := strconv.ParseBool(v); err == nil {
+					filter["armor"] = bson.D{{Key: "$exists", Value: v}}
+				}
+			}
+
 			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
 			if err != nil {
 				break
