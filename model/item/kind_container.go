@@ -9,5 +9,6 @@ const (
 type Container struct {
 	Item `bson:",inline"`
 
-	Grids []Grid `json:"grids" bson:"grids"`
+	Capacity int64  `json:"capacity" bson:"capacity"`
+	Grids    []Grid `json:"grids" bson:"grids"`
 }

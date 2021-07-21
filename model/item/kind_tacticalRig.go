@@ -9,6 +9,7 @@ const (
 type TacticalRig struct {
 	Item `bson:",inline"`
 
+	Capacity  int64       `json:"capacity" bson:"capacity"`
 	Grids     []Grid      `json:"grids" bson:"grids"`
 	Penalties Penalties   `json:"penalties" bson:"penalties"`
 	Armor     *ArmorProps `json:"armor,omitempty" bson:"armor,omitempty"`
