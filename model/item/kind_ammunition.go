@@ -14,6 +14,9 @@ type Ammunition struct {
 	Tracer              bool                   `json:"tracer" bson:"tracer"`
 	TracerColor         string                 `json:"tracerColor" bson:"tracerColor"`
 	Subsonic            bool                   `json:"subsonic" bson:"subsonic"`
+	CasingMass          float64                `json:"casingMass" bson:"casingMass"`
+	BulletMass          float64                `json:"bulletMass" bson:"bulletMass"`
+	BulletDiameter      float64                `json:"bulletDiameter" bson:"bulletDiameter"`
 	Velocity            float64                `json:"velocity" bson:"velocity"`
 	BallisticCoeficient float64                `json:"ballisticCoef" bson:"ballisticCoef"`
 	Retardation         float64                `json:"retardation" bson:"retardation"`
