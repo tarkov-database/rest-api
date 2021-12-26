@@ -101,6 +101,8 @@ func (k Kind) GetEntity() (Entity, error) {
 		e = &Modification{}
 	case KindModificationBarrel:
 		e = &Barrel{}
+	case KindModificationAuxiliary:
+		e = &Auxiliary{}
 	case KindModificationBipod:
 		e = &Bipod{}
 	case KindModificationCharge:
@@ -162,6 +164,7 @@ var KindList = [...]Kind{
 	KindMelee,
 	KindModification,
 	KindModificationBarrel,
+	KindModificationAuxiliary,
 	KindModificationBipod,
 	KindModificationCharge,
 	KindModificationDevice,

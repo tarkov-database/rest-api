@@ -7,6 +7,9 @@ const (
 	// KindModificationBarrel represents the kind of Barrel
 	KindModificationBarrel Kind = "modificationBarrel"
 
+	// KindModificationAuxiliary represents the kind of Auxiliary
+	KindModificationAuxiliary Kind = "modificationAuxiliary"
+
 	// KindModificationBipod represents the kind of Bipod
 	KindModificationBipod Kind = "modificationBipod"
 
@@ -69,6 +72,15 @@ type Modification struct {
 }
 
 // Weapon modifications //
+
+// Auxiliary describes the entity of an auxiliary mod item
+type Auxiliary struct {
+	Modification `bson:",inline"`
+
+	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
+	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
+}
 
 // Barrel describes the entity of an barrel item
 type Barrel struct {
