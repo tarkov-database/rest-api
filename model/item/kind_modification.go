@@ -79,6 +79,7 @@ type Barrel struct {
 	Suppressor     bool    `json:"suppressor" bson:"suppressor"`
 	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Bipod describes the entity of an bipod item
@@ -110,6 +111,7 @@ type GasBlock struct {
 
 	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Handguard describes the entity of an handguard item
@@ -117,6 +119,7 @@ type Handguard struct {
 	Modification `bson:",inline"`
 
 	HeatFactor float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Launcher describes the entity of an launcher item
@@ -131,6 +134,7 @@ type Mount struct {
 	Modification `bson:",inline"`
 
 	HeatFactor float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Muzzle describes the entity of an muzzle item
@@ -142,6 +146,7 @@ type Muzzle struct {
 	Loudness       float64 `json:"loudness" bson:"loudness"`
 	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // PistolGrip describes the entity of an pistol grip item
@@ -156,6 +161,7 @@ type Receiver struct {
 	Velocity       float64 `json:"velocity" bson:"velocity"`
 	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Sight describes the entity of an sight item
@@ -180,6 +186,7 @@ type Stock struct {
 
 	FoldRectractable bool    `json:"foldRectractable" bson:"foldRectractable"`
 	HeatFactor       float64 `json:"heatFactor" bson:"heatFactor"`
+	CoolFactor       float64 `json:"coolFactor" bson:"coolFactor"`
 }
 
 // Gear modifications //

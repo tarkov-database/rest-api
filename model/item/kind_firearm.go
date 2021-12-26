@@ -27,5 +27,9 @@ type Firearm struct {
 	MalfunctionChance  float64  `json:"malfunctionChance" bson:"malfunctionChance"`
 	DurabilityRatio    float64  `json:"durabilityRatio" bson:"durabilityRatio"`
 	HeatFactor         float64  `json:"heatFactor" bson:"heatFactor"`
+	HeatFactorByShot   float64  `json:"heatFactorByShot" bson:"heatFactorByShot"`
+	CoolFactor         float64  `json:"coolFactor" bson:"coolFactor"`
+	CoolFactorMods     float64  `json:"coolFactorMods" bson:"coolFactorMods"`
+	CanJam             bool     `json:"canJam" bson:"canJam"`
 	Slots              Slots    `json:"slots" bson:"slots"`
 }
