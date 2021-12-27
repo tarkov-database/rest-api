@@ -30,6 +30,5 @@ type Firearm struct {
 	HeatFactorByShot   float64  `json:"heatFactorByShot" bson:"heatFactorByShot"`
 	CoolFactor         float64  `json:"coolFactor" bson:"coolFactor"`
 	CoolFactorMods     float64  `json:"coolFactorMods" bson:"coolFactorMods"`
-	CanJam             bool     `json:"canJam" bson:"canJam"`
 	Slots              Slots    `json:"slots" bson:"slots"`
 }
