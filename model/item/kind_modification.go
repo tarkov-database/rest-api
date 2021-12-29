@@ -89,6 +89,7 @@ type Barrel struct {
 	Length         float64 `json:"length" bson:"length"`
 	Velocity       float64 `json:"velocity" bson:"velocity"`
 	Suppressor     bool    `json:"suppressor" bson:"suppressor"`
+	CenterOfImpact float64 `json:"centerOfImpact" bson:"centerOfImpact"`
 	DurabilityBurn float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor     float64 `json:"heatFactor" bson:"heatFactor"`
 	CoolFactor     float64 `json:"coolFactor" bson:"coolFactor"`
