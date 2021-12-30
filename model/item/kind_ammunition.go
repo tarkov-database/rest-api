@@ -26,7 +26,7 @@ type Ammunition struct {
 	Fragmentation       AmmoFrag               `json:"fragmentation" bson:"fragmentation"`
 	Effects             AmmoEffects            `json:"effects" bson:"effects"`
 	Projectiles         int64                  `json:"projectiles" bson:"projectiles"`
-	Pellets             int64                  `json:"pellets,omitempty" bson:"pellets,omitempty"` // deprecated
+	Pellets             int64                  `json:"pellets,omitempty" bson:"pellets,omitempty"` // Deprecated: no longer used
 	MisfireChance       float64                `json:"misfireChance" bson:"misfireChance"`
 	FailureToFeedChance float64                `json:"failureToFeedChance" bson:"failureToFeedChance"`
 	WeaponModifier      WeaponModifier         `json:"weaponModifier" bson:"weaponModifier"`
@@ -50,7 +50,7 @@ type AmmoEffects struct {
 type WeaponModifier struct {
 	Accuracy          float64 `json:"accuracy" bson:"accuracy"`
 	Recoil            float64 `json:"recoil" bson:"recoil"`
-	MalfunctionChance float64 `json:"malfunctionChance" bson:"malfunctionChance"` // deprecated
+	MalfunctionChance float64 `json:"malfunctionChance" bson:"malfunctionChance"` // Deprecated: replaced
 	DurabilityBurn    float64 `json:"durabilityBurn" bson:"durabilityBurn"`
 	HeatFactor        float64 `json:"heatFactor" bson:"heatFactor"`
 }

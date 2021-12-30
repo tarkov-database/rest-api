@@ -61,7 +61,7 @@ type Modification struct {
 	Item `bson:",inline"`
 
 	ErgonomicsFloat float64      `json:"ergonomicsFP" bson:"ergonomicsFP"`
-	Ergonomics      int64        `json:"ergonomics" bson:"ergonomics"` // Deprecated
+	Ergonomics      int64        `json:"ergonomics" bson:"ergonomics"` // Deprecated: replaced
 	Accuracy        float64      `json:"accuracy" bson:"accuracy"`
 	Recoil          float64      `json:"recoil" bson:"recoil"`
 	RaidModdable    int64        `json:"raidModdable" bson:"raidModdable"`

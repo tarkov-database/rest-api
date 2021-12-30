@@ -19,7 +19,7 @@ type Firearm struct {
 	Velocity           float64  `json:"velocity" bson:"velocity"`
 	EffectiveDistance  int64    `json:"effectiveDist" bson:"effectiveDist"`
 	ErgonomicsFloat    float64  `json:"ergonomicsFP" bson:"ergonomicsFP"`
-	Ergonomics         int64    `json:"ergonomics" bson:"ergonomics"` // Deprecated
+	Ergonomics         int64    `json:"ergonomics" bson:"ergonomics"` // Deprecated: replaced
 	FoldRectractable   bool     `json:"foldRectractable" bson:"foldRectractable"`
 	RecoilVertical     int64    `json:"recoilVertical" bson:"recoilVertical"`
 	RecoilHorizontal   int64    `json:"recoilHorizontal" bson:"recoilHorizontal"`

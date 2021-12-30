@@ -10,7 +10,7 @@ type Effects struct {
 	StaminaRate       *Effect  `json:"staminaRate,omitempty" bson:"staminaRate,omitempty"`
 	Health            *Effect  `json:"health,omitempty" bson:"health,omitempty"`
 	HealthRate        *Effect  `json:"healthRate,omitempty" bson:"healthRate,omitempty"`
-	Bloodloss         *Effect  `json:"bloodloss,omitempty" bson:"bloodloss,omitempty"` // Deprecated
+	Bloodloss         *Effect  `json:"bloodloss,omitempty" bson:"bloodloss,omitempty"` // Deprecated: replaced
 	LightBleeding     *Effect  `json:"lightBleeding,omitempty" bson:"lightBleeding,omitempty"`
 	HeavyBleeding     *Effect  `json:"heavyBleeding,omitempty" bson:"heavyBleeding,omitempty"`
 	Fracture          *Effect  `json:"fracture,omitempty" bson:"fracture,omitempty"`

@@ -22,10 +22,10 @@ type Item struct {
 	Name        string    `json:"name" bson:"name"`
 	ShortName   string    `json:"shortName" bson:"shortName"`
 	Description string    `json:"description" bson:"description"`
-	Price       int64     `json:"price" bson:"price"`
+	Price       int64     `json:"price" bson:"price"` // Deprecated: no longer supported
 	Weight      float64   `json:"weight" bson:"weight"`
 	MaxStack    int64     `json:"maxStack" bson:"maxStack"`
-	Rarity      string    `json:"rarity" bson:"rarity"`
+	Rarity      string    `json:"rarity" bson:"rarity"` // Deprecated: no longer supported
 	Grid        GridProps `json:"grid" bson:"grid"`
 	Modified    timestamp `json:"_modified" bson:"_modified"`
 	Kind        Kind      `json:"_kind" bson:"_kind"`
