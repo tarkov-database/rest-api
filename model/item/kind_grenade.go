@@ -12,6 +12,7 @@ type Grenade struct {
 	Type              string  `json:"type" bson:"type"`
 	Delay             float64 `json:"delay" bson:"delay"`
 	FragmentCount     float64 `json:"fragCount" bson:"fragCount"`
+	FragmentDamage    float64 `json:"fragDamage,omitempty" bson:"fragDamage,omitempty"`
 	MinDistance       float64 `json:"minDistance" bson:"minDistance"`
 	MaxDistance       float64 `json:"maxDistance" bson:"maxDistance"`
 	ContusionDistance float64 `json:"contusionDistance" bson:"contusionDistance"`
