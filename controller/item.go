@@ -153,6 +153,11 @@ Loop:
 				break
 			}
 		case item.KindFirearm:
+			err = filter.AddString("manufacturer", r.URL.Query().Get("manufacturer"))
+			if err != nil {
+				break
+			}
+
 			err = filter.AddString("type", r.URL.Query().Get("type"))
 			if err != nil {
 				break
