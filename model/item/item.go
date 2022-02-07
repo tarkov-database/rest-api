@@ -53,7 +53,7 @@ func GetByID(id string, k Kind) (Entity, error) {
 
 // Options represents the options for a database operation
 type Options struct {
-	Sort   map[string]int64
+	Sort   bson.D
 	Limit  int64
 	Offset int64
 }

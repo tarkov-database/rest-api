@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/tarkov-database/rest-api/model"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func getLimitOffset(r *http.Request) (limit int64, offset int64) {
@@ -28,8 +29,8 @@ func getLimitOffset(r *http.Request) (limit int64, offset int64) {
 	return
 }
 
-func getSort(def string, r *http.Request) map[string]int64 {
-	sort := make(map[string]int64)
+func getSort(def string, r *http.Request) bson.D {
+	sort := make(bson.D, 0, 1)
 
 	sortStr := def
 	if s := r.URL.Query().Get("sort"); len(s) > 1 {
@@ -37,9 +38,9 @@ func getSort(def string, r *http.Request) map[string]int64 {
 	}
 
 	if strings.HasPrefix(sortStr, "-") {
-		sort = map[string]int64{strings.TrimPrefix(sortStr, "-"): -1}
+		sort = append(sort, bson.E{Key: strings.TrimPrefix(sortStr, "-"), Value: -1})
 	} else {
-		sort = map[string]int64{sortStr: 1}
+		sort = append(sort, bson.E{Key: sortStr, Value: 1})
 	}
 
 	return sort

@@ -46,7 +46,7 @@ func TestGetSort(t *testing.T) {
 	}
 
 	sort := getSort(defaultSort, &http.Request{URL: u})
-	if v, ok := sort["testSort"]; ok {
+	if v, ok := sort.Map()["testSort"]; ok {
 		if v != 1 {
 			t.Errorf("Getting sort failed: value \"1\" expected but \"%v\" received", v)
 		}
@@ -62,7 +62,7 @@ func TestGetSort(t *testing.T) {
 	}
 
 	sort = getSort(defaultSort, &http.Request{URL: u})
-	if v, ok := sort["testSort"]; ok {
+	if v, ok := sort.Map()["testSort"]; ok {
 		if v != -1 {
 			t.Errorf("Getting sort failed: value \"-1\" expected but \"%v\" received", v)
 		}
