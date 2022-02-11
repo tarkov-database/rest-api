@@ -20,11 +20,15 @@ type timestamp = model.Timestamp
 
 // AmmoDistanceStatistics describes the entity of a ammo distance statistics
 type AmmoDistanceStatistics struct {
-	ID         objectID               `json:"_id" bson:"_id"`
-	Reference  objectID               `json:"ammo" bson:"ammo"`
-	Distance   uint64                 `json:"distance" bson:"distance"`
-	Properties AmmoDistanceProperties `json:"properties" bson:"properties"`
-	Modified   timestamp              `json:"_modified" bson:"_modified"`
+	ID               objectID  `json:"_id" bson:"_id"`
+	Reference        objectID  `json:"ammo" bson:"ammo"`
+	Distance         uint64    `json:"distance" bson:"distance"`
+	Velocity         float64   `json:"velocity" bson:"velocity"`
+	Damage           float64   `json:"damage" bson:"damage"`
+	PenetrationPower float64   `json:"penetrationPower" bson:"penetrationPower"`
+	TimeOfFlight     float64   `json:"timeOfFlight" bson:"timeOfFlight"`
+	Drop             float64   `json:"drop" bson:"drop"`
+	Modified         timestamp `json:"_modified" bson:"_modified"`
 }
 
 // Validate validates the fields of a DistanceStatistics
@@ -34,15 +38,6 @@ func (d AmmoDistanceStatistics) Validate() error {
 	}
 
 	return nil
-}
-
-// AmmoDistanceProperties describes the properties of a ammo distance statistics
-type AmmoDistanceProperties struct {
-	Velocity         float64 `json:"velocity" bson:"velocity"`
-	Damage           float64 `json:"damage" bson:"damage"`
-	PenetrationPower float64 `json:"penetrationPower" bson:"penetrationPower"`
-	TimeOfFlight     float64 `json:"timeOfFlight" bson:"timeOfFlight"`
-	Drop             float64 `json:"drop" bson:"drop"`
 }
 
 // Collection indicates the MongoDB feature collection
