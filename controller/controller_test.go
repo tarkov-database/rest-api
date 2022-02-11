@@ -16,6 +16,7 @@ import (
 	"github.com/tarkov-database/rest-api/model/location"
 	"github.com/tarkov-database/rest-api/model/location/feature"
 	"github.com/tarkov-database/rest-api/model/location/featuregroup"
+	"github.com/tarkov-database/rest-api/model/statistic/ammunition/armor"
 	"github.com/tarkov-database/rest-api/model/user"
 
 	"github.com/google/logger"
@@ -26,13 +27,14 @@ import (
 const contentTypeJSON = "application/json"
 
 var (
-	itemIDs         []primitive.ObjectID
-	userIDs         []primitive.ObjectID
-	moduleIDs       []primitive.ObjectID
-	productionIDs   []primitive.ObjectID
-	locationIDs     []primitive.ObjectID
-	featureIDs      []primitive.ObjectID
-	featureGroupIDs []primitive.ObjectID
+	itemIDs           []primitive.ObjectID
+	userIDs           []primitive.ObjectID
+	moduleIDs         []primitive.ObjectID
+	productionIDs     []primitive.ObjectID
+	locationIDs       []primitive.ObjectID
+	featureIDs        []primitive.ObjectID
+	featureGroupIDs   []primitive.ObjectID
+	ammoArmorStatsIDs []primitive.ObjectID
 )
 
 func init() {
@@ -50,6 +52,7 @@ func mongoStartup() {
 	createProductions()
 	createLocations()
 	createFeatureGroups()
+	createStatisticAmmoArmor()
 	createFeatures()
 }
 
@@ -60,6 +63,7 @@ func mongoCleanup() {
 	removeLocations()
 	removeFeatures()
 	removeFeatureGroups()
+	removeStatisticAmmoArmor()
 	removeUsers()
 
 	if err := database.Shutdown(); err != nil {
@@ -175,6 +179,24 @@ func removeFeatureGroupID(id primitive.ObjectID) {
 	featureGroupIDs = new
 }
 
+func createStatisticAmmoArmorID() primitive.ObjectID {
+	id := primitive.NewObjectID()
+	ammoArmorStatsIDs = append(ammoArmorStatsIDs, id)
+
+	return id
+}
+
+func removeStatisticAmmoArmorID(id primitive.ObjectID) {
+	new := make([]primitive.ObjectID, 0, len(ammoArmorStatsIDs)-1)
+	for _, k := range ammoArmorStatsIDs {
+		if k != id {
+			new = append(new, k)
+		}
+	}
+
+	ammoArmorStatsIDs = new
+}
+
 func createUserID() primitive.ObjectID {
 	id := primitive.NewObjectID()
 	userIDs = append(userIDs, id)
@@ -287,7 +309,7 @@ func removeProductions() {
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
 	defer cancel()
 
-	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": moduleIDs}}); err != nil {
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": productionIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
 	}
 }
@@ -415,6 +437,55 @@ func removeFeatureGroups() {
 	defer cancel()
 
 	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": featureGroupIDs}}); err != nil {
+		log.Fatalf("Database cleanup error: %s", err)
+	}
+}
+
+func createStatisticAmmoArmor() {
+	c := database.GetDB().Collection(armor.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	statsA := armor.AmmoArmorStatistics{
+		ID:   createStatisticAmmoArmorID(),
+		Ammo: primitive.NewObjectID(),
+		Armor: armor.ItemRef{
+			ID:   primitive.NewObjectID(),
+			Kind: item.KindTacticalrig,
+		},
+		Distance:                  100,
+		PenetrationChance:         [4]float64{},
+		AverageShotsToDestruction: armor.Statistics{},
+		AverageShotsTo50Damage:    armor.Statistics{},
+		Modified:                  model.Timestamp{Time: time.Now()},
+	}
+	statsB := armor.AmmoArmorStatistics{
+		ID:   createStatisticAmmoArmorID(),
+		Ammo: primitive.NewObjectID(),
+		Armor: armor.ItemRef{
+			ID:   primitive.NewObjectID(),
+			Kind: item.KindArmor,
+		},
+		Distance:                  500,
+		PenetrationChance:         [4]float64{},
+		AverageShotsToDestruction: armor.Statistics{},
+		AverageShotsTo50Damage:    armor.Statistics{},
+		Modified:                  model.Timestamp{Time: time.Now()},
+	}
+
+	if _, err := c.InsertMany(ctx, bson.A{statsA, statsB}); err != nil {
+		log.Fatalf("Database startup error: %s", err)
+	}
+}
+
+func removeStatisticAmmoArmor() {
+	c := database.GetDB().Collection(armor.Collection)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+
+	if _, err := c.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": ammoArmorStatsIDs}}); err != nil {
 		log.Fatalf("Database cleanup error: %s", err)
 	}
 }

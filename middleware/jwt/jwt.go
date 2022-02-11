@@ -70,6 +70,12 @@ const (
 	// ScopeLocationWrite represents the location write permission scope
 	ScopeLocationWrite = "write:location"
 
+	// ScopeStatisticRead represents the statistic read permission scope
+	ScopeStatisticRead = "read:statistic"
+
+	// ScopeStatisticWrite represents the statistic write permission scope
+	ScopeStatisticWrite = "write:statistic"
+
 	// ScopeUserRead represents the user read permission scope
 	ScopeUserRead = "read:user"
 
