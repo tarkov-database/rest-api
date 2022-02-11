@@ -2,8 +2,10 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -84,4 +86,22 @@ func isSupportedMediaType(r *http.Request) bool {
 func parseJSONBody(body io.ReadCloser, target interface{}) error {
 	defer body.Close()
 	return json.NewDecoder(body).Decode(target)
+}
+
+func parseObjIDs(query string) ([]string, error) {
+	q, err := url.QueryUnescape(query)
+	if err != nil {
+		return nil, fmt.Errorf("Query string error: %s", err)
+	}
+
+	if len(q) < 24 {
+		return nil, fmt.Errorf("ID is not valid")
+	}
+
+	ids := strings.Split(q, ",")
+	if len(ids) > 100 {
+		return nil, fmt.Errorf("ID limit exceeded")
+	}
+
+	return ids, nil
 }

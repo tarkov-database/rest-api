@@ -69,6 +69,20 @@ func routes() *httprouter.Router {
 	r.PUT(prefix+"/location/:id/featuregroup/:gid", auth(jwt.ScopeLocationWrite, cntrl.FeatureGroupPUT))
 	r.DELETE(prefix+"/location/:id/featuregroup/:gid", auth(jwt.ScopeLocationWrite, cntrl.FeatureGroupDELETE))
 
+	// Ammunition distance statistics
+	r.GET(prefix+"/statistic/ammunition/distance", auth(jwt.ScopeStatisticRead, cntrl.DistanceStatsGET))
+	r.GET(prefix+"/statistic/ammunition/distance/:id", auth(jwt.ScopeStatisticRead, cntrl.DistanceStatGET))
+	r.POST(prefix+"/statistic/ammunition/distance", auth(jwt.ScopeStatisticWrite, cntrl.DistanceStatPOST))
+	r.PUT(prefix+"/statistic/ammunition/distance/:id", auth(jwt.ScopeStatisticWrite, cntrl.DistanceStatPUT))
+	r.DELETE(prefix+"/statistic/ammunition/distance/:id", auth(jwt.ScopeStatisticWrite, cntrl.DistanceStatDELETE))
+
+	// Ammunition armor statistics
+	r.GET(prefix+"/statistic/ammunition/armor", auth(jwt.ScopeStatisticRead, cntrl.ArmorStatsGET))
+	r.GET(prefix+"/statistic/ammunition/armor/:id", auth(jwt.ScopeStatisticRead, cntrl.ArmorStatGET))
+	r.POST(prefix+"/statistic/ammunition/armor", auth(jwt.ScopeStatisticWrite, cntrl.ArmorStatPOST))
+	r.PUT(prefix+"/statistic/ammunition/armor/:id", auth(jwt.ScopeStatisticWrite, cntrl.ArmorStatPUT))
+	r.DELETE(prefix+"/statistic/ammunition/armor/:id", auth(jwt.ScopeStatisticWrite, cntrl.ArmorStatDELETE))
+
 	// User
 	r.GET(prefix+"/user", auth(jwt.ScopeUserRead, cntrl.UsersGET))
 	r.GET(prefix+"/user/:id", auth(jwt.ScopeUserRead, cntrl.UserGET))
