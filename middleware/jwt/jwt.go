@@ -106,6 +106,10 @@ func isScopeValid(s string) bool {
 		valid = true
 	case ScopeLocationWrite:
 		valid = true
+	case ScopeStatisticRead:
+		valid = true
+	case ScopeStatisticWrite:
+		valid = true
 	case ScopeUserRead:
 		valid = true
 	case ScopeUserWrite:
