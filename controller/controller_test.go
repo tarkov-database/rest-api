@@ -79,14 +79,14 @@ func createItemID() primitive.ObjectID {
 }
 
 func removeItemID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(itemIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(itemIDs)-1)
 	for _, k := range itemIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	itemIDs = new
+	itemIDs = ids
 }
 
 func createModuleID() primitive.ObjectID {
@@ -97,14 +97,14 @@ func createModuleID() primitive.ObjectID {
 }
 
 func removeModuleID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(moduleIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(moduleIDs)-1)
 	for _, k := range moduleIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	moduleIDs = new
+	moduleIDs = ids
 }
 
 func createProductionID() primitive.ObjectID {
@@ -115,14 +115,14 @@ func createProductionID() primitive.ObjectID {
 }
 
 func removeProductionID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(productionIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(productionIDs)-1)
 	for _, k := range productionIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	productionIDs = new
+	productionIDs = ids
 }
 
 func createLocationID() primitive.ObjectID {
@@ -133,14 +133,14 @@ func createLocationID() primitive.ObjectID {
 }
 
 func removeLocationID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(locationIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(locationIDs)-1)
 	for _, k := range locationIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	locationIDs = new
+	locationIDs = ids
 }
 
 func createFeatureID() primitive.ObjectID {
@@ -151,14 +151,14 @@ func createFeatureID() primitive.ObjectID {
 }
 
 func removeFeatureID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(featureIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(featureIDs)-1)
 	for _, k := range featureIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	featureIDs = new
+	featureIDs = ids
 }
 
 func createFeatureGroupID() primitive.ObjectID {
@@ -169,14 +169,14 @@ func createFeatureGroupID() primitive.ObjectID {
 }
 
 func removeFeatureGroupID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(featureGroupIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(featureGroupIDs)-1)
 	for _, k := range featureGroupIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	featureGroupIDs = new
+	featureGroupIDs = ids
 }
 
 func createStatisticAmmoArmorID() primitive.ObjectID {
@@ -187,14 +187,14 @@ func createStatisticAmmoArmorID() primitive.ObjectID {
 }
 
 func removeStatisticAmmoArmorID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(ammoArmorStatsIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(ammoArmorStatsIDs)-1)
 	for _, k := range ammoArmorStatsIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	ammoArmorStatsIDs = new
+	ammoArmorStatsIDs = ids
 }
 
 func createUserID() primitive.ObjectID {
@@ -205,14 +205,14 @@ func createUserID() primitive.ObjectID {
 }
 
 func removeUserID(id primitive.ObjectID) {
-	new := make([]primitive.ObjectID, 0, len(userIDs)-1)
+	ids := make([]primitive.ObjectID, 0, len(userIDs)-1)
 	for _, k := range userIDs {
 		if k != id {
-			new = append(new, k)
+			ids = append(ids, k)
 		}
 	}
 
-	userIDs = new
+	userIDs = ids
 }
 
 func createItems() {
