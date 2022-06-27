@@ -27,7 +27,8 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: '1.17'
+        go-version: '1.18'
+        check-latest: true
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
@@ -57,7 +58,8 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: '1.17'
+        go-version: '1.18'
+        check-latest: true
 
     - uses: actions/cache@v3
       env:
