@@ -27,6 +27,7 @@ type Production struct {
 	Module          objectID    `json:"module" bson:"module"`
 	RequiredModules []ModuleRef `json:"requiredMods" bson:"requiredMods"`
 	Materials       []ItemRef   `json:"materials" bson:"materials"`
+	Tools           []ItemRef   `json:"tools" bson:"tools"`
 	Outcome         []ItemRef   `json:"outcome" bson:"outcome"`
 	Duration        int64       `json:"duration" bson:"duration"`
 	Modified        timestamp   `json:"_modified" bson:"_modified"`
@@ -39,6 +40,12 @@ func (p Production) Validate() error {
 	}
 	if len(p.Outcome) == 0 {
 		return errors.New("outcome missing")
+	}
+
+	for i, v := range p.Tools {
+		if err := v.Validate(); err != nil {
+			return fmt.Errorf("validation error in tools index \"%v\": %s", i, err)
+		}
 	}
 
 	for i, v := range p.Materials {
