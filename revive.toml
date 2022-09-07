@@ -18,6 +18,7 @@ severity = "warning"
 [rule.var-naming]
 [rule.var-declaration]
 [rule.package-comments]
+severity = "warning"
 [rule.range]
 [rule.receiver-naming]
 [rule.time-naming]
