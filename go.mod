@@ -6,7 +6,7 @@ require (
 	github.com/gbrlsnchs/jwt/v3 v3.0.1
 	github.com/google/logger v1.1.1
 	github.com/julienschmidt/httprouter v1.3.0
-	go.mongodb.org/mongo-driver v1.10.2
+	go.mongodb.org/mongo-driver v1.10.4
 )
 
 require (
