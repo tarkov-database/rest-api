@@ -39,6 +39,9 @@ jobs:
       DEPLOYMENT: rest-api
       CONTAINER: rest-api
     steps:
+      
+      - name: Check out
+        uses: actions/checkout@v3
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
