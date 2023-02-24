@@ -31,26 +31,34 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: read
+      id-token: write
     env:
+      NAMESPACE: production
       DEPLOYMENT: rest-api
       CONTAINER: rest-api
     steps:
 
-      - name: Set up config
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-        run: |
-          mkdir -p ${HOME}/.kube
-          export KUBECONFIG=${HOME}/.kube/config
-          echo $KUBE_CONFIG | base64 -d > $KUBECONFIG
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.GC_WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ secrets.GC_SERVICE_ACCOUNT }}'
+
+      - name: Get GKE cluster credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: '${{ secrets.GC_GKE_CLUSTER_NAME }}'
+          location: '${{ secrets.GC_GKE_CLUSTER_LOCATION }}'
 
       - name: Deploy image
-        run: kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_REF#refs/tags/v}
+        run: kubectl -n ${NAMESPACE} set image deployment/${DEPLOYMENT} ${CONTAINER}=ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_REF#refs/tags/v}
 
       - name: Check rollout
         if: success()
-        run: kubectl rollout status deployment/${DEPLOYMENT} -w --timeout=5m
+        run: kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT} -w --timeout=5m
 
       - name: Roll back
         if: failure()
-        run: kubectl rollout undo deployment/${DEPLOYMENT}
+        run: kubectl -n ${NAMESPACE} rollout undo deployment/${DEPLOYMENT}
