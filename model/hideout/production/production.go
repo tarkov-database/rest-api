@@ -26,6 +26,7 @@ type Production struct {
 	ID              objectID    `json:"_id" bson:"_id"`
 	Module          objectID    `json:"module" bson:"module"`
 	RequiredModules []ModuleRef `json:"requiredMods" bson:"requiredMods"`
+	RequiredQuests  []Quest     `json:"requiredQuests" bson:"requiredQuests"`
 	Materials       []ItemRef   `json:"materials" bson:"materials"`
 	Tools           []ItemRef   `json:"tools" bson:"tools"`
 	Outcome         []ItemRef   `json:"outcome" bson:"outcome"`
@@ -96,6 +97,20 @@ func (i ItemRef) Validate() error {
 	}
 	if i.Count == 0 && i.Resources == 0 {
 		return errors.New("count and resources is zero")
+	}
+
+	return nil
+}
+
+// Quest describes a quest requirement of a production
+type Quest struct {
+	Name string `json:"name" bson:"name"`
+}
+
+// Validate validates the fields of a quest requirement
+func (q Quest) Validate() error {
+	if len(q.Name) < 3 {
+		return errors.New("name is too short or not set")
 	}
 
 	return nil
