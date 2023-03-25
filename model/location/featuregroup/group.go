@@ -204,7 +204,7 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 			{Key: "_location", Value: lID},
 			{Key: "$and", Value: bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
-				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "gim"}},
+				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "im"}},
 			}},
 		}
 	}

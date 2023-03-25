@@ -173,7 +173,7 @@ func GetByText(q string, opts *Options, kind Kind) (*model.Result, error) {
 			{Key: "_kind", Value: kind},
 			{Key: "$and", Value: bson.A{
 				bson.M{"$text": bson.M{"$search": q}},
-				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "gim"}},
+				bson.M{"description": primitive.Regex{Pattern: fmt.Sprintf("(%s)", re), Options: "im"}},
 			}},
 		}
 	}
