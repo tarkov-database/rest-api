@@ -155,8 +155,8 @@ func GetByText(q string, opts *Options, kind Kind) (*model.Result, error) {
 	filter := bson.D{
 		{Key: "_kind", Value: kind},
 		{Key: "$or", Value: bson.A{
-			bson.M{"shortName": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
-			bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
+			bson.M{"shortName": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "i"}},
+			bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "i"}},
 		}},
 	}
 

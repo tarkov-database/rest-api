@@ -193,7 +193,7 @@ func GetByText(q string, opts *Options) (*model.Result, error) {
 
 	var filter interface{}
 
-	filter = bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}}
+	filter = bson.M{"name": primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "i"}}
 
 	count, err := c.CountDocuments(ctx, filter)
 	if err != nil {

@@ -189,7 +189,7 @@ func GetByText(q, loc string, opts *Options) (*model.Result, error) {
 
 	filter = bson.D{
 		{Key: "_location", Value: lID},
-		{Key: "name", Value: primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "gi"}},
+		{Key: "name", Value: primitive.Regex{Pattern: fmt.Sprintf("%s", re), Options: "i"}},
 	}
 
 	count, err := c.CountDocuments(ctx, filter)
