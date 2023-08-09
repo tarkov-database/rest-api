@@ -1,4 +1,4 @@
-FROM golang:1.20.5-bullseye as build-env
+FROM golang:1.21.0-bullseye as build-env
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
