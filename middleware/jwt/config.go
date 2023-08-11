@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var cfg *config
@@ -24,31 +24,33 @@ func init() {
 }
 
 type config struct {
-	Algorithm      jwt.Algorithm
-	Audience       jwt.Audience
-	ExpirationTime time.Duration
-	Leeway         time.Duration
+	SigningAlgorithm jwt.SigningMethod
+	SigningKey       []byte
+	Audience         string
+	ExpirationTime   time.Duration
+	Leeway           time.Duration
 }
 
 func newConfig() (*config, error) {
 	c := &config{}
 
-	if env := os.Getenv("JWT_KEY"); len(env) > 0 {
+	if key := os.Getenv("JWT_KEY"); len(key) > 0 {
 		switch strings.ToLower(os.Getenv("JWT_ALG")) {
 		case "hs256":
-			c.Algorithm = jwt.NewHS256([]byte(env))
+			c.SigningAlgorithm = jwt.SigningMethodHS256
 		case "hs512":
-			c.Algorithm = jwt.NewHS512([]byte(env))
+			c.SigningAlgorithm = jwt.SigningMethodHS512
 		default:
 			log.Println("No valid JWT algorithm set, using HS256")
-			c.Algorithm = jwt.NewHS256([]byte(env))
+			c.SigningAlgorithm = jwt.SigningMethodHS256
 		}
+		c.SigningKey = []byte(key)
 	} else {
 		return c, errors.New("jwt key is not set")
 	}
 
 	if env := os.Getenv("JWT_AUDIENCE"); len(env) >= 3 {
-		c.Audience = strings.Split(env, ",")
+		c.Audience = env
 	} else {
 		return c, errors.New("jwt audience is not set or too short")
 	}

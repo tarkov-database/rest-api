@@ -10,7 +10,7 @@ import (
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/view"
 
-	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -123,12 +123,12 @@ func isScopeValid(s string) bool {
 
 // Claims represents the claims of a token
 type Claims struct {
-	jwt.Payload
+	jwt.RegisteredClaims
 	Scope []string `json:"scope"`
 }
 
 // ValidateCustom validates the custom claims of a token
-func (c *Claims) ValidateCustom() error {
+func (c *Claims) Validate() error {
 	for _, s := range c.Scope {
 		if !isScopeValid(s) {
 			return ErrInvalidScope
@@ -138,25 +138,26 @@ func (c *Claims) ValidateCustom() error {
 	return nil
 }
 
-// CreateToken creates a new token
-func CreateToken(c *Claims, d *time.Duration) (string, error) {
+// SignToken creates a new token
+func SignToken(c *Claims, d *time.Duration) (string, error) {
 	now := time.Now()
 
-	c.Audience = cfg.Audience
-	c.IssuedAt = jwt.NumericDate(now)
+	c.Audience = append(c.Audience, cfg.Audience)
+	c.IssuedAt = jwt.NewNumericDate(now)
 
 	if d != nil {
-		c.ExpirationTime = jwt.NumericDate(now.Add(*d))
+		c.ExpiresAt = jwt.NewNumericDate(now.Add(*d))
 	} else {
-		c.ExpirationTime = jwt.NumericDate(now.Add(cfg.ExpirationTime))
+		c.ExpiresAt = jwt.NewNumericDate(now.Add(cfg.ExpirationTime))
 	}
 
-	t, err := jwt.Sign(c, cfg.Algorithm)
+	token := jwt.NewWithClaims(cfg.SigningAlgorithm, c)
+	s, err := token.SignedString(cfg.SigningKey)
 	if err != nil {
 		return "", err
 	}
 
-	return string(t), nil
+	return s, nil
 }
 
 // GetToken gets the token of an HTTP request
@@ -178,31 +179,38 @@ func GetToken(r *http.Request) (string, error) {
 func VerifyToken(tokenStr string) (*Claims, error) {
 	claims := &Claims{}
 
-	now := time.Now()
+	leeway := jwt.WithLeeway(cfg.Leeway)
+	audience := jwt.WithAudience(cfg.Audience)
 
-	expVal := jwt.ExpirationTimeValidator(now.Add(-cfg.Leeway))
-	audVal := jwt.AudienceValidator(cfg.Audience)
-
-	valPayload := jwt.ValidatePayload(&claims.Payload, expVal, audVal)
-
-	if _, err := jwt.Verify([]byte(tokenStr), cfg.Algorithm, claims, valPayload); err != nil {
-		switch err {
-		case jwt.ErrExpValidation:
-			return claims, ErrExpiredToken
-		case jwt.ErrNbfValidation:
-			return claims, ErrNotBefore
-		case jwt.ErrAudValidation:
-			return claims, ErrInvalidAudience
-		case jwt.ErrSubValidation:
-			return claims, ErrInvalidSubject
-		case jwt.ErrMalformed:
-			return claims, ErrMalformed
+	_, err := jwt.ParseWithClaims(tokenStr, claims, keyFunc, leeway, audience)
+	if err != nil {
+		switch {
+		case errors.Is(err, jwt.ErrTokenExpired):
+			return nil, ErrExpiredToken
+		case errors.Is(err, jwt.ErrTokenNotValidYet):
+			return nil, ErrNotBefore
+		case errors.Is(err, jwt.ErrTokenInvalidAudience):
+			return nil, ErrInvalidAudience
+		case errors.Is(err, jwt.ErrTokenInvalidSubject):
+			return nil, ErrInvalidSubject
+		case errors.Is(err, jwt.ErrTokenMalformed):
+			return nil, ErrMalformed
+		case errors.Is(err, jwt.ErrInvalidKey), errors.Is(err, jwt.ErrInvalidKeyType):
+			return nil, errors.New("invalid signing key")
 		default:
-			return claims, ErrInvalidToken
+			return nil, ErrInvalidToken
 		}
 	}
 
 	return claims, nil
+}
+
+func keyFunc(token *jwt.Token) (interface{}, error) {
+	if token.Method.Alg() != cfg.SigningAlgorithm.Alg() {
+		return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
+	}
+
+	return cfg.SigningKey, nil
 }
 
 // AuhtorizationHandler returns a JWT authorization handler

@@ -21,7 +21,7 @@ func TestTokenGET(t *testing.T) {
 	clmIn := &jwt.Claims{}
 	clmIn.Subject = userID.Hex()
 
-	tkn, err := jwt.CreateToken(clmIn, nil)
+	tkn, err := jwt.SignToken(clmIn, nil)
 	if err != nil {
 		t.Fatalf("Getting token failed: %s", err)
 	}
@@ -71,7 +71,7 @@ func TestTokenPOST(t *testing.T) {
 	}
 	clm.Subject = userID.Hex()
 
-	tkn, err := jwt.CreateToken(clm, nil)
+	tkn, err := jwt.SignToken(clm, nil)
 	if err != nil {
 		t.Fatalf("Creating token failed: %s", err)
 	}
@@ -122,7 +122,7 @@ func TestTokenPOST(t *testing.T) {
 		t.Error("Getting token failed: subject invalid")
 	}
 
-	d := clmOut.ExpirationTime.Sub(time.Now())
+	d := clmOut.ExpiresAt.Sub(time.Now())
 
 	if d.Round(time.Hour) != 24*time.Hour {
 		t.Error("Getting token failed: lifetime mismatch")
