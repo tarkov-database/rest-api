@@ -138,7 +138,7 @@ func (c *Claims) Validate() error {
 	return nil
 }
 
-// SignToken creates a new token
+// SignToken signs a token
 func SignToken(c *Claims, d *time.Duration) (string, error) {
 	now := time.Now()
 
@@ -160,8 +160,8 @@ func SignToken(c *Claims, d *time.Duration) (string, error) {
 	return s, nil
 }
 
-// GetToken gets the token of an HTTP request
-func GetToken(r *http.Request) (string, error) {
+// ExtractToken extracts a token from a request header
+func ExtractToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
 	if len(header) == 0 {
 		return "", ErrNoAuthHeader
@@ -206,17 +206,53 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 }
 
 func keyFunc(token *jwt.Token) (interface{}, error) {
-	if token.Method.Alg() != cfg.SigningAlgorithm.Alg() {
-		return nil, fmt.Errorf("unexpected signing method: %v", token.Method.Alg())
+	switch alg := token.Method.Alg(); alg {
+	// RSA algorithms
+	case jwt.SigningMethodRS256.Alg(), jwt.SigningMethodRS384.Alg(), jwt.SigningMethodRS512.Alg():
+	// RSAPSS algorithms
+	case jwt.SigningMethodPS256.Alg(), jwt.SigningMethodPS384.Alg(), jwt.SigningMethodPS512.Alg():
+	// ECDSA algorithms
+	case jwt.SigningMethodES256.Alg(), jwt.SigningMethodES384.Alg(), jwt.SigningMethodES512.Alg():
+	// EdDSA algorithms
+	case jwt.SigningMethodEdDSA.Alg():
+	// HMAC algorithms
+	case jwt.SigningMethodHS256.Alg(), jwt.SigningMethodHS384.Alg(), jwt.SigningMethodHS512.Alg():
+		return cfg.SigningKey, nil
+	default:
+		return nil, fmt.Errorf("unsupported signing algorithm: %s", alg)
 	}
 
-	return cfg.SigningKey, nil
+	fingerprint, ok := token.Header["x5t#S256"].(string)
+	if !ok {
+		return nil, errors.New("invalid fingerprint")
+	}
+
+	chain, ok := store.get(fingerprint)
+	if ok {
+		if err := chain.verify(store.roots); err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+
+		chain, err = parseTokenCerts(token)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse certificate chain: %w", err)
+		}
+
+		// The add method verifies the chain
+		if err := store.add(chain); err != nil {
+			return nil, fmt.Errorf("failed to add certificate chain: %w", err)
+		}
+	}
+
+	return chain.publicKey(), nil
 }
 
 // AuhtorizationHandler returns a JWT authorization handler
 func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		token, err := GetToken(r)
+		token, err := ExtractToken(r)
 		if err != nil {
 			AddAuthenticateHeader(w, err, scope)
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
