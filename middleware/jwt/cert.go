@@ -15,7 +15,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var store certStore = certStore{
+var store = certStore{
 	roots: x509.NewCertPool(),
 	certs: make(map[string]*certChain),
 }
