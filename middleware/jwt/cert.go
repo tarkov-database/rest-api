@@ -95,14 +95,6 @@ func parseCertsFromPEM(path string) ([]*x509.Certificate, error) {
 		certs = append(certs, cert)
 	}
 
-	lastIdx := len(certs) - 1
-	for i := lastIdx; i >= 0; i-- {
-		c := certs[i]
-		if i == lastIdx && c.IsCA || i < lastIdx && !c.IsCA {
-			return nil, errors.New("invalid certificate chain")
-		}
-	}
-
 	return certs, nil
 }
 
