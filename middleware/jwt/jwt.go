@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"net/http"
@@ -227,26 +228,34 @@ func keyFunc(token *jwt.Token) (interface{}, error) {
 		return nil, errors.New("invalid fingerprint")
 	}
 
-	chain, ok := store.get(fingerprint)
+	cert, ok := store.get(fingerprint)
 	if ok {
-		if err := chain.verify(store.roots); err != nil {
-			return nil, err
+		if time.Now().After(cert.NotAfter) {
+			store.remove(fingerprint)
+			return nil, errors.New("certificate expired")
 		}
 	} else {
-		var err error
-
-		chain, err = parseTokenCerts(token)
+		certs, err := parseCertsFromToken(token)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse certificate chain: %w", err)
 		}
 
-		// The add method verifies the chain
-		if err := store.add(chain); err != nil {
-			return nil, fmt.Errorf("failed to add certificate chain: %w", err)
+		leaf := certs[0]
+
+		var intermediates []*x509.Certificate
+		if len(certs) > 1 {
+			intermediates = certs[1:]
 		}
+
+		if err := verifyCert(leaf, intermediates, store.roots); err != nil {
+			return nil, fmt.Errorf("failed to verify certificate: %w", err)
+		}
+
+		store.add(leaf)
+		cert = leaf
 	}
 
-	return chain.publicKey(), nil
+	return cert.PublicKey, nil
 }
 
 // AuhtorizationHandler returns a JWT authorization handler
