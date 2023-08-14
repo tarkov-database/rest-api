@@ -147,7 +147,7 @@ func verifyCert(leaf *x509.Certificate, intermediates []*x509.Certificate, roots
 
 	_, err := leaf.Verify(opts)
 	if err != nil {
-		return fmt.Errorf("failed to verify certificate: %w", err)
+		return fmt.Errorf("failed to verify and build certificate chain: %v", err)
 	}
 
 	if leaf.KeyUsage&x509.KeyUsageDigitalSignature == 0 {

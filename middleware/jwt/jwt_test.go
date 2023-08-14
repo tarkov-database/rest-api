@@ -2,7 +2,9 @@ package jwt
 
 import (
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -38,21 +40,21 @@ func init() {
 
 const badToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 
-func TestHmacSignVerify(t *testing.T) {
+func TestSymmetricSignVerify(t *testing.T) {
 	claimsIn := &Claims{}
 
 	token, err := SignToken(claimsIn, nil)
 	if err != nil {
-		t.Errorf("Token creation failed: %v", err)
+		t.Fatalf("Token creation failed: %v", err)
 	}
 
 	claimsOut, err := VerifyToken(token)
 	if err != nil {
-		t.Errorf("Token verification failed: %v", err)
+		t.Fatalf("Token verification failed: %v", err)
 	}
 
 	if !reflect.DeepEqual(claimsIn, claimsOut) {
-		t.Errorf("Token claim validation failed: claims %v and %v unequal", claimsIn, claimsOut)
+		t.Fatalf("Token claim validation failed: claims %v and %v unequal", claimsIn, claimsOut)
 	}
 
 	if _, err := VerifyToken(badToken); err == nil {
@@ -60,109 +62,130 @@ func TestHmacSignVerify(t *testing.T) {
 	}
 }
 
-func TestEd25519Verify(t *testing.T) {
-	claimsIn := &Claims{}
-
-	token, err := signTestingToken(claimsIn)
-	if err != nil {
-		t.Errorf("Token creation failed: %v", err)
+func TestAsymmetricVerify(t *testing.T) {
+	tests := []struct {
+		name              string
+		claims            *Claims
+		certFile          string
+		keyFile           string
+		expectedErr       error
+		expectedCustomErr interface{}
+	}{
+		{
+			name:     "valid token",
+			claims:   &Claims{},
+			certFile: "testdata/certs.crt",
+			keyFile:  "testdata/key.pem",
+		},
+		{
+			name:              "invalid token",
+			claims:            &Claims{},
+			certFile:          "testdata/certs_invalid.crt",
+			keyFile:           "testdata/key_invalid.pem",
+			expectedCustomErr: x509.UnknownAuthorityError{},
+		},
 	}
 
-	claimsOut, err := VerifyToken(token)
-	if err != nil {
-		t.Errorf("Token verification failed: %v", err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			token, err := signTestingToken(tt.claims, tt.certFile, tt.keyFile)
+			if err != nil {
+				t.Fatalf("Token creation failed: %v", err)
+			}
 
-	if !reflect.DeepEqual(claimsIn, claimsOut) {
-		t.Errorf("Token claim validation failed: claims %v and %v unequal", claimsIn, claimsOut)
+			_, err = VerifyToken(token)
+			if tt.expectedErr != nil && !errors.Is(err, tt.expectedErr) {
+				t.Fatalf("Token verification failed: expected error %v, got %v", tt.expectedErr, err)
+			}
+			if tt.expectedCustomErr != nil && !errors.As(err, &tt.expectedCustomErr) {
+				t.Fatalf("Token verification failed: expected error type %T, got %v", tt.expectedCustomErr, err)
+			}
+			if tt.expectedErr == nil && tt.expectedCustomErr == nil && err != nil {
+				t.Errorf("Token verification failed: %v", err)
+			}
+		})
 	}
 }
 
-func TestGetToken(t *testing.T) {
+func TestExtractToken(t *testing.T) {
 	header := http.Header{}
 	header.Add("Authorization", fmt.Sprintf("Bearer %s", badToken))
 
 	token, err := ExtractToken(&http.Request{Header: header})
 	if err != nil {
-		t.Errorf("Getting token failed: %v", err)
+		t.Fatalf("Getting token failed: %v", err)
 	}
 
 	if token != badToken {
-		t.Errorf("Getting token failed: token %s and %s unequal", token, badToken)
+		t.Fatalf("Getting token failed: token %s and %s unequal", token, badToken)
 	}
 }
 
 func TestAuhtorizationHandler(t *testing.T) {
-	validClaims := &Claims{
-		Scope: []string{
-			ScopeUserRead,
+	tests := []struct {
+		name         string
+		claims       *Claims
+		certFile     string
+		keyFile      string
+		expectedCode int
+	}{
+		{
+			name: "valid token",
+			claims: &Claims{
+				Scope: []string{ScopeUserRead},
+			},
+			certFile:     "testdata/certs.crt",
+			keyFile:      "testdata/key.pem",
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "invalid token",
+			claims:       &Claims{},
+			certFile:     "testdata/certs_invalid.crt",
+			keyFile:      "testdata/key_invalid.pem",
+			expectedCode: http.StatusUnauthorized,
+		},
+		{
+			name: "invalid scope token",
+			claims: &Claims{
+				Scope: []string{ScopeItemRead},
+			},
+			certFile:     "testdata/certs.crt",
+			keyFile:      "testdata/key.pem",
+			expectedCode: http.StatusForbidden,
 		},
 	}
 
-	validToken, err := signTestingToken(validClaims)
-	if err != nil {
-		t.Fatalf("Getting token failed: %s", err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			token, err := signTestingToken(tt.claims, tt.certFile, tt.keyFile)
+			if err != nil {
+				t.Fatalf("Getting token failed: %s", err)
+			}
 
-	header := http.Header{}
-	header.Add("Authorization", fmt.Sprintf("Bearer %s", validToken))
+			header := http.Header{}
+			header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 
-	handle := AuhtorizationHandler(ScopeUserRead, func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-		w.WriteHeader(http.StatusOK)
-	})
+			handle := AuhtorizationHandler(ScopeUserRead, func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+				w.WriteHeader(http.StatusOK)
+			})
 
-	w := httptest.NewRecorder()
+			w := httptest.NewRecorder()
+			handle(w, &http.Request{Header: header}, httprouter.Params{})
 
-	handle(w, &http.Request{Header: header}, httprouter.Params{})
+			resp := w.Result()
+			defer resp.Body.Close()
 
-	resp := w.Result()
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("Authorization handler failed: unexpcted response code %v", resp.StatusCode)
-	}
-
-	header.Set("Authorization", fmt.Sprintf("Bearer %s", badToken))
-
-	w = httptest.NewRecorder()
-
-	handle(w, &http.Request{Header: header}, httprouter.Params{})
-
-	resp = w.Result()
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusUnauthorized {
-		t.Fatalf("Authorization handler failed: unexpcted response code %v", resp.StatusCode)
-	}
-
-	invalidClaims := &Claims{
-		Scope: []string{
-			ScopeItemRead,
-		},
-	}
-
-	invalidToken, err := signTestingToken(invalidClaims)
-	if err != nil {
-		t.Fatalf("Authorization handler failed: %s", err)
-	}
-
-	header.Set("Authorization", fmt.Sprintf("Bearer %s", invalidToken))
-
-	w = httptest.NewRecorder()
-
-	handle(w, &http.Request{Header: header}, httprouter.Params{})
-
-	resp = w.Result()
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusForbidden {
-		t.Fatalf("Authorization handler failed: unexpcted response code %v", resp.StatusCode)
+			if resp.StatusCode != tt.expectedCode {
+				t.Fatalf("Authorization handler failed: unexpected response code %v", resp.StatusCode)
+			}
+		})
 	}
 }
 
-func signTestingToken(c *Claims) (string, error) {
+func signTestingToken(c *Claims, certPath, keyPath string) (string, error) {
 	// Load key and PEM certificates
-	keyBytes, err := os.ReadFile("testdata/key.pem")
+	keyBytes, err := os.ReadFile(keyPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read key file: %w", err)
 	}
@@ -172,7 +195,7 @@ func signTestingToken(c *Claims) (string, error) {
 		return "", fmt.Errorf("failed to parse key: %w", err)
 	}
 
-	certs, err := parseCertsFromPEM("testdata/certs.crt")
+	certs, err := parseCertsFromPEM(certPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read cert file: %w", err)
 	}
