@@ -23,7 +23,7 @@ func init() {
 	logger.Init("default", false, false, io.Discard)
 
 	// Load root certificate
-	certs, err := parseCertsFromPEM("testdata/certs.crt")
+	certs, err := parseCertsFromPEM("testdata/root.crt")
 	if err != nil {
 		log.Printf("failed to read cert file: %v", err)
 		os.Exit(2)
