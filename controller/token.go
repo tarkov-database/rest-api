@@ -14,7 +14,7 @@ import (
 
 // TokenGET handles a GET request on the token endpoint
 func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, err := jwt.GetToken(r)
+	t, err := jwt.ExtractToken(r)
 	if err != nil {
 		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
@@ -39,13 +39,13 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	t, err = jwt.CreateToken(clm, nil)
+	t, err = jwt.SignToken(clm, nil)
 	if err != nil {
 		StatusUnprocessableEntity(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpirationTime.Unix()}, http.StatusCreated, w)
+	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpiresAt.Unix()}, http.StatusCreated, w)
 }
 
 // TokenPOST handles a POST request on the token endpoint
@@ -55,7 +55,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	issToken, err := jwt.GetToken(r)
+	issToken, err := jwt.ExtractToken(r)
 	if err != nil {
 		jwt.AddAuthenticateHeader(w, err, jwt.ScopeTokenWrite, jwt.ScopeAllWrite)
 		StatusUnauthorized(err.Error()).Render(w)
@@ -98,7 +98,7 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	clm := rb.ToClaims()
 
-	if err := clm.ValidateCustom(); err != nil {
+	if err := clm.Validate(); err != nil {
 		StatusUnprocessableEntity(fmt.Sprintf("Validation error: %s", err)).Render(w)
 		return
 	}
@@ -116,11 +116,11 @@ func TokenPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	clm.Issuer = issClaims.Issuer
 
-	t, err := jwt.CreateToken(clm, lt)
+	t, err := jwt.SignToken(clm, lt)
 	if err != nil {
 		StatusInternalServerError(fmt.Sprintf("Creation error: %s", err)).Render(w)
 		return
 	}
 
-	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpirationTime.Unix()}, http.StatusCreated, w)
+	view.RenderJSON(token.Response{Token: t, Expires: clm.ExpiresAt.Unix()}, http.StatusCreated, w)
 }

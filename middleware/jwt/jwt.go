@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 	"github.com/tarkov-database/rest-api/model"
 	"github.com/tarkov-database/rest-api/view"
 
-	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -123,12 +124,12 @@ func isScopeValid(s string) bool {
 
 // Claims represents the claims of a token
 type Claims struct {
-	jwt.Payload
+	jwt.RegisteredClaims
 	Scope []string `json:"scope"`
 }
 
 // ValidateCustom validates the custom claims of a token
-func (c *Claims) ValidateCustom() error {
+func (c *Claims) Validate() error {
 	for _, s := range c.Scope {
 		if !isScopeValid(s) {
 			return ErrInvalidScope
@@ -138,29 +139,30 @@ func (c *Claims) ValidateCustom() error {
 	return nil
 }
 
-// CreateToken creates a new token
-func CreateToken(c *Claims, d *time.Duration) (string, error) {
+// SignToken signs a token
+func SignToken(c *Claims, d *time.Duration) (string, error) {
 	now := time.Now()
 
-	c.Audience = cfg.Audience
-	c.IssuedAt = jwt.NumericDate(now)
+	c.Audience = append(c.Audience, cfg.Audience)
+	c.IssuedAt = jwt.NewNumericDate(now)
 
 	if d != nil {
-		c.ExpirationTime = jwt.NumericDate(now.Add(*d))
+		c.ExpiresAt = jwt.NewNumericDate(now.Add(*d))
 	} else {
-		c.ExpirationTime = jwt.NumericDate(now.Add(cfg.ExpirationTime))
+		c.ExpiresAt = jwt.NewNumericDate(now.Add(cfg.ExpirationTime))
 	}
 
-	t, err := jwt.Sign(c, cfg.Algorithm)
+	token := jwt.NewWithClaims(cfg.SigningAlgorithm, c)
+	s, err := token.SignedString(cfg.SigningKey)
 	if err != nil {
 		return "", err
 	}
 
-	return string(t), nil
+	return s, nil
 }
 
-// GetToken gets the token of an HTTP request
-func GetToken(r *http.Request) (string, error) {
+// ExtractToken extracts a token from a request header
+func ExtractToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
 	if len(header) == 0 {
 		return "", ErrNoAuthHeader
@@ -178,37 +180,88 @@ func GetToken(r *http.Request) (string, error) {
 func VerifyToken(tokenStr string) (*Claims, error) {
 	claims := &Claims{}
 
-	now := time.Now()
+	leeway := jwt.WithLeeway(cfg.Leeway)
+	audience := jwt.WithAudience(cfg.Audience)
 
-	expVal := jwt.ExpirationTimeValidator(now.Add(-cfg.Leeway))
-	audVal := jwt.AudienceValidator(cfg.Audience)
-
-	valPayload := jwt.ValidatePayload(&claims.Payload, expVal, audVal)
-
-	if _, err := jwt.Verify([]byte(tokenStr), cfg.Algorithm, claims, valPayload); err != nil {
-		switch err {
-		case jwt.ErrExpValidation:
-			return claims, ErrExpiredToken
-		case jwt.ErrNbfValidation:
-			return claims, ErrNotBefore
-		case jwt.ErrAudValidation:
-			return claims, ErrInvalidAudience
-		case jwt.ErrSubValidation:
-			return claims, ErrInvalidSubject
-		case jwt.ErrMalformed:
-			return claims, ErrMalformed
+	_, err := jwt.ParseWithClaims(tokenStr, claims, keyFunc, leeway, audience)
+	if err != nil {
+		switch {
+		case errors.Is(err, jwt.ErrTokenExpired):
+			return nil, errors.Join(ErrExpiredToken, err)
+		case errors.Is(err, jwt.ErrTokenNotValidYet):
+			return nil, errors.Join(ErrNotBefore, err)
+		case errors.Is(err, jwt.ErrTokenInvalidAudience):
+			return nil, errors.Join(ErrInvalidAudience, err)
+		case errors.Is(err, jwt.ErrTokenInvalidSubject):
+			return nil, errors.Join(ErrInvalidSubject, err)
+		case errors.Is(err, jwt.ErrTokenMalformed):
+			return nil, errors.Join(ErrMalformed, err)
+		case errors.Is(err, jwt.ErrInvalidKey), errors.Is(err, jwt.ErrInvalidKeyType):
+			return nil, err
 		default:
-			return claims, ErrInvalidToken
+			return nil, errors.Join(ErrInvalidToken, err)
 		}
 	}
 
 	return claims, nil
 }
 
+func keyFunc(token *jwt.Token) (interface{}, error) {
+	switch alg := token.Method.Alg(); alg {
+	// RSA algorithms
+	case jwt.SigningMethodRS256.Alg(), jwt.SigningMethodRS384.Alg(), jwt.SigningMethodRS512.Alg():
+	// RSAPSS algorithms
+	case jwt.SigningMethodPS256.Alg(), jwt.SigningMethodPS384.Alg(), jwt.SigningMethodPS512.Alg():
+	// ECDSA algorithms
+	case jwt.SigningMethodES256.Alg(), jwt.SigningMethodES384.Alg(), jwt.SigningMethodES512.Alg():
+	// EdDSA algorithms
+	case jwt.SigningMethodEdDSA.Alg():
+	// HMAC algorithms
+	case jwt.SigningMethodHS256.Alg(), jwt.SigningMethodHS384.Alg(), jwt.SigningMethodHS512.Alg():
+		return cfg.SigningKey, nil
+	default:
+		return nil, fmt.Errorf("unsupported signing algorithm: %s", alg)
+	}
+
+	fingerprint, ok := token.Header["x5t#S256"].(string)
+	if !ok {
+		return nil, errors.New("invalid fingerprint")
+	}
+
+	cert, ok := store.get(fingerprint)
+	if ok {
+		if time.Now().After(cert.NotAfter) {
+			store.remove(fingerprint)
+			return nil, errors.New("certificate expired")
+		}
+	} else {
+		certs, err := parseCertsFromToken(token)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse certificate chain: %w", err)
+		}
+
+		leaf := certs[0]
+
+		var intermediates []*x509.Certificate
+		if len(certs) > 1 {
+			intermediates = certs[1:]
+		}
+
+		if err := verifyCert(leaf, intermediates, store.roots); err != nil {
+			return nil, fmt.Errorf("failed to verify certificate: %w", err)
+		}
+
+		store.add(leaf)
+		cert = leaf
+	}
+
+	return cert.PublicKey, nil
+}
+
 // AuhtorizationHandler returns a JWT authorization handler
 func AuhtorizationHandler(scope string, h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		token, err := GetToken(r)
+		token, err := ExtractToken(r)
 		if err != nil {
 			AddAuthenticateHeader(w, err, scope)
 			statusHandler(err.Error(), http.StatusUnauthorized, w)
