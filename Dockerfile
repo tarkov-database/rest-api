@@ -1,4 +1,4 @@
-FROM golang:1.21.0-bullseye as build-env
+FROM golang:1.21.0-bookworm as build-env
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
@@ -7,7 +7,7 @@ RUN make bin && \
     mkdir -p /usr/share/tarkov-database/rest-api && \
     mv -t /usr/share/tarkov-database/rest-api apiserver
 
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/base-debian12
 
 LABEL homepage="https://tarkov-database.com"
 LABEL repository="https://github.com/tarkov-database/rest-api"
