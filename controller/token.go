@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -22,7 +23,7 @@ func TokenGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	clm, err := jwt.VerifyToken(t)
-	if err != nil && err != jwt.ErrExpiredToken {
+	if err != nil && !errors.Is(err, jwt.ErrExpiredToken) {
 		jwt.AddAuthenticateHeader(w, err)
 		StatusUnauthorized(err.Error()).Render(w)
 		return
