@@ -187,19 +187,19 @@ func VerifyToken(tokenStr string) (*Claims, error) {
 	if err != nil {
 		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
-			return nil, errors.Join(ErrExpiredToken, err)
+			return claims, errors.Join(ErrExpiredToken, err)
 		case errors.Is(err, jwt.ErrTokenNotValidYet):
-			return nil, errors.Join(ErrNotBefore, err)
+			return claims, errors.Join(ErrNotBefore, err)
 		case errors.Is(err, jwt.ErrTokenInvalidAudience):
-			return nil, errors.Join(ErrInvalidAudience, err)
+			return claims, errors.Join(ErrInvalidAudience, err)
 		case errors.Is(err, jwt.ErrTokenInvalidSubject):
-			return nil, errors.Join(ErrInvalidSubject, err)
+			return claims, errors.Join(ErrInvalidSubject, err)
 		case errors.Is(err, jwt.ErrTokenMalformed):
-			return nil, errors.Join(ErrMalformed, err)
+			return claims, errors.Join(ErrMalformed, err)
 		case errors.Is(err, jwt.ErrInvalidKey), errors.Is(err, jwt.ErrInvalidKeyType):
-			return nil, err
+			return claims, err
 		default:
-			return nil, errors.Join(ErrInvalidToken, err)
+			return claims, errors.Join(ErrInvalidToken, err)
 		}
 	}
 
