@@ -1,4 +1,4 @@
-FROM golang:1.21.3-bookworm as build-env
+FROM golang:1.21.5-bookworm as build-env
 
 WORKDIR /tmp/github.com/tarkov-database/rest-api
 COPY . .
