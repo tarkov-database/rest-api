@@ -50,7 +50,7 @@ jobs:
           service_account: '${{ secrets.GC_SERVICE_ACCOUNT }}'
 
       - name: Get GKE cluster credentials
-        uses: google-github-actions/get-gke-credentials@v1
+        uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: '${{ secrets.GC_GKE_CLUSTER_NAME }}'
           location: '${{ secrets.GC_GKE_CLUSTER_LOCATION }}'
