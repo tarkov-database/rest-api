@@ -9,16 +9,22 @@ const (
 type Armor struct {
 	Item `bson:",inline"`
 
-	Type           string     `json:"type" bson:"type"`
-	Armor          ArmorProps `json:"armor" bson:"armor"`
-	RicochetChance string     `json:"ricochetChance,omitempty" bson:"ricochetChance,omitempty"`
-	Penalties      Penalties  `json:"penalties" bson:"penalties"`
-	Blocking       []string   `json:"blocking" bson:"blocking"`
-	Slots          Slots      `json:"slots" bson:"slots"`
-	Compatibility  List       `json:"compatibility" bson:"compatibility"`
+	Type           string           `json:"type" bson:"type"`
+	Armor          ArmorProps       `json:"armor" bson:"armor"`
+	Components     []ArmorComponent `json:"components" bson:"components"`
+	RicochetChance string           `json:"ricochetChance,omitempty" bson:"ricochetChance,omitempty"`
+	Penalties      Penalties        `json:"penalties" bson:"penalties"`
+	Blocking       []string         `json:"blocking" bson:"blocking"`
+	Slots          Slots            `json:"slots" bson:"slots"`
+	Compatibility  List             `json:"compatibility" bson:"compatibility"`
 }
 
-// ArmorProps represents the armor properties of Armor and TacticalRig
+// ArmorComponent describes the entity of an armor component
+type ArmorComponent struct {
+	ArmorProps `bson:",inline"`
+}
+
+// ArmorProps represents the armor properties of ArmorComponent and Armor
 type ArmorProps struct {
 	Class           int64         `json:"class" bson:"class"`
 	Durability      float64       `json:"durability" bson:"durability"`
