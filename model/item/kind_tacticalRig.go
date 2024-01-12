@@ -14,5 +14,6 @@ type TacticalRig struct {
 	Penalties       Penalties        `json:"penalties" bson:"penalties"`
 	Armor           *ArmorProps      `json:"armor,omitempty" bson:"armor,omitempty"` // Deprecated
 	ArmorComponents []ArmorComponent `json:"armorComponents,omitempty" bson:"armorComponents,omitempty"`
+	IsPlateCarrier  bool             `json:"isPlateCarrier" bson:"isPlateCarrier"`
 	Slots           Slots            `json:"slots" bson:"slots"`
 }
