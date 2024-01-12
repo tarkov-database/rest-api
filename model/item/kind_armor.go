@@ -17,6 +17,7 @@ type Armor struct {
 	Blocking       []string         `json:"blocking" bson:"blocking"`
 	Slots          Slots            `json:"slots" bson:"slots"`
 	Compatibility  List             `json:"compatibility" bson:"compatibility"`
+	Conflicts      List             `json:"conflicts" bson:"conflicts"`
 }
 
 // ArmorComponent describes the entity of an armor component
