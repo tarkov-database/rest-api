@@ -276,7 +276,7 @@ Loop:
 			return
 		}
 
-		result, err = item.GetAll(filter.Filter(), kind, opts)
+		result, err = item.GetAll(filter, kind, opts)
 		if err != nil {
 			handleError(err, w)
 			return

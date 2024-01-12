@@ -116,9 +116,11 @@ func getManyByFilter(filter interface{}, k Kind, opts *Options) (*model.Result, 
 }
 
 // GetAll returns a result based on filters
-func GetAll(filter bson.D, k Kind, opts *Options) (*model.Result, error) {
+func GetAll(filter model.DocumentFilter, k Kind, opts *Options) (*model.Result, error) {
 	f := bson.D{{Key: "_kind", Value: k}}
-	f = append(f, filter...)
+	if filter != nil {
+		f = append(f, filter.Filter()...)
+	}
 
 	return getManyByFilter(f, k, opts)
 }
