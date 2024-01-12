@@ -2,13 +2,10 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
-	"regexp"
-	"strconv"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -60,60 +57,17 @@ func NewResponse(msg string, code int) *Response {
 	}
 }
 
-// Filter represents an MongoDB query filter
-type Filter map[string]interface{}
-
-var regexNotAllowedFieldChars = regexp.MustCompile(`[^[:alnum:][:blank:]!#%&'()*+,\-./:;?_~]`)
-
-// AddString adds a string to the given MongoDB field
-func (f Filter) AddString(field, value string) error {
-	if value != "" {
-		if regexNotAllowedFieldChars.MatchString(value) {
-			return fmt.Errorf("%w: field \"%s\" contains invalid characters", ErrInvalidInput, field)
-		}
-
-		var err error
-		f[field], err = url.QueryUnescape(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+// DocumentFilter describes the interface for filtering documents
+type DocumentFilter interface {
+	Filter() bson.D
 }
 
-// AddInt adds an integer to the given MongoDB field
-func (f Filter) AddInt(field, value string) error {
-	if value != "" {
-		var err error
-		value, err = url.QueryUnescape(value)
-		if err != nil {
-			return err
-		}
-
-		f[field], err = strconv.ParseInt(value, 10, 64)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+// CustomFilter describes a custom filter
+type CustomFilter struct {
+	bson.D
 }
 
-// AddFloat adds a float to the given MongoDB field
-func (f Filter) AddFloat(field, value string) error {
-	if value != "" {
-		var err error
-		value, err = url.QueryUnescape(value)
-		if err != nil {
-			return err
-		}
-
-		f[field], err = strconv.ParseFloat(value, 64)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+// Filter implements the DocumentFilter interface
+func (f *CustomFilter) Filter() bson.D {
+	return f.D
 }

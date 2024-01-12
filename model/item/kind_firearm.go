@@ -1,5 +1,7 @@
 package item
 
+import "go.mongodb.org/mongo-driver/bson"
+
 const (
 	// KindFirearm represents the kind of Firearm
 	KindFirearm Kind = "firearm"
@@ -33,4 +35,39 @@ type Firearm struct {
 	CoolFactorMods     float64  `json:"coolFactorMods" bson:"coolFactorMods"`
 	CenterOfImpact     float64  `json:"centerOfImpact" bson:"centerOfImpact"`
 	Slots              Slots    `json:"slots" bson:"slots"`
+}
+
+// FirearmFilter describes the filters used for filtering Firearm
+type FirearmFilter struct {
+	Manufacturer *string
+	Type         *string
+	Class        *string
+	Caliber      *string
+}
+
+// Filter implements the DocumentFilter interface
+func (f *FirearmFilter) Filter() bson.D {
+	filters := []bson.M{}
+
+	if f.Manufacturer != nil {
+		filters = append(filters, bson.M{"manufacturer": *f.Manufacturer})
+	}
+
+	if f.Type != nil {
+		filters = append(filters, bson.M{"type": *f.Type})
+	}
+
+	if f.Class != nil {
+		filters = append(filters, bson.M{"class": *f.Class})
+	}
+
+	if f.Caliber != nil {
+		filters = append(filters, bson.M{"caliber": *f.Caliber})
+	}
+
+	if len(filters) == 0 {
+		return bson.D{}
+	}
+
+	return bson.D{{Key: "$and", Value: filters}}
 }

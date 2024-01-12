@@ -54,6 +54,12 @@ func isAlnumBlankPunct(s string) bool {
 	return !regexNonAlnumBlankPunct.MatchString(s)
 }
 
+var regexNotAllowedQueryChars = regexp.MustCompile(`[^[:alnum:][:blank:]!#%&'()*+,\-./:;?_~]`)
+
+func isAllowedQueryChars(s string) bool {
+	return !regexNotAllowedQueryChars.MatchString(s)
+}
+
 func handleError(err error, w http.ResponseWriter) {
 	var res *Status
 

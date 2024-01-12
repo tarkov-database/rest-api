@@ -1,5 +1,7 @@
 package item
 
+import "go.mongodb.org/mongo-driver/bson"
+
 const (
 	// KindMagazine represents the kind of Magazine
 	KindMagazine Kind = "magazine"
@@ -24,4 +26,24 @@ type Magazine struct {
 type MagazineModifier struct {
 	CheckTime  float64 `json:"checkTime" bson:"checkTime"`
 	LoadUnload float64 `json:"loadUnload" bson:"loadUnload"`
+}
+
+// MagazineFilter describes the filters used for filtering Magazine
+type MagazineFilter struct {
+	Caliber *string
+}
+
+// Filter implements the DocumentFilter interface
+func (f *MagazineFilter) Filter() bson.D {
+	filters := []bson.M{}
+
+	if f.Caliber != nil {
+		filters = append(filters, bson.M{"caliber": *f.Caliber})
+	}
+
+	if len(filters) == 0 {
+		return bson.D{}
+	}
+
+	return bson.D{{Key: "$and", Value: filters}}
 }

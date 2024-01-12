@@ -1,5 +1,7 @@
 package item
 
+import "go.mongodb.org/mongo-driver/bson"
+
 const (
 	// KindArmor represents the kind of Armor
 	KindArmor Kind = "armor"
@@ -38,4 +40,40 @@ type ArmorProps struct {
 type ArmorMaterial struct {
 	Name            string  `json:"name" bson:"name"`
 	Destructibility float64 `json:"destructibility" bson:"destructibility"`
+}
+
+// ArmorFilter describes the filters used for filtering Armor
+type ArmorFilter struct {
+	Type         *string
+	ArmorClass   *int64
+	MaterialName *string
+}
+
+// Filter implements the DocumentFilter interface
+func (f *ArmorFilter) Filter() bson.D {
+	filters := []bson.M{}
+
+	if f.Type != nil {
+		filters = append(filters, bson.M{"type": *f.Type})
+	}
+
+	if f.ArmorClass != nil {
+		filters = append(filters, bson.M{"$or": []bson.M{
+			{"armor.class": *f.ArmorClass},
+			{"components": bson.M{"$elemMatch": bson.M{"class": *f.ArmorClass}}},
+		}})
+	}
+
+	if f.MaterialName != nil {
+		filters = append(filters, bson.M{"$or": []bson.M{
+			{"armor.material.name": *f.MaterialName},
+			{"components": bson.M{"$elemMatch": bson.M{"material.name": *f.MaterialName}}},
+		}})
+	}
+
+	if len(filters) == 0 {
+		return bson.D{}
+	}
+
+	return bson.D{{Key: "$and", Value: filters}}
 }

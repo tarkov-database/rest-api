@@ -134,87 +134,149 @@ Loop:
 	}
 
 	if result == nil {
-		filter := model.Filter{}
+		var filter model.DocumentFilter
 
 		switch kind {
 		case item.KindArmor:
-			err = filter.AddString("type", r.URL.Query().Get("type"))
-			if err != nil {
-				break
+			armorFilter := &item.ArmorFilter{}
+
+			if v := r.URL.Query().Get("type"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				armorFilter.Type = &v
 			}
 
-			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
-			if err != nil {
-				break
-			}
-
-			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
-			if err != nil {
-				break
-			}
-		case item.KindFirearm:
-			err = filter.AddString("manufacturer", r.URL.Query().Get("manufacturer"))
-			if err != nil {
-				break
-			}
-
-			err = filter.AddString("type", r.URL.Query().Get("type"))
-			if err != nil {
-				break
-			}
-
-			err = filter.AddString("class", r.URL.Query().Get("class"))
-			if err != nil {
-				break
-			}
-
-			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
-			if err != nil {
-				break
-			}
-		case item.KindTacticalrig:
-			if v := r.URL.Query().Get("armored"); v != "" {
-				if v, err := strconv.ParseBool(v); err == nil {
-					filter["armor"] = bson.D{{Key: "$exists", Value: v}}
+			if v := r.URL.Query().Get("armor.class"); v != "" {
+				if v, err := strconv.ParseInt(v, 10, 64); err == nil {
+					armorFilter.ArmorClass = &v
+				} else {
+					break
 				}
 			}
 
-			err = filter.AddInt("armor.class", r.URL.Query().Get("armor.class"))
-			if err != nil {
-				break
+			if v := r.URL.Query().Get("armor.material.name"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				armorFilter.MaterialName = &v
 			}
 
-			err = filter.AddString("armor.material.name", r.URL.Query().Get("armor.material.name"))
-			if err != nil {
-				break
+			filter = armorFilter
+		case item.KindFirearm:
+			firearmFilter := &item.FirearmFilter{}
+
+			if v := r.URL.Query().Get("type"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				firearmFilter.Type = &v
 			}
+
+			if v := r.URL.Query().Get("class"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				firearmFilter.Class = &v
+			}
+
+			if v := r.URL.Query().Get("caliber"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				firearmFilter.Caliber = &v
+			}
+
+			if v := r.URL.Query().Get("manufacturer"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				firearmFilter.Manufacturer = &v
+			}
+
+			filter = firearmFilter
+		case item.KindTacticalrig:
+			tacticalrigFilter := &item.TacticalRigFilter{}
+
+			if v := r.URL.Query().Get("isPlateCarrier"); v != "" {
+				if v, err := strconv.ParseBool(v); err == nil {
+					tacticalrigFilter.IsPlateCarrier = &v
+				} else {
+					break
+				}
+			}
+
+			if v := r.URL.Query().Get("isArmored"); v != "" {
+				if v, err := strconv.ParseBool(v); err == nil {
+					tacticalrigFilter.IsArmored = &v
+				} else {
+					break
+				}
+			}
+
+			if v := r.URL.Query().Get("armor.class"); v != "" {
+				if v, err := strconv.ParseInt(v, 10, 64); err == nil {
+					tacticalrigFilter.ArmorClass = &v
+				} else {
+					break
+				}
+			}
+
+			if v := r.URL.Query().Get("armor.material"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				tacticalrigFilter.ArmorMaterial = &v
+			}
+
+			filter = tacticalrigFilter
 		case item.KindAmmunition:
-			err = filter.AddString("type", r.URL.Query().Get("type"))
-			if err != nil {
-				break
+			ammunitionFilter := &item.AmmunitionFilter{}
+
+			if v := r.URL.Query().Get("type"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				ammunitionFilter.Type = &v
 			}
 
-			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
-			if err != nil {
-				break
+			if v := r.URL.Query().Get("caliber"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				ammunitionFilter.Caliber = &v
 			}
+
+			filter = ammunitionFilter
 		case item.KindMagazine:
-			err = filter.AddString("caliber", r.URL.Query().Get("caliber"))
-			if err != nil {
-				break
+			magazineFilter := &item.MagazineFilter{}
+
+			if v := r.URL.Query().Get("caliber"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				magazineFilter.Caliber = &v
 			}
+
+			filter = magazineFilter
 		case item.KindMedical, item.KindFood, item.KindGrenade, item.KindClothing, item.KindModificationMuzzle, item.KindModificationDevice, item.KindModificationSight, item.KindModificationSightSpecial, item.KindModificationGoggles:
-			err = filter.AddString("type", r.URL.Query().Get("type"))
-			if err != nil {
-				break
+			customFilter := bson.D{}
+
+			if v := r.URL.Query().Get("type"); v != "" {
+				if !isAllowedQueryChars(v) {
+					break
+				}
+				customFilter = append(customFilter, bson.E{Key: "type", Value: v})
 			}
+
+			filter = &model.CustomFilter{D: customFilter}
 		}
 		if err != nil {
 			StatusBadRequest(fmt.Sprintf("Query string error: %s", err)).Render(w)
 			return
 		}
 
-		result, err = item.GetAll(filter, kind, opts)
+		result, err = item.GetAll(filter.Filter(), kind, opts)
 		if err != nil {
 			handleError(err, w)
 			return

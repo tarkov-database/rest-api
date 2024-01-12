@@ -1,5 +1,7 @@
 package item
 
+import "go.mongodb.org/mongo-driver/bson"
+
 const (
 	// KindAmmunition represents the kind of Ammunition
 	KindAmmunition Kind = "ammunition"
@@ -61,4 +63,29 @@ type AmmoGrenadeProperties struct {
 	FragmentCount float64 `json:"fragCount" bson:"fragCount"`
 	MinRadius     float64 `json:"minRadius" bson:"minRadius"`
 	MaxRadius     float64 `json:"maxRadius" bson:"maxRadius"`
+}
+
+// AmmunitionFilter describes the filters used for filtering Ammunition
+type AmmunitionFilter struct {
+	Caliber *string
+	Type    *string
+}
+
+// Filter implements the DocumentFilter interface
+func (f *AmmunitionFilter) Filter() bson.D {
+	filters := []bson.M{}
+
+	if f.Caliber != nil {
+		filters = append(filters, bson.M{"caliber": *f.Caliber})
+	}
+
+	if f.Type != nil {
+		filters = append(filters, bson.M{"type": *f.Type})
+	}
+
+	if len(filters) == 0 {
+		return bson.D{}
+	}
+
+	return bson.D{{Key: "$and", Value: filters}}
 }
