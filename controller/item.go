@@ -222,7 +222,7 @@ Loop:
 				}
 			}
 
-			if v := r.URL.Query().Get("armor.material"); v != "" {
+			if v := r.URL.Query().Get("armor.material.name"); v != "" {
 				if !isAllowedQueryChars(v) {
 					break
 				}
