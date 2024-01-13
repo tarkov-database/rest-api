@@ -48,7 +48,7 @@ func (f *TacticalRigFilter) Filter() bson.D {
 
 	if f.ArmorMaterial != nil {
 		filters = append(filters, bson.M{
-			"armorComponents": bson.M{"$elemMatch": bson.M{"material": *f.ArmorMaterial}},
+			"armorComponents": bson.M{"$elemMatch": bson.M{"material.name": *f.ArmorMaterial}},
 		})
 	}
 
